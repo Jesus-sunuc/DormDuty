@@ -1,90 +1,122 @@
-import { ExpoConfig, ConfigContext } from '@expo/config';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { ExpoConfig, ConfigContext } from "@expo/config";
 
-const IS_DEV = process.env.APP_VARIANT === 'development';
-const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+const EAS_PROJECT_ID = "411e34e6-3329-4b94-8261-3bed4b8587f0";
+const PROJECT_SLUG = "DormDuty";
+const OWNER = "jesus9160";
 
-const getUniqueIdentifier = () => {
-  if (IS_DEV) {
-    return 'com.com.jesus9160.DormDuty.dev';
-  }
+export default ({ config }: ConfigContext): ExpoConfig => {
+  console.log("Building app for environment:", process.env.APP_ENV);
+  const { name, bundleIdentifier, icon, adaptiveIcon, packageName, schema } =
+    getDynamicConfig(
+      (process.env.APP_ENV as "development" | "preview" | "production") ||
+        "development"
+    );
 
-  if (IS_PREVIEW) {
-    return 'com.com.jesus9160.DormDuty.preview';
-  }
-
-  return 'com.com.jesus9160.DormDuty';
-};
-
-const getAppName = () => {
-  if (IS_DEV) {
-    return 'Dorm Duty (Dev)';
-  }
-
-  if (IS_PREVIEW) {
-    return 'Dorm Duty (Preview)';
-  }
-
-  return 'Dorm Duty';
-};
-
-
-export default ({config}: ConfigContext): ExpoConfig => ({
-  ...config,
-  name: getAppName(),
-  slug: "DormDuty",
-  version: "1.0.0",
-  orientation: "portrait",
-  icon: "./assets/icons/icon.png",
-  scheme: "dormduty",
-  userInterfaceStyle: "automatic",
-  newArchEnabled: true,
-  ios: {
-    supportsTablet: true,
-    bundleIdentifier: getUniqueIdentifier(),
-    infoPlist: {
-      ITSAppUsesNonExemptEncryption: false,
+  return {
+    ...config,
+    name: name,
+    slug: PROJECT_SLUG,
+    version: "1.0.1",
+    orientation: "portrait",
+    icon: icon,
+    scheme: schema,
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: bundleIdentifier,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
-  },
-  android: {
-    adaptiveIcon: {
-      foregroundImage: "./assets/icons/icon.png",
-      backgroundColor: "#ffffff",
-    },
-    edgeToEdgeEnabled: true,
-    package: "com.jesus9160.DormDuty",
-  },
-  web: {
-    bundler: "metro",
-    output: "static",
-    favicon: "./assets/images/favicon.png",
-  },
-  plugins: [
-    "expo-router",
-    [
-      "expo-splash-screen",
-      {
-        image: "./assets/icons/splash.png",
-        imageWidth: 175,
-        resizeMode: "contain",
+    android: {
+      adaptiveIcon: {
+        foregroundImage: adaptiveIcon,
         backgroundColor: "#ffffff",
-        dark: {
+      },
+      package: packageName,
+    },
+
+    updates: {
+      url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
+    extra: {
+      eas: {
+        projectId: EAS_PROJECT_ID,
+      },
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
           image: "./assets/icons/splash.png",
           imageWidth: 175,
           resizeMode: "contain",
-          backgroundColor: "#000000",
+          backgroundColor: "#ffffff",
+          dark: {
+            image: "./assets/icons/splash.png",
+            imageWidth: 175,
+            resizeMode: "contain",
+            backgroundColor: "#000000",
+          },
         },
-      },
+      ],
     ],
-  ],
-  experiments: {
-    typedRoutes: true,
-  },
-  extra: {
-    router: {},
-    eas: {
-      projectId: "411e34e6-3329-4b94-8261-3bed4b8587f0",
+    experiments: {
+      typedRoutes: true,
     },
-  },
-  owner: "jesus9160",
-});
+
+    owner: OWNER,
+  };
+};
+
+// App production configuration
+const APP_NAME = "Dorm Duty";
+const BUNDLE_IDENTIFIER = "com.jesus9160.DormDuty";
+const PACKAGE_NAME = "com.jesus9160.DormDuty";
+const ICON = "./assets/icons/iOS.png";
+const ADAPTATIVE_ICON = "./assets/icons/Android.png";
+const SCHEMA = "dormduty";
+
+export const getDynamicConfig = (
+  environment: "development" | "preview" | "production"
+) => {
+  if (environment === "production") {
+    return {
+      name: APP_NAME,
+      bundleIdentifier: BUNDLE_IDENTIFIER,
+      packageName: PACKAGE_NAME,
+      icon: ICON,
+      adaptiveIcon: ADAPTATIVE_ICON,
+      schema: SCHEMA,
+    };
+  }
+
+  if (environment === "preview") {
+    return {
+      name: `${APP_NAME} (Prev)`,
+      bundleIdentifier: `${BUNDLE_IDENTIFIER}.preview`,
+      packageName: `${PACKAGE_NAME}.preview`,
+      icon: "./assets/icons/iOS-prev.png",
+      adaptiveIcon: "./assets/icons/Android-prev.png",
+      schema: `${SCHEMA}-prev`,
+    };
+  }
+  return {
+    name: `${APP_NAME} (Dev)`,
+    bundleIdentifier: `${BUNDLE_IDENTIFIER}.dev`,
+    packageName: `${PACKAGE_NAME}.dev`,
+    icon: "./assets/icons/iOS-dev.png",
+    adaptiveIcon: "./assets/icons/Android-dev.png",
+    schema: `${SCHEMA}-dev`,
+  };
+};
