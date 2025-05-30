@@ -36,7 +36,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       package: packageName,
     },
-
     updates: {
       url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
     },
