@@ -1,34 +1,29 @@
-import { StyleSheet, Text, View } from "react-native";
+import { colors } from "@/constants/theme";
+import { View, Image, StyleSheet } from "react-native";
 
-export default function Page() {
+const index = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Estos son los primeros cambios que voy a hacer.</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
-      </View>
+      <Image
+        style={styles.logo}
+        resizeMode="contain"
+        source={require("../assets/icons/iOS.png")}
+      />
     </View>
   );
-}
+};
+
+export default index;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  main: {
-    flex: 1,
     justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
+    alignItems: "center",
+    backgroundColor: colors.neutral900,
   },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
+  logo: {
+    height: "20%",
+    aspectRatio: 1,
   },
 });
