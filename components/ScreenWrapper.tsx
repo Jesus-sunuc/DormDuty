@@ -1,6 +1,6 @@
 import { colors } from "@/constants/theme";
 import { ScreenWrapperProps } from "@/type";
-import { Dimensions, Platform, StatusBar, Text, View } from "react-native";
+import { Dimensions, Platform, StatusBar, View } from "react-native";
 
 const { height } = Dimensions.get("window");
 

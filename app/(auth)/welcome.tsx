@@ -3,15 +3,17 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Type";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
+import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 const Welcome = () => {
+  const router = useRouter();
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <View>
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={styles.loginButton}>
             <Typo fontWeight={"500"}>Sign In</Typo>
           </TouchableOpacity>
           <Animated.Image
@@ -56,14 +58,14 @@ const Welcome = () => {
               .springify()
               .damping(12)}
           >
-            <Button>
+            <Button onPress={() => router.push("/(auth)/register")}>
               <Typo size={22} color={colors.neutral900} fontWeight={"600"}>
                 Get Started
               </Typo>
             </Button>
           </Animated.View>
         </View>
-      </View>
+      </View> 
     </ScreenWrapper>
   );
 };
