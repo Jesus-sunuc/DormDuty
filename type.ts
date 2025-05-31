@@ -15,7 +15,6 @@ import {
 export type ScreenWrapperProps = {
   style?: ViewStyle;
   children?: React.ReactNode;
-  bg?: string;
 };
 
 export type ModalWrapperProps = {
@@ -115,7 +114,6 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   style?: ViewStyle;
   onPress?: () => void;
   loading?: boolean;
-  hasShadow?: boolean;
   children?: React.ReactNode;
 }
 

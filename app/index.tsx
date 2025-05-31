@@ -1,13 +1,21 @@
 import { colors } from "@/constants/theme";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import { View, Image, StyleSheet } from "react-native";
 
 const index = () => {
+    const router = useRouter();
+    useEffect(() => {
+        setTimeout(() => {
+            router.push("/(auth)/welcome");
+        }, 800);
+    }, [])
   return (
     <View style={styles.container}>
       <Image
         style={styles.logo}
         resizeMode="contain"
-        source={require("../assets/icons/iOS.png")}
+        source={require("../assets/icons/splash.png")}
       />
     </View>
   );
