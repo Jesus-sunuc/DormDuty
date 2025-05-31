@@ -34,6 +34,11 @@ yarn-error.*
 .env*.local
 .env
 
+
+# Firebase config with sensitive data
+config/firebase.ts
+
+
 # typescript
 *.tsbuildinfo
 
