@@ -3,12 +3,15 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { StyleSheet } from "react-native";
 
-export default function HomeScreen() {
+export default function ChoresScreen() {
   return (
     <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
+      <ThemedText>
+        This app includes example code to help you get started.
+      </ThemedText>
     </ParallaxScrollView>
   );
 }
@@ -16,7 +19,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 8,
   },
 });

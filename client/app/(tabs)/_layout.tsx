@@ -26,21 +26,48 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={32} color={color} />
+            <Ionicons name="home-outline" size={28} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="chores"
         options={{
-          title: "Explore",
+          title: "Chores",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="paper-plane-o" size={24} color={color} />
+            <FontAwesome name="tasks" size={28} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen 
+        name="rewards"
+        options={{
+          title: "Rewards",
+          tabBarIcon: ({color}) => (
+            <Ionicons name="gift-outline" size={28} color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen 
+        name="expenses"
+        options={{
+          title: "Expenses",
+          tabBarIcon: ({color}) => (
+            <Ionicons name="wallet-outline" size={28} color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen 
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({color}) => (
+            <Ionicons name="settings-outline" size={28} color={color} />
+          )
         }}
       />
     </Tabs>

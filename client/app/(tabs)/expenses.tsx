@@ -3,15 +3,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { StyleSheet } from "react-native";
 
-export default function TabTwoScreen() {
+export default function ExpensesScreen() {
   return (
     <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <ThemedText type="title">Expenses!</ThemedText>
       </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
     </ParallaxScrollView>
   );
 }
@@ -19,6 +16,7 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
 });
