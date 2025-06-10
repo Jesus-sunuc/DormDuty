@@ -1,17 +1,53 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# from dotenv import load_dotenv
 
+
+# load_dotenv()
+
+# import logging
+# from fastapi import FastAPI, APIRouter
+
+
+# app = FastAPI()
+
+
+# logging.getLogger("uvicorn.access").addFilter(lambda _: False)
+
+
+# router = APIRouter(prefix="/api")
+
+
+# @router.get("/health")
+# def health_check():
+#     return True
+
+
+# app.include_router(router)
+
+
+import os
+import logging
+from dotenv import load_dotenv
+from fastapi import FastAPI, APIRouter
+
+# 1. Load the correct .env file based on ENV_FILE or ENV
+env_file = os.getenv("ENV_FILE", ".env.docker")  # Default to local dev
+load_dotenv(dotenv_path=env_file)
+
+# 2. Set up FastAPI
 app = FastAPI()
 
-# Allow CORS for your mobile app
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Replace with your mobile app URI in prod
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 3. Optional: silence uvicorn.access logs
+logging.getLogger("uvicorn.access").addFilter(lambda _: False)
 
-@app.get("/ping")
-def ping():
-    return {"message": "pong"}
+# 4. Set up router
+router = APIRouter(prefix="/api")
+
+@router.get("/health")
+def health_check():
+    return {"status": "ok"}  # More descriptive than True
+
+app.include_router(router)
+
+# 5. Optional: Log what environment file was loaded
+logging.info(f"Loaded environment from {env_file}")
+
