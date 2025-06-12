@@ -48,6 +48,5 @@ def health_check():
 
 app.include_router(router)
 
-# 5. Optional: Log what environment file was loaded
 logging.info(f"Loaded environment from {env_file}")
 
