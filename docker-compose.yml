@@ -11,7 +11,7 @@ services:
     volumes:
       - ./api:/app
       - ./logs:/var/log/api
-    restart: always 
+    restart: always
 
 volumes:
   pgdata:
