@@ -7,27 +7,11 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./api/.env.docker
+      - ./api/.env.dev
     volumes:
       - ./api:/app
       - ./logs:/var/log/api
     restart: always 
-
-  dorm_duty_db:
-    # psql -U $POSTGRES_USER $POSTGRES_DB
-    image: postgres:latest
-    container_name: dormduty-postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    restart: always
-    environment:
-      POSTGRES_USER: dormdutyadmin
-      POSTGRES_PASSWORD: devpassword123
-      POSTGRES_DB: postgres
-      pgdata: /var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
 
 volumes:
   pgdata:

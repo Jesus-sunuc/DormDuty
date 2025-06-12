@@ -4,5 +4,5 @@ client/.vscode/
 # Ignore backend envs
 api/venv/
 api/src/__pycache__/
-api/.env.docker
+api/.env.dev
 api/.env.prod
