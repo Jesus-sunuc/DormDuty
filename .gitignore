@@ -5,4 +5,3 @@ client/.vscode/
 api/venv/
 api/src/__pycache__/
 api/.env.dev
-api/.env.prod
