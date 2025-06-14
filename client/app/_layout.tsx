@@ -9,8 +9,9 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { getQueryClient } from "@/services/queryClient.native";
+import { getQueryClient } from "@/services/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,7 +20,6 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
@@ -28,11 +28,13 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
+        <LoadingAndErrorHandling>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </LoadingAndErrorHandling>
       </ThemeProvider>
     </QueryClientProvider>
   );
