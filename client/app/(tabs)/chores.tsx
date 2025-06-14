@@ -1,24 +1,19 @@
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { useChores } from "@/hooks/choreHooks";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { StyleSheet } from "react-native";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
 
 export default function ChoresScreen() {
+  const { data: chores } = useChores();
+
   return (
     <ParallaxScrollView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+      <ThemedView>
+        <ThemedText type="title">My Chores</ThemedText>
       </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
+      {chores.map((item) => (
+        <ThemedText key={item.choreId}>{item.name}</ThemedText>
+      ))}
     </ParallaxScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-});
