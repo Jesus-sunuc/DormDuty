@@ -1,7 +1,4 @@
-# Ignore client dev files
-client/.vscode/
-
-# Ignore backend envs
+# Ignore Python virtual environment
 api/venv/
 
 # Ignore Python cache
