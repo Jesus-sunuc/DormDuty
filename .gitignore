@@ -1,11 +1,9 @@
-# Ignore client dev files
-client/.vscode/
-
-# Ignore backend envs
+# Ignore Python virtual environment
 api/venv/
-api/src/__pycache__/
-api/src/models/__pycache__/
-api/src/repository/__pycache__/
-api/src/router/__pycache__/
-api/src/services/database/__pycache__/
+
+# Ignore Python cache
+**/__pycache__/
+*.pyc
+
+# Ignore env files
 api/.env.dev
