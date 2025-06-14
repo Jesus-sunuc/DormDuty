@@ -10,5 +10,6 @@ router = APIRouter(
 
 @router.get("/all")
 @error_handler("Error fetching all chores")
-async def get_all_chores(chores_repo: ChoreRepository = Depends()):
-    return await chores_repo.get_all_chores()
+def get_chores():
+    repo = ChoreRepository()
+    return repo.get_all_chores()
