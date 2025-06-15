@@ -1,4 +1,5 @@
--- 1. USER TABLE
+-- psql -U $POSTGRES_USER $POSTGRES_DB
+
 CREATE TABLE "user" (
   "user_id" SERIAL PRIMARY KEY,
   "fb_uid" VARCHAR(128) UNIQUE NOT NULL,
@@ -9,7 +10,6 @@ CREATE TABLE "user" (
   "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. ROOM TABLE
 CREATE TABLE "room" (
   "room_id" SERIAL PRIMARY KEY,
   "room_code" VARCHAR(10) UNIQUE NOT NULL,
@@ -22,7 +22,6 @@ CREATE TABLE "room" (
     FOREIGN KEY ("created_by") REFERENCES "user"("user_id")
 );
 
--- 3.ROOM_MEMBERSHIP
 CREATE TABLE "room_membership" (
   "membership_id" SERIAL PRIMARY KEY,
   "user_id" INTEGER NOT NULL,
@@ -43,7 +42,6 @@ CREATE TABLE "room_membership" (
     UNIQUE ("user_id", "room_id")
 );
 
--- 4. ROOM_INVITATION
 CREATE TABLE "room_invitation" (
   "invitation_id" SERIAL PRIMARY KEY,
   "room_id" INTEGER NOT NULL,
@@ -71,7 +69,6 @@ CREATE TABLE "room_invitation" (
     )
 );
 
--- 5. CHORE TABLE
 CREATE TABLE "chore" (
   "chore_id" SERIAL PRIMARY KEY,
   "room_id" INTEGER NOT NULL,
@@ -92,7 +89,6 @@ CREATE TABLE "chore" (
     FOREIGN KEY ("assigned_to") REFERENCES "room_membership"("membership_id")
 );
 
--- 6. CHORE_COMPLETION TABLE
 CREATE TABLE "chore_completion" (
   "completion_id" SERIAL PRIMARY KEY,
   "chore_id" INTEGER NOT NULL,
@@ -109,7 +105,6 @@ CREATE TABLE "chore_completion" (
     FOREIGN KEY ("membership_id") REFERENCES "room_membership"("membership_id")
 );
 
--- 7. CHORE_VERIFICATION TABLE
 CREATE TABLE "chore_verification" (
   "verification_id" SERIAL PRIMARY KEY,
   "completion_id" INTEGER NOT NULL,
@@ -124,7 +119,6 @@ CREATE TABLE "chore_verification" (
     FOREIGN KEY ("verified_by") REFERENCES "room_membership"("membership_id")
 );
 
--- 8. CHORE_ASSIGNMENT_HISTORY TABLE
 CREATE TABLE "chore_assignment_history" (
   "assignment_id" SERIAL PRIMARY KEY,
   "chore_id" INTEGER NOT NULL,
@@ -139,7 +133,6 @@ CREATE TABLE "chore_assignment_history" (
     FOREIGN KEY ("membership_id") REFERENCES "room_membership"("membership_id")
 );
 
--- 9. CHORE_SWAP_REQUEST TABLE
 CREATE TABLE "chore_swap_request" (
   "swap_id" SERIAL PRIMARY KEY,
   "chore_id" INTEGER NOT NULL,
@@ -158,7 +151,6 @@ CREATE TABLE "chore_swap_request" (
     FOREIGN KEY ("to_membership") REFERENCES "room_membership"("membership_id")
 );
 
--- 10. EXPENSE TABLE
 CREATE TABLE "expense" (
   "expense_id" SERIAL PRIMARY KEY,
   "room_id" INTEGER NOT NULL,
@@ -176,7 +168,6 @@ CREATE TABLE "expense" (
     FOREIGN KEY ("payer_membership_id") REFERENCES "room_membership"("membership_id")
 );
 
--- 11. EXPENSE_SPLIT TABLE
 CREATE TABLE "expense_split" (
   "split_id" SERIAL PRIMARY KEY,
   "expense_id" INTEGER NOT NULL,
@@ -248,26 +239,3 @@ FROM "room" r
 JOIN "room_membership" rm ON r.room_id = rm.room_id
 JOIN "user" u ON rm.user_id = u.user_id
 WHERE rm.is_active = TRUE;
-
-
-
-BEGIN;
-
--- 1. Drop views first (they depend on tables)
-DROP VIEW IF EXISTS "room_members" CASCADE;
-DROP VIEW IF EXISTS "user_rooms"  CASCADE;
-
--- 2. Drop tables – CASCADE removes FKs, indexes, sequences
-DROP TABLE IF EXISTS "expense_split"           CASCADE;
-DROP TABLE IF EXISTS "expense"                 CASCADE;
-DROP TABLE IF EXISTS "chore_swap_request"      CASCADE;
-DROP TABLE IF EXISTS "chore_assignment_history"CASCADE;
-DROP TABLE IF EXISTS "chore_verification"      CASCADE;
-DROP TABLE IF EXISTS "chore_completion"        CASCADE;
-DROP TABLE IF EXISTS "chore"                   CASCADE;
-DROP TABLE IF EXISTS "room_invitation"         CASCADE;
-DROP TABLE IF EXISTS "room_membership"         CASCADE;
-DROP TABLE IF EXISTS "room"                    CASCADE;
-DROP TABLE IF EXISTS "user"                    CASCADE;
-
-COMMIT;
