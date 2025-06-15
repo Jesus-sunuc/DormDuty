@@ -13,5 +13,21 @@ services:
       - ./logs:/var/log/api
     restart: always
 
+  db:
+    image: postgres:17
+    container_name: dormduty-pg
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: postgres
+      POSTGRES_USER: dormduty
+      POSTGRES_PASSWORD: password
+      pgdata: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
 volumes:
   pgdata:

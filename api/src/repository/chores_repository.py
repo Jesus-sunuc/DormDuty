@@ -5,5 +5,5 @@ from src.services.database.helper import run_sql
 
 class ChoreRepository:
     def get_all_chores(self) -> List[Chore]:
-        query = "SELECT * FROM dormduty.chore"
+        query = "SELECT * FROM chore"
         return run_sql(query, output_class=Chore)
