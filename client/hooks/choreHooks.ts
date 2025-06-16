@@ -6,7 +6,7 @@ export const choresKeys = {
   all: ["chores"] as const,
 };
 
-export function useChores() {
+export function useChoresQuery() {
   return useSuspenseQuery({
     queryKey: choresKeys.all,
     queryFn: async (): Promise<Chore[]> => {

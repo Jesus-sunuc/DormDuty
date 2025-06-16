@@ -12,6 +12,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { getQueryClient } from "@/services/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import "@/global.css"
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -31,7 +32,6 @@ export default function RootLayout() {
         <LoadingAndErrorHandling>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
         </LoadingAndErrorHandling>
