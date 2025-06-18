@@ -1,14 +1,12 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Text} from "react-native";
 
 export default function SeettingsScreen() {
   return (
     <ParallaxScrollView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Settings!</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Settings!</Text>
+      </View>
     </ParallaxScrollView>
   );
 }

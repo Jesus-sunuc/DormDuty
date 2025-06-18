@@ -1,14 +1,12 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 export default function RewardsScreen() {
   return (
     <ParallaxScrollView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Rewards!</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Rewards!</Text>
+      </View>
     </ParallaxScrollView>
   );
 }

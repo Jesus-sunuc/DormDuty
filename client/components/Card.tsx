@@ -1,32 +1,21 @@
 import { View, type ViewProps } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import clsx from "clsx";
 
 export interface CardProps extends ViewProps {
-  lightColor?: string;
-  darkColor?: string;
   className?: string;
 }
 
-export const Card = ({ style, className, lightColor, darkColor, ...otherProps }: CardProps) => {
-  const backgroundColor = useThemeColor(
-    { light: lightColor ?? "#ffffff", dark: darkColor ?? "#222222" },
-    "background"
-  );
-
-  const borderColor = useThemeColor(
-    { light: "rgba(0,0,0,0.1)", dark: "rgba(255,255,255,0.1)" },
-    "background"
-  );
-
+export const Card = ({ style, className, ...props }: CardProps) => {
   return (
     <View
       className={clsx(
-        "rounded-xl border px-4 py-3 mb-4 shadow-sm",
+        "rounded-2xl border px-4 py-3 mb-4 shadow-sm",
+        "bg-white dark:bg-zinc-900",
+        "border-zinc-100 dark:border-zinc-700",
         className
       )}
-      style={[{ backgroundColor, borderColor, borderWidth: 1 }, style]}
-      {...otherProps}
+      style={style}
+      {...props}
     />
   );
 };
