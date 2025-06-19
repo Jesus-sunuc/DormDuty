@@ -20,7 +20,7 @@ export default function ChoresScreen() {
     <ParallaxScrollView>
       <ThemedView className="px-2">
         <ThemedView className="mb-4">
-          <ThemedText type="title">My Chores</ThemedText>
+          <ThemedText type="title" className="text-2xl">My Chores</ThemedText>
         </ThemedView>
 
         {chores.length === 0 ? (
@@ -30,7 +30,7 @@ export default function ChoresScreen() {
         ) : (
           chores.map((chore) => (
             <Card key={chore.choreId}>
-              <ThemedText className="text-lg font-semibold mb-2">
+              <ThemedText className="text-lg font-semibold mb-2 font-inter">
                 {chore.name}
               </ThemedText>
 

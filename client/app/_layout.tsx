@@ -3,25 +3,43 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { useFonts as useInter, Inter_400Regular, Inter_600SemiBold } from "@expo-google-fonts/inter";
+import { useFonts as useGrotesk, SpaceGrotesk_700Bold } from "@expo-google-fonts/space-grotesk";
+import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getQueryClient } from "@/services/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import "@/global.css";
 import { View } from "react-native";
+import { useEffect } from "react";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+
+  SplashScreen.preventAutoHideAsync();
+
+
+  const [interLoaded] = useInter({
+    Inter_400Regular,
+    Inter_600SemiBold,
   });
 
-  if (!loaded) {
+  const [groteskLoaded] = useGrotesk({
+    SpaceGrotesk_700Bold,
+  });
+
+  const fontsLoaded = interLoaded && groteskLoaded;
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
     return null;
   }
 

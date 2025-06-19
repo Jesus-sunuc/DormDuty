@@ -19,18 +19,14 @@ export function ThemedText({
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
   const tint = useThemeColor({}, "tint");
 
-  const defaultStyles = clsx(
-    type === "title" && "text-2xl font-bold",
-    type === "subtitle" && "text-lg font-semibold",
-    type === "defaultSemiBold" && "text-base font-semibold",
-    type === "link" && "text-sm underline",
-    type === "default" && "text-base",
-    className
+  const fontClass = clsx(
+    (type === "title" || type === "subtitle") && "font-grotesk",
+    (type === "default" || type === "defaultSemiBold" || type === "link") && "font-inter"
   );
 
   return (
     <Text
-      className={defaultStyles}
+      className={clsx(fontClass, className)}
       style={{ color: type === "link" ? tint : color }}
       {...rest}
     />

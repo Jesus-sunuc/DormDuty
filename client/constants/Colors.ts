@@ -10,7 +10,7 @@ export const Colors = {
     tabIconSelected: "#27ae60",
   },
   dark: {
-    text: "#e6f4ea",
+    text: "#f1f5f9",
     background: "#1c1c1e",
     surface: "#262626",        // Optional: Card backgrounds in dark mode
     muted: "#3a3a3a",          // Optional: Subtle lines or borders

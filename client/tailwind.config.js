@@ -23,6 +23,10 @@ module.exports = {
           900: "#12381a",
         },
       },
+      fontFamily: {
+        inter: ["Inter_400Regular"],
+        grotesk: ["SpaceGrotesk_700Bold"],
+      },
     },
   },
   plugins: [],
