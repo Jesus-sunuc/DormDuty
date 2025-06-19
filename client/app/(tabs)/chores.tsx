@@ -20,7 +20,7 @@ export default function ChoresScreen() {
     <ParallaxScrollView>
       <ThemedView className="px-2">
         <ThemedView className="mb-4">
-          <ThemedText type="title" className="text-2xl">My Chores</ThemedText>
+          <ThemedText className="text-2xl">My Chores</ThemedText>
         </ThemedView>
 
         {chores.length === 0 ? (
