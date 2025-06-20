@@ -5,6 +5,7 @@ import { formatDistance } from "date-fns";
 import { Card } from "@/components/Card";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function ChoresScreen() {
   const { data: chores = [] } = useChoresQuery();
@@ -18,55 +19,43 @@ export default function ChoresScreen() {
 
   return (
     <ParallaxScrollView>
-      <ThemedView className="px-2">
-        <ThemedView className="mb-4">
-          <ThemedText className="text-2xl">My Chores</ThemedText>
-        </ThemedView>
+      <ThemedView className="px-4 pt-6">
+        <ThemedText type="title" className="text-2xl font-grotesk mb-3 dark:text-gray-200">
+          My Chores
+        </ThemedText>
 
         {chores.length === 0 ? (
-          <ThemedText className="text-center mt-10 text-muted">
+          <ThemedText className="text-center text-muted mt-10">
             No chores assigned yet!
           </ThemedText>
         ) : (
           chores.map((chore) => (
             <Card key={chore.choreId}>
-              <ThemedText className="text-lg font-semibold mb-2 font-inter">
+              <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-200">
                 {chore.name}
               </ThemedText>
 
-              <View className="flex-row justify-between mb-1">
-                <ThemedText type="subtitle" className="text-muted">
-                  Frequency:
-                </ThemedText>
-                <ThemedText type="defaultSemiBold">
-                  {chore.frequencyValue} {chore.frequency}
-                </ThemedText>
-              </View>
-
-              <View className="flex-row justify-between mb-1">
-                <ThemedText type="subtitle" className="text-muted">
-                  Last completed:
-                </ThemedText>
-                <ThemedText type="defaultSemiBold">
+              <View className="flex-row items-center justify-between mb-1">
+                <View className="flex-row items-center space-x-1">
+                  <Ionicons name="time-outline" size={16} color="#9ca3af" />
+                  <ThemedText className="px-1 text-sm text-muted dark:text-gray-100">
+                    Last completed:
+                  </ThemedText>
+                </View>
+                <ThemedText className="text-sm font-medium dark:text-gray-100">
                   {formatDate(chore.lastCompleted)}
                 </ThemedText>
               </View>
 
-              <View className="flex-row justify-between mb-2">
-                <ThemedText type="subtitle" className="text-muted">
-                  Assigned to:
-                </ThemedText>
-                <ThemedText type="defaultSemiBold">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center space-x-1">
+                  <Ionicons name="person-outline" size={16} color="#9ca3af" />
+                  <ThemedText className="text-sm px-1 text-muted dark:text-gray-100">
+                    Assigned to:
+                  </ThemedText>
+                </View>
+                <ThemedText className="text-sm font-medium dark:text-gray-100">
                   {chore.assignedTo?.toString() || "Unassigned"}
-                </ThemedText>
-              </View>
-
-              <View className="border-t border-muted mt-3 pt-2">
-                <ThemedText className="text-xs text-muted">
-                  Created: {formatDate(chore.createdAt)}
-                </ThemedText>
-                <ThemedText className="text-xs text-muted">
-                  Updated: {formatDate(chore.updatedAt)}
                 </ThemedText>
               </View>
             </Card>

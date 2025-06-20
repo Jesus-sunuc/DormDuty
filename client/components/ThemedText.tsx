@@ -16,18 +16,27 @@ export function ThemedText({
   className,
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const defaultColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "text"
+  );
   const tint = useThemeColor({}, "tint");
 
   const fontClass = clsx(
     (type === "title" || type === "subtitle") && "font-grotesk",
-    (type === "default" || type === "defaultSemiBold" || type === "link") && "font-inter"
+    (type === "default" || type === "defaultSemiBold" || type === "link") &&
+      "font-inter"
   );
+
+  const isOverridingColor =
+    className?.includes("text-") || className?.includes("dark:text-");
 
   return (
     <Text
       className={clsx(fontClass, className)}
-      style={{ color: type === "link" ? tint : color }}
+      style={[
+        !isOverridingColor && { color: type === "link" ? tint : defaultColor },
+      ]}
       {...rest}
     />
   );
