@@ -19,7 +19,7 @@ export default function ChoresScreen() {
 
   return (
     <ParallaxScrollView>
-      <ThemedView className="px-4 pt-6">
+      <ThemedView className="pt-3">
         <ThemedText type="title" className="text-2xl font-grotesk mb-3 dark:text-gray-200">
           My Chores
         </ThemedText>
