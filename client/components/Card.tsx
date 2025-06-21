@@ -9,7 +9,7 @@ export const Card = ({ style, className, ...props }: CardProps) => {
   return (
     <View
       className={clsx(
-        "rounded-xl border px-5 py-4 mb-2 shadow-lg",
+        "rounded-xl border px-4 py-4 mb-2 shadow-lg",
         "bg-gray-100 border-gray-300 dark:bg-neutral-800",
         "border-zinc-200 dark:border-zinc-700",
         className

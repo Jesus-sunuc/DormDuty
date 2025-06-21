@@ -7,6 +7,7 @@ import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
+import Entypo from "@expo/vector-icons/Entypo";
 
 export default function HomeScreen() {
   const { data: rooms } = useRoomsQuery();
@@ -25,7 +26,7 @@ export default function HomeScreen() {
 
           {rooms.map((room) => {
             return (
-              <Card key={room.roomId} className="flex-row items-center">
+              <Card key={room.roomId} className="flex-row items-center pe-2 ps-2">
                 <View
                   style={{
                     backgroundColor: getRoomColor(room.roomId),
@@ -34,12 +35,19 @@ export default function HomeScreen() {
                   }}
                   className="rounded-l-xl"
                 />
-                <View className="p-3 pl-4 flex-1">
+                <View className="p-3 flex-1">
                   <View className="flex-row items-center">
                     <Ionicons name="people-outline" size={22} color="#9ca3af" />
                     <ThemedText className="ml-2 text-lg font-semibold dark:text-gray-100">
                       {room.name}
                     </ThemedText>
+                    <View className="ml-auto -mt-8">
+                      <Entypo
+                        name="dots-three-horizontal"
+                        size={24}
+                        color="#9ca3af"
+                      />
+                    </View>
                   </View>
                 </View>
               </Card>
