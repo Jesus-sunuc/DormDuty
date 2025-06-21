@@ -15,6 +15,7 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import "@/global.css";
 import { View } from "react-native";
 import { useEffect } from "react";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -52,9 +53,11 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <LoadingAndErrorHandling>
+
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>
+            < Toast />
             <StatusBar style="auto" />
           </LoadingAndErrorHandling>
         </ThemeProvider>

@@ -1,8 +1,8 @@
-// RoomCreateModal.tsx
 import { useState } from "react";
 import { Modal, TextInput, View, TouchableOpacity } from "react-native";
 import { useAddRoomMutation } from "@/hooks/roomHooks";
 import { ThemedText } from "@/components/ThemedText";
+import { toastError, toastSuccess } from "../ToastService";
 
 interface RoomCreateModalProps {
   visible: boolean;
@@ -14,25 +14,25 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
   const { mutate, isPending } = useAddRoomMutation();
 
   const handleSubmit = () => {
-  if (!name.trim()) return;
+    if (!name.trim()) return;
 
-  mutate(
-    {
-      name,
-      createdBy: 2,
-    },
-    {
-      onSuccess: () => {
-        console.log("Room created!");
-        setName("");
-        onClose();
+    mutate(
+      {
+        name,
+        createdBy: 2,
       },
-      onError: (error) => {
-        console.error("Room creation failed", error);
-      },
-    }
-  );
-};
+      {
+        onSuccess: (data) => {
+          toastSuccess(`Room "${name}" created successfully!`);
+          setName("");
+          onClose();
+        },
+        onError: (err) => {
+          toastError("Failed to create room");
+        },
+      }
+    );
+  };
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -57,7 +57,7 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
             <TouchableOpacity
               onPress={handleSubmit}
               disabled={isPending}
-              className="px-4 py-2 bg-customGreen-500 rounded-lg"
+              className="px-4 py-2 bg-customGreen-600 rounded-lg"
             >
               <ThemedText className="text-white">Create</ThemedText>
             </TouchableOpacity>
