@@ -1,6 +1,6 @@
 import { useChoresQuery } from "@/hooks/choreHooks";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { formatDistance } from "date-fns";
 import { Card } from "@/components/Card";
 import { ThemedText } from "@/components/ThemedText";
@@ -56,7 +56,7 @@ export default function ChoresScreen() {
                           size={16}
                           color="#9ca3af"
                         />
-                        <ThemedText className="text-sm text-muted dark:text-gray-300">
+                        <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
                           Last completed:
                         </ThemedText>
                       </View>
@@ -72,7 +72,7 @@ export default function ChoresScreen() {
                           size={16}
                           color="#9ca3af"
                         />
-                        <ThemedText className="text-sm text-muted dark:text-gray-300">
+                        <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
                           Assigned to:
                         </ThemedText>
                       </View>
@@ -87,16 +87,6 @@ export default function ChoresScreen() {
           )}
         </View>
       </ParallaxScrollView>
-
-      <TouchableOpacity
-        onPress={() => {
-          // TODO: navigate to Add Chore screen or open modal
-        }}
-        className="absolute bottom-6 right-6 bg-customGreen-500 p-4 rounded-full"
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
     </>
   );
 }
