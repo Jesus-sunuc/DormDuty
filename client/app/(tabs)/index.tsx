@@ -3,6 +3,7 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useRoomsQuery } from "@/hooks/roomHooks";
+import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { View } from "react-native";
 
@@ -19,23 +20,34 @@ export default function HomeScreen() {
           Your Rooms
         </ThemedText>
 
-        {rooms.map((room) => (
-          <Card key={room.roomId}>
-            <View className="flex-row items-center mb-1">
-              <Ionicons name="home-outline" size={18} color="#6b7280" />
-              <ThemedText className="ml-2 font-semibold text-base dark:text-gray-200">
-                {room.name}
-              </ThemedText>
-            </View>
+        {rooms.map((room) => {
+          const roomColor = getRoomColor(room.roomId);
 
-            <View className="flex-row items-center">
-              <Ionicons name="key-outline" size={16} color="#9ca3af" />
-              <ThemedText className="ml-2 text-xs text-muted dark:text-gray-300">
-                Code: {room.roomCode}
-              </ThemedText>
-            </View>
-          </Card>
-        ))}
+          return (
+            <Card key={room.roomId} className="flex-row items-center">
+              <View
+                style={{
+                  backgroundColor: getRoomColor(room.roomId),
+                  width: 6,
+                  height: "100%",
+                }}
+                className="rounded-l-xl"
+              />
+
+              <View className="p-3 pl-4 flex-1">
+                <ThemedText className="text-lg font-semibold dark:text-gray-100">
+                  {room.name}
+                </ThemedText>
+                <View className="flex-row items-center mt-1">
+                  <Ionicons name="key-outline" size={16} color="#9ca3af" />
+                  <ThemedText className="ml-2 text-sm text-muted dark:text-gray-300">
+                    Code: {room.roomCode}
+                  </ThemedText>
+                </View>
+              </View>
+            </Card>
+          );
+        })}
       </ThemedView>
     </ParallaxScrollView>
   );
