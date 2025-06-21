@@ -1,7 +1,6 @@
 import { Card } from "@/components/Card";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useRoomsQuery } from "@/hooks/roomHooks";
 import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -12,7 +11,7 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView>
-      <ThemedView>
+      <View>
         <ThemedText
           type="title"
           className="text-2xl font-grotesk mb-4 dark:text-gray-200"
@@ -48,7 +47,7 @@ export default function HomeScreen() {
             </Card>
           );
         })}
-      </ThemedView>
+      </View>
     </ParallaxScrollView>
   );
 }

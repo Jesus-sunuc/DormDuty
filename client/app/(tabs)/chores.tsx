@@ -3,7 +3,6 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { TouchableOpacity, View } from "react-native";
 import { formatDistance } from "date-fns";
 import { Card } from "@/components/Card";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getRoomColor } from "@/utils/colorUtils";
@@ -21,7 +20,7 @@ export default function ChoresScreen() {
   return (
     <>
       <ParallaxScrollView>
-        <ThemedView className="pt-3">
+        <View className="pt-3">
           <ThemedText
             type="title"
             className="text-2xl font-grotesk mb-3 dark:text-gray-200"
@@ -35,8 +34,6 @@ export default function ChoresScreen() {
             </ThemedText>
           ) : (
             chores.map((chore) => {
-              const roomColor = getRoomColor(chore.roomId);
-
               return (
                 <Card key={chore.choreId} className="flex-row items-center">
                   <View
@@ -88,7 +85,7 @@ export default function ChoresScreen() {
               );
             })
           )}
-        </ThemedView>
+        </View>
       </ParallaxScrollView>
 
       <TouchableOpacity
