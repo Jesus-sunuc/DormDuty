@@ -7,7 +7,7 @@ export const choresKeys = {
   byRoom: (roomId: string) => ["chores", "by-room", roomId] as const,
 };
 
-export function useChoresQuery() {
+export const useChoresQuery = () => {
   return useSuspenseQuery({
     queryKey: choresKeys.all,
     queryFn: async (): Promise<Chore[]> => {
@@ -18,7 +18,7 @@ export function useChoresQuery() {
 }
 
 
-export function useChoresByRoomQuery(roomId: string) {
+export const useChoresByRoomQuery = (roomId: string) =>{
   return useSuspenseQuery({
     queryKey: choresKeys.byRoom(roomId),
     queryFn: async (): Promise<Chore[]> => {

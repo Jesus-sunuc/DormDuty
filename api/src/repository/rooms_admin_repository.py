@@ -1,0 +1,29 @@
+import datetime
+from typing import Dict
+import uuid
+from src.models.room import RoomCreateRequest
+from src.services.database.helper import run_sql
+
+class RoomAdminRepository:
+    def generate_room_code(self) -> str:
+        return str(uuid.uuid4())[:6].upper()
+    
+    def add_room(self, room: RoomCreateRequest) -> Dict[str, int]:
+        room_code = self.generate_room_code()
+        now = datetime.datetime.now()
+
+        sql = """
+            INSERT INTO room (room_code, created_by, name, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING room_id
+        """
+        params = (
+            room_code,
+            room.created_by,
+            room.name,
+            now,  # created_at
+            now,  # updated_at
+        )
+
+        result = run_sql(sql, params)
+        return {"room_id": result[0][0], "room_code": room_code}

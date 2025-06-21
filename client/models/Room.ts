@@ -5,3 +5,8 @@ export interface Room {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface RoomCreateRequest {
+  name: string;
+  createdBy: number;
+}

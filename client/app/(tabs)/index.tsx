@@ -1,13 +1,16 @@
 import { Card } from "@/components/Card";
+import { RoomCreateModal } from "@/components/index/RoomCreateModal";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { useRoomsQuery } from "@/hooks/roomHooks";
 import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
   const { data: rooms } = useRoomsQuery();
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <>
@@ -45,14 +48,17 @@ export default function HomeScreen() {
         </View>
       </ParallaxScrollView>
       <TouchableOpacity
-        onPress={() => {
-          // TODO: navigate to Add Chore screen or open modal
-        }}
+        onPress={() => setModalVisible(true)}
         className="absolute bottom-6 right-6 bg-customGreen-500 p-4 rounded-full"
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
+
+      <RoomCreateModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </>
   );
 }

@@ -8,3 +8,8 @@ class Room(BaseModel):
     name: str
     created_at: datetime
     updated_at: datetime
+
+class RoomCreateRequest(BaseModel):
+    name: str
+    created_by: int
+    
