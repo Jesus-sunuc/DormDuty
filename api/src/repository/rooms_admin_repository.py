@@ -21,8 +21,8 @@ class RoomAdminRepository:
             room_code,
             room.created_by,
             room.name,
-            now,  # created_at
-            now,  # updated_at
+            now,
+            now,
         )
 
         result = run_sql(sql, params)

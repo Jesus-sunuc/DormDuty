@@ -16,12 +16,10 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
   const handleSubmit = () => {
   if (!name.trim()) return;
 
-  console.log("Submitting room:", name); // ✅ Confirm the button works
-
   mutate(
     {
       name,
-      createdBy: 1,
+      createdBy: 2,
     },
     {
       onSuccess: () => {
@@ -40,7 +38,7 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex-1 justify-center items-center bg-black/50 px-6">
         <View className="w-full bg-white dark:bg-neutral-900 rounded-xl p-5">
-          <ThemedText className="text-lg font-semibold mb-3">
+          <ThemedText className="text-lg font-semibold mb-3 dark:text-gray-300">
             Create New Room
           </ThemedText>
 
