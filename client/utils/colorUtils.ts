@@ -1,10 +1,10 @@
 export const ROOM_COLORS = [
-  "#FFEDD5", // soft orange
-  "#DBEAFE", // soft blue
-  "#DCFCE7", // soft green
-  "#FCE7F3", // soft pink
-  "#FEF9C3", // soft yellow
-  "#E0E7FF", // soft indigo
+  "#EF4444", // Red
+  "#3B82F6", // Blue
+  "#10B981", // Green
+  "#8B5CF6", // Violet
+  "#F59E0B", // Amber
+  "#14B8A6", // Teal
 ];
 
 export function getRoomColor(id: number | string): string {
