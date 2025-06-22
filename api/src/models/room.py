@@ -6,8 +6,6 @@ class Room(BaseModel):
     room_code: str
     created_by: int
     name: str
-    created_at: datetime
-    updated_at: datetime
 
 class RoomCreateRequest(BaseModel):
     name: str
@@ -16,4 +14,3 @@ class RoomCreateRequest(BaseModel):
 class RoomUpdateRequest(BaseModel):
     name: str
     room_id: int
-    updated_at: datetime

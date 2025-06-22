@@ -26,6 +26,8 @@ export const useAddRoomMutation = () =>
       data: RoomCreateRequest
     ): Promise<{ room_id: number; room_code: string }> => {
       const body = camel_to_snake_serializing_date(data);
+      console.log("Creating room with body:", body);
+
       const res = await axiosClient.post("/api/rooms/admin/add_room", body);
       return res.data;
     },
@@ -38,6 +40,7 @@ export const useUpdateRoomMutation = () =>
   useMutation({
     mutationFn: async (data: RoomUpdateRequest): Promise<Room> => {
       const body = camel_to_snake_serializing_date(data);
+      console.log("Updating room with body:", body);
       const res = await axiosClient.put("/api/rooms/admin/update_room", body);
       return res.data;
     },

@@ -41,13 +41,16 @@ export default function HomeScreen() {
   const handleUpdateRoom = (name: string) => {
     if (!roomToEdit) return;
     updateRoomMutate(
-      { roomId: roomToEdit.roomId, name, updatedAt: new Date().toISOString() } as RoomUpdateRequest,
+      { roomId: roomToEdit.roomId, name } as RoomUpdateRequest,
       {
         onSuccess: () => {
           toastSuccess(`Room updated to "${name}"`);
           setRoomToEdit(null);
           setModalVisible(false);
         },
+      //   onError: (error) => {
+      //   console.error("Failed to update room:", error);
+      // }
         onError: () => toastError("Failed to update room"),
       }
     );

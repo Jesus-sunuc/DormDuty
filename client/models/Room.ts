@@ -14,5 +14,4 @@ export interface RoomCreateRequest {
 export interface RoomUpdateRequest {
   roomId: number;
   name: string;
-  updatedAt: string;
 }

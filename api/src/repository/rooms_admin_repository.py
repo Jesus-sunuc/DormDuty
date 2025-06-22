@@ -1,5 +1,4 @@
-import datetime
-from typing import Dict
+from datetime import datetime, timezone
 import uuid
 from src.models.room import RoomCreateRequest, RoomUpdateRequest
 from src.services.database.helper import run_sql
@@ -10,7 +9,6 @@ class RoomAdminRepository:
     
     def add_room(self, room: RoomCreateRequest):
         room_code = self.generate_room_code()
-        now = datetime.datetime.now()
 
         sql = """
             INSERT INTO room (room_code, created_by, name, created_at, updated_at)
@@ -21,8 +19,8 @@ class RoomAdminRepository:
             room_code,
             room.created_by,
             room.name,
-            now,
-            now,
+            datetime.now(timezone.utc),
+            datetime.now(timezone.utc),
         )
 
         result = run_sql(sql, params)
@@ -31,14 +29,14 @@ class RoomAdminRepository:
     def update_room(self, room: RoomUpdateRequest):
         sql = """
             UPDATE room
-            SET name = %s, updated_at = %s
+            SET name = %s,
+                updated_at = %s
             WHERE room_id = %s
         """
         params = (
             room.name,
-            room.updated_at,
-            room.room_id
+            datetime.now(timezone.utc),
+            room.room_id,
         )
-
         run_sql(sql, params)
-        return {"message": "Room updated successfully"}
+        return {"room_id": room.room_id}
