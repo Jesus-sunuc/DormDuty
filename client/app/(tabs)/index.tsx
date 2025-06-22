@@ -14,16 +14,20 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
+import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
 
 export default function HomeScreen() {
   const { data: rooms } = useRoomsQuery();
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
+  const [optionsRoom, setOptionsRoom] = useState<Room | null>(null);
 
   const userId = 3; // Replace with auth-based value
 
-  const { mutate: addRoomMutate, isPending: addRoomIsPending } = useAddRoomMutation();
-  const { mutate: updateRoomMutate, isPending: updateRoomIsPending } = useUpdateRoomMutation();
+  const { mutate: addRoomMutate, isPending: addRoomIsPending } =
+    useAddRoomMutation();
+  const { mutate: updateRoomMutate, isPending: updateRoomIsPending } =
+    useUpdateRoomMutation();
 
   const handleAddRoom = (name: string) => {
     addRoomMutate(
@@ -40,20 +44,17 @@ export default function HomeScreen() {
 
   const handleUpdateRoom = (name: string) => {
     if (!roomToEdit) return;
-    updateRoomMutate(
-      { roomId: roomToEdit.roomId, name } as RoomUpdateRequest,
-      {
-        onSuccess: () => {
-          toastSuccess(`Room updated to "${name}"`);
-          setRoomToEdit(null);
-          setModalVisible(false);
-        },
+    updateRoomMutate({ roomId: roomToEdit.roomId, name } as RoomUpdateRequest, {
+      onSuccess: () => {
+        toastSuccess(`Room updated to "${name}"`);
+        setRoomToEdit(null);
+        setModalVisible(false);
+      },
       //   onError: (error) => {
       //   console.error("Failed to update room:", error);
       // }
-        onError: () => toastError("Failed to update room"),
-      }
-    );
+      onError: () => toastError("Failed to update room"),
+    });
   };
 
   return (
@@ -84,13 +85,14 @@ export default function HomeScreen() {
                     {room.name}
                   </ThemedText>
                   <TouchableOpacity
-                    onPress={() => {
-                      setRoomToEdit(room);
-                      setModalVisible(true);
-                    }}
-                    className="ml-auto -mt-8"
+                    onPress={() => setOptionsRoom(room)}
+                    className="ml-auto"
                   >
-                    <Entypo name="dots-three-horizontal" size={24} color="#9ca3af" />
+                    <Entypo
+                      name="dots-three-vertical"
+                      size={20}
+                      color="#9ca3af"
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -120,6 +122,21 @@ export default function HomeScreen() {
         defaultName={roomToEdit?.name ?? ""}
         submitLabel={roomToEdit ? "Update" : "Create"}
         isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
+      />
+      <RoomOptionsBottomSheet
+        visible={!!optionsRoom}
+        onClose={() => setOptionsRoom(null)}
+        onEdit={() => {
+          if (!optionsRoom) return;
+          setRoomToEdit(optionsRoom);
+          setModalVisible(true);
+        }}
+        onShareCode={() => {
+          toastSuccess(`Duplicated room "${optionsRoom?.name}"`);
+        }}
+        onDelete={() => {
+          toastError(`Deleted room "${optionsRoom?.name}"`);
+        }}
       />
     </>
   );
