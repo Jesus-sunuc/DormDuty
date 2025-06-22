@@ -1,14 +1,14 @@
 import datetime
 from typing import Dict
 import uuid
-from src.models.room import RoomCreateRequest
+from src.models.room import RoomCreateRequest, RoomUpdateRequest
 from src.services.database.helper import run_sql
 
 class RoomAdminRepository:
     def generate_room_code(self) -> str:
         return str(uuid.uuid4())[:6].upper()
     
-    def add_room(self, room: RoomCreateRequest) -> Dict[str, int]:
+    def add_room(self, room: RoomCreateRequest):
         room_code = self.generate_room_code()
         now = datetime.datetime.now()
 
@@ -27,3 +27,18 @@ class RoomAdminRepository:
 
         result = run_sql(sql, params)
         return {"room_id": result[0][0], "room_code": room_code}
+    
+    def update_room(self, room: RoomUpdateRequest):
+        sql = """
+            UPDATE room
+            SET name = %s, updated_at = %s
+            WHERE room_id = %s
+        """
+        params = (
+            room.name,
+            room.updated_at,
+            room.room_id
+        )
+
+        run_sql(sql, params)
+        return {"message": "Room updated successfully"}

@@ -1,6 +1,6 @@
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
-import { Room, RoomCreateRequest } from "@/models/Room";
+import { Room, RoomCreateRequest, RoomUpdateRequest } from "@/models/Room";
 import { camel_to_snake_serializing_date } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
 
@@ -27,6 +27,18 @@ export const useAddRoomMutation = () =>
     ): Promise<{ room_id: number; room_code: string }> => {
       const body = camel_to_snake_serializing_date(data);
       const res = await axiosClient.post("/api/rooms/admin/add_room", body);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: roomKeys.all });
+    },
+  });
+
+export const useUpdateRoomMutation = () =>
+  useMutation({
+    mutationFn: async (data: RoomUpdateRequest): Promise<Room> => {
+      const body = camel_to_snake_serializing_date(data);
+      const res = await axiosClient.put("/api/rooms/admin/update_room", body);
       return res.data;
     },
     onSuccess: () => {

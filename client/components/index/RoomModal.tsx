@@ -1,37 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, TextInput, View, TouchableOpacity } from "react-native";
-import { useAddRoomMutation } from "@/hooks/roomHooks";
 import { ThemedText } from "@/components/ThemedText";
-import { toastError, toastSuccess } from "../ToastService";
 
-interface RoomCreateModalProps {
+interface RoomModalProps {
   visible: boolean;
   onClose: () => void;
+  onSubmit: (name: string) => void;
+  defaultName?: string;
+  submitLabel?: string;
+  isPending?: boolean;
 }
 
-export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
-  const [name, setName] = useState("");
-  const { mutate, isPending } = useAddRoomMutation();
+export const RoomModal = ({
+  visible,
+  onClose,
+  onSubmit,
+  defaultName: defaultRoomName = "",
+  submitLabel = "Save",
+  isPending = false,
+}: RoomModalProps) => {
+  const [name, setName] = useState(defaultRoomName);
+
+  useEffect(() => {
+    if (visible) setName(defaultRoomName); // Reset when reopened
+  }, [visible, defaultRoomName]);
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-
-    mutate(
-      {
-        name,
-        createdBy: 2,
-      },
-      {
-        onSuccess: (data) => {
-          toastSuccess(`Room "${name}" created successfully!`);
-          setName("");
-          onClose();
-        },
-        onError: (err) => {
-          toastError("Failed to create room");
-        },
-      }
-    );
+    onSubmit(name.trim());
   };
 
   return (
@@ -39,7 +35,7 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
       <View className="flex-1 justify-center items-center bg-black/50 px-6">
         <View className="w-full bg-white dark:bg-neutral-900 rounded-xl p-5">
           <ThemedText className="text-lg font-semibold mb-3 dark:text-gray-300">
-            Create New Room
+            {submitLabel} Room
           </ThemedText>
 
           <TextInput
@@ -59,7 +55,7 @@ export const RoomCreateModal = ({ visible, onClose }: RoomCreateModalProps) => {
               disabled={isPending}
               className="px-4 py-2 bg-customGreen-600 rounded-lg"
             >
-              <ThemedText className="text-white">Create</ThemedText>
+              <ThemedText className="text-white">{submitLabel}</ThemedText>
             </TouchableOpacity>
           </View>
         </View>

@@ -10,3 +10,9 @@ export interface RoomCreateRequest {
   name: string;
   createdBy: number;
 }
+
+export interface RoomUpdateRequest {
+  roomId: number;
+  name: string;
+  updatedAt: string;
+}

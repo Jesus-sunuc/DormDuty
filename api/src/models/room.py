@@ -12,4 +12,8 @@ class Room(BaseModel):
 class RoomCreateRequest(BaseModel):
     name: str
     created_by: int
-    
+
+class RoomUpdateRequest(BaseModel):
+    name: str
+    room_id: int
+    updated_at: datetime
