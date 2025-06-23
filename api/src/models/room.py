@@ -14,3 +14,8 @@ class RoomCreateRequest(BaseModel):
 class RoomUpdateRequest(BaseModel):
     name: str
     room_id: int
+    
+class RoomDeleteRequest(BaseModel):
+    room_id: int
+    membership_id: int
+    is_admin: bool

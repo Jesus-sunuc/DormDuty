@@ -3,31 +3,41 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import {
   useAddRoomMutation,
+  useDeleteRoomMutation,
   useRoomsQuery,
   useUpdateRoomMutation,
 } from "@/hooks/roomHooks";
 import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
 import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
+import { useMembershipQuery } from "@/hooks/membershipHooks";
 
 export default function HomeScreen() {
   const { data: rooms } = useRoomsQuery();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
   const [optionsRoom, setOptionsRoom] = useState<Room | null>(null);
-
-  const userId = 3; // Replace with auth-based value
 
   const { mutate: addRoomMutate, isPending: addRoomIsPending } =
     useAddRoomMutation();
   const { mutate: updateRoomMutate, isPending: updateRoomIsPending } =
     useUpdateRoomMutation();
+
+  const { mutate: deleteRoomMutate } = useDeleteRoomMutation();
+
+  const userId = 3;
+  const roomId = optionsRoom?.roomId ?? 0; // fallback if not set
+
+  const { data: membershipData } = useMembershipQuery(userId, roomId ?? 0, {
+    enabled: !!optionsRoom?.roomId,
+  });
 
   const handleAddRoom = (name: string) => {
     addRoomMutate(
@@ -134,8 +144,31 @@ export default function HomeScreen() {
         onShareCode={() => {
           toastSuccess(`Duplicated room "${optionsRoom?.name}"`);
         }}
-        onDelete={() => {
-          toastError(`Deleted room "${optionsRoom?.name}"`);
+        onDelete={async () => {
+          if (!optionsRoom || !membershipData) {
+            toastError("Couldn't confirm your membership");
+            return;
+          }
+
+          console.log("Membership Data:", membershipData);
+          const { membershipId, role } = membershipData;
+
+          deleteRoomMutate(
+            {
+              roomId: optionsRoom.roomId,
+              membershipId: membershipId,
+              isAdmin: role === "admin",
+            },
+            {
+              onSuccess: () => {
+                toastSuccess(`Room "${optionsRoom.name}" deleted`);
+                setOptionsRoom(null);
+              },
+              onError: (error) => {
+                console.error("Failed to delete room:", error);
+              },
+            }
+          );
         }}
       />
     </>

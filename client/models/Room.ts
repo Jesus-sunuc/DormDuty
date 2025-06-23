@@ -15,3 +15,9 @@ export interface RoomUpdateRequest {
   roomId: number;
   name: string;
 }
+
+export interface RoomDeleteRequest {
+  roomId: number;
+  membershipId: number;
+  isAdmin: boolean;
+}
