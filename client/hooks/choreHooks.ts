@@ -15,10 +15,9 @@ export const useChoresQuery = () => {
       return res.data;
     },
   });
-}
+};
 
-
-export const useChoresByRoomQuery = (roomId: string) =>{
+export const useChoresByRoomQuery = (roomId: string) => {
   return useSuspenseQuery({
     queryKey: choresKeys.byRoom(roomId),
     queryFn: async (): Promise<Chore[]> => {
@@ -26,4 +25,4 @@ export const useChoresByRoomQuery = (roomId: string) =>{
       return res.data;
     },
   });
-}
+};

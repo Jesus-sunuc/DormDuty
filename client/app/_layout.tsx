@@ -3,8 +3,15 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts as useInter, Inter_400Regular, Inter_600SemiBold } from "@expo-google-fonts/inter";
-import { useFonts as useGrotesk, SpaceGrotesk_700Bold } from "@expo-google-fonts/space-grotesk";
+import {
+  useFonts as useInter,
+  Inter_400Regular,
+  Inter_600SemiBold,
+} from "@expo-google-fonts/inter";
+import {
+  useFonts as useGrotesk,
+  SpaceGrotesk_700Bold,
+} from "@expo-google-fonts/space-grotesk";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -21,7 +28,6 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   SplashScreen.preventAutoHideAsync();
-
 
   const [interLoaded] = useInter({
     Inter_400Regular,
@@ -55,8 +61,12 @@ export default function RootLayout() {
           <LoadingAndErrorHandling>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="rooms/[roomId]"
+                options={{ headerShown: false }}
+              />
             </Stack>
-            < Toast />
+            <Toast />
             <StatusBar style="auto" />
           </LoadingAndErrorHandling>
         </ThemeProvider>

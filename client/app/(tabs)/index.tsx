@@ -17,14 +17,16 @@ import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
 import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
+import { useRouter } from "expo-router";
 
-function RoomList({
+const RoomList = ({
   rooms,
   onOptionsPress,
 }: {
   rooms: Room[];
   onOptionsPress: (room: Room) => void;
-}) {
+}) => {
+  const router = useRouter();
   return (
     <>
       {rooms.map((room) => (
@@ -37,25 +39,30 @@ function RoomList({
             }}
             className="rounded-l-xl"
           />
-          <View className="p-3 flex-1">
+          <TouchableOpacity
+            onPress={() => router.push(`/rooms/${room.roomId}`)}
+            className="p-3 flex-1"
+            activeOpacity={0.8}
+          >
             <View className="flex-row items-center">
               <Ionicons name="people-outline" size={22} color="#9ca3af" />
               <ThemedText className="ml-2 text-lg font-semibold dark:text-gray-100">
                 {room.name}
               </ThemedText>
-              <TouchableOpacity
-                onPress={() => onOptionsPress(room)}
-                className="ml-auto"
-              >
-                <Entypo name="dots-three-vertical" size={20} color="#9ca3af" />
-              </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => onOptionsPress(room)}
+            className="ml-2"
+          >
+            <Entypo name="dots-three-vertical" size={20} color="#9ca3af" />
+          </TouchableOpacity>
         </Card>
       ))}
     </>
   );
-}
+};
 
 const HomeScreen = () => {
   const { data: rooms } = useRoomsQuery();

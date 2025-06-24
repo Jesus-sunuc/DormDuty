@@ -17,6 +17,6 @@ def get_chores():
 
 @router.get("/by-room/{room_id}")
 @error_handler("Error fetching chores by room")
-def get_chores_by_room(room_id: int = Path(..., title="Room ID")):
+def get_chores_by_room(room_id: int):
     return repo.get_chores_by_room_id(room_id)
 
