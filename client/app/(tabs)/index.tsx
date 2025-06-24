@@ -9,14 +9,53 @@ import {
 } from "@/hooks/roomHooks";
 import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useMemo, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
 import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
 import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
+
+function RoomList({
+  rooms,
+  onOptionsPress,
+}: {
+  rooms: Room[];
+  onOptionsPress: (room: Room) => void;
+}) {
+  return (
+    <>
+      {rooms.map((room) => (
+        <Card key={room.roomId} className="flex-row items-center pe-2 ps-2">
+          <View
+            style={{
+              backgroundColor: getRoomColor(room.roomId),
+              width: 6,
+              height: "100%",
+            }}
+            className="rounded-l-xl"
+          />
+          <View className="p-3 flex-1">
+            <View className="flex-row items-center">
+              <Ionicons name="people-outline" size={22} color="#9ca3af" />
+              <ThemedText className="ml-2 text-lg font-semibold dark:text-gray-100">
+                {room.name}
+              </ThemedText>
+              <TouchableOpacity
+                onPress={() => onOptionsPress(room)}
+                className="ml-auto"
+              >
+                <Entypo name="dots-three-vertical" size={20} color="#9ca3af" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Card>
+      ))}
+    </>
+  );
+}
 
 export default function HomeScreen() {
   const { data: rooms } = useRoomsQuery();
@@ -29,13 +68,12 @@ export default function HomeScreen() {
     useAddRoomMutation();
   const { mutate: updateRoomMutate, isPending: updateRoomIsPending } =
     useUpdateRoomMutation();
-
   const { mutate: deleteRoomMutate } = useDeleteRoomMutation();
 
   const userId = 3;
-  const roomId = optionsRoom?.roomId ?? 0; // fallback if not set
+  const roomId = optionsRoom?.roomId ?? 0;
 
-  const { data: membershipData } = useMembershipQuery(userId, roomId ?? 0, {
+  const { data: membershipData } = useMembershipQuery(userId, roomId, {
     enabled: !!optionsRoom?.roomId,
   });
 
@@ -60,11 +98,31 @@ export default function HomeScreen() {
         setRoomToEdit(null);
         setModalVisible(false);
       },
-      //   onError: (error) => {
-      //   console.error("Failed to update room:", error);
-      // }
       onError: () => toastError("Failed to update room"),
     });
+  };
+
+  const handleDeleteRoom = () => {
+    if (!optionsRoom || !membershipData) {
+      toastError("Couldn't confirm your membership");
+      return;
+    }
+
+    const { membershipId, role } = membershipData;
+    deleteRoomMutate(
+      {
+        roomId: optionsRoom.roomId,
+        membershipId: membershipId,
+        isAdmin: role === "admin",
+      },
+      {
+        onSuccess: () => {
+          toastSuccess(`Room "${optionsRoom.name}" deleted`);
+          setOptionsRoom(null);
+        },
+        onError: () => toastError("Failed to delete room"),
+      }
+    );
   };
 
   return (
@@ -77,37 +135,7 @@ export default function HomeScreen() {
           >
             Your Rooms
           </ThemedText>
-
-          {rooms.map((room) => (
-            <Card key={room.roomId} className="flex-row items-center pe-2 ps-2">
-              <View
-                style={{
-                  backgroundColor: getRoomColor(room.roomId),
-                  width: 6,
-                  height: "100%",
-                }}
-                className="rounded-l-xl"
-              />
-              <View className="p-3 flex-1">
-                <View className="flex-row items-center">
-                  <Ionicons name="people-outline" size={22} color="#9ca3af" />
-                  <ThemedText className="ml-2 text-lg font-semibold dark:text-gray-100">
-                    {room.name}
-                  </ThemedText>
-                  <TouchableOpacity
-                    onPress={() => setOptionsRoom(room)}
-                    className="ml-auto"
-                  >
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={20}
-                      color="#9ca3af"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Card>
-          ))}
+          <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
         </View>
       </ParallaxScrollView>
 
@@ -133,6 +161,7 @@ export default function HomeScreen() {
         submitLabel={roomToEdit ? "Update" : "Create"}
         isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
       />
+
       <RoomOptionsBottomSheet
         visible={!!optionsRoom}
         onClose={() => setOptionsRoom(null)}
@@ -141,32 +170,10 @@ export default function HomeScreen() {
           setRoomToEdit(optionsRoom);
           setModalVisible(true);
         }}
-        onShareCode={() => {
-          toastSuccess(`Duplicated room "${optionsRoom?.name}"`);
-        }}
-        onDelete={async () => {
-          if (!optionsRoom || !membershipData) {
-            toastError("Couldn't confirm your membership");
-            return;
-          }
-
-          const { membershipId, role } = membershipData;
-
-          deleteRoomMutate(
-            {
-              roomId: optionsRoom.roomId,
-              membershipId: membershipId,
-              isAdmin: role === "admin",
-            },
-            {
-              onSuccess: () => {
-                toastSuccess(`Room "${optionsRoom.name}" deleted`);
-                setOptionsRoom(null);
-              },
-              onError: () => toastError("Failed to delete room"),
-            }
-          );
-        }}
+        onShareCode={() =>
+          toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
+        }
+        onDelete={handleDeleteRoom}
       />
     </>
   );
