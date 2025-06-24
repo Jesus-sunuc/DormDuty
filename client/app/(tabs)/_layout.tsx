@@ -31,7 +31,7 @@ const TabLayout = () => {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="home-outline" size={28} color={color} />
+              <Ionicons name="home-outline" size={24} color={color} />
             ),
           }}
         />
@@ -40,7 +40,7 @@ const TabLayout = () => {
           options={{
             title: "Chores",
             tabBarIcon: ({ color }) => (
-              <FontAwesome name="tasks" size={28} color={color} />
+              <FontAwesome name="tasks" size={23} color={color} />
             ),
           }}
         />
@@ -49,7 +49,7 @@ const TabLayout = () => {
           options={{
             title: "Rewards",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="gift-outline" size={28} color={color} />
+              <Ionicons name="gift-outline" size={24} color={color} />
             ),
           }}
         />
@@ -58,7 +58,7 @@ const TabLayout = () => {
           options={{
             title: "Expenses",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="wallet-outline" size={28} color={color} />
+              <Ionicons name="wallet-outline" size={24} color={color} />
             ),
           }}
         />
@@ -67,7 +67,7 @@ const TabLayout = () => {
           options={{
             title: "Settings",
             tabBarIcon: ({ color }) => (
-              <Ionicons name="settings-outline" size={28} color={color} />
+              <Ionicons name="settings-outline" size={24} color={color} />
             ),
           }}
         />
