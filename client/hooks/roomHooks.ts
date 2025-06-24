@@ -51,7 +51,7 @@ export const useDeleteRoomMutation = () =>
   useMutation({
     mutationFn: async (data: RoomDeleteRequest) => {
       const body = camel_to_snake_serializing_date(data);
-      console.log("🔥 DELETE ROOM BODY:", body);
+      // console.log("🔥 DELETE ROOM BODY:", body);
       const res = await axiosClient.post("/api/rooms/admin/delete_room_or_leave", body);
       return res.data;
     },

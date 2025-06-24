@@ -150,7 +150,6 @@ export default function HomeScreen() {
             return;
           }
 
-          console.log("Membership Data:", membershipData);
           const { membershipId, role } = membershipData;
 
           deleteRoomMutate(
@@ -164,9 +163,7 @@ export default function HomeScreen() {
                 toastSuccess(`Room "${optionsRoom.name}" deleted`);
                 setOptionsRoom(null);
               },
-              onError: (error) => {
-                console.error("Failed to delete room:", error);
-              },
+              onError: () => toastError("Failed to delete room"),
             }
           );
         }}

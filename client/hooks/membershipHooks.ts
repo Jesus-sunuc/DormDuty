@@ -15,9 +15,12 @@ export const useMembershipQuery = (
   useQuery({
     queryKey: membershipKeys.byUserAndRoom(userId, roomId),
     queryFn: async (): Promise<{ membershipId: number; role: string }> => {
-      const res = await axiosClient.get("/api/membership/user_room", {
-        params: { user_id: userId, room_id: roomId },
-      });
+      const res = await axiosClient.get(
+        `/api/membership/user/${userId}/room/${roomId}`,
+        {
+          params: { user_id: userId, room_id: roomId },
+        }
+      );
       // console.log("🔥 Membership Query Result:", res.data);
       return res.data;
     },

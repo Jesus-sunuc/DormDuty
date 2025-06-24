@@ -10,12 +10,8 @@ router = APIRouter(
 
 repo = MembershipRepository()
 
-# @router.get("/user/{user_id}/room/{room_id}")
-@router.get("/user_room")
+@router.get("/user/{user_id}/room/{room_id}")
 @error_handler("Error fetching room membership")
-def get_room_membership(
-    user_id: int = Query(..., title="User ID"),
-    room_id: int = Query(..., title="Room ID")
-):
+def get_room_membership(user_id: int, room_id: int):
     repo = MembershipRepository()
     return repo.get_membership_by_user_and_room(user_id=user_id, room_id=room_id)
