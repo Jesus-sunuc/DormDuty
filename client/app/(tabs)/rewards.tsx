@@ -1,20 +1,14 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { StyleSheet, View, Text } from "react-native";
 
-export default function RewardsScreen() {
+const RewardsScreen = () => {
   return (
     <ParallaxScrollView>
-      <View style={styles.titleContainer}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Text>Rewards!</Text>
       </View>
     </ParallaxScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-});
+export default RewardsScreen;

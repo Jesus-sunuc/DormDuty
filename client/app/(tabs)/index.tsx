@@ -57,7 +57,7 @@ function RoomList({
   );
 }
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   const { data: rooms } = useRoomsQuery();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -177,4 +177,6 @@ export default function HomeScreen() {
       />
     </>
   );
-}
+};
+
+export default HomeScreen;

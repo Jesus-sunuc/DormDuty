@@ -21,7 +21,6 @@ export const useMembershipQuery = (
           params: { user_id: userId, room_id: roomId },
         }
       );
-      // console.log("🔥 Membership Query Result:", res.data);
       return res.data;
     },
     enabled: options?.enabled ?? true,

@@ -1,7 +1,7 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { Text, View } from "react-native";
 
-export default function ExpensesScreen() {
+const ExpensesScreen = () => {
   return (
     <ParallaxScrollView>
       <View>
@@ -9,4 +9,6 @@ export default function ExpensesScreen() {
       </View>
     </ParallaxScrollView>
   );
-}
+};
+
+export default ExpensesScreen;

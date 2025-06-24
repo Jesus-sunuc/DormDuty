@@ -8,7 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import clsx from "clsx";
 
-export default function TabLayout() {
+const TabLayout = () => {
   const colorScheme = useColorScheme();
 
   return (
@@ -75,3 +75,5 @@ export default function TabLayout() {
     </View>
   );
 }
+
+export default TabLayout;
