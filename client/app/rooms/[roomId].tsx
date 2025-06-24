@@ -2,10 +2,10 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useChoresByRoomQuery } from "@/hooks/choreHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import { View, Pressable } from "react-native";
+import { View, Pressable, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { Card } from "@/components/Card"; 
+import { Card } from "@/components/Card";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
@@ -16,11 +16,17 @@ const RoomChoresScreen = () => {
       <ParallaxScrollView>
         <View>
           <Pressable onPress={() => router.back()} className="mb-4">
-            <Ionicons name="arrow-back" size={28} color="#9ca3af" />
+            <Ionicons name="arrow-back" size={24} color="#9ca3af" />
           </Pressable>
           <ChoreList roomId={roomId} />
         </View>
       </ParallaxScrollView>
+      <TouchableOpacity
+        className="absolute bottom-10 right-6 bg-customGreen-500 p-4 rounded-full"
+        activeOpacity={0.8}
+      >
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </LoadingAndErrorHandling>
   );
 };
