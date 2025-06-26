@@ -14,3 +14,13 @@ class Chore(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
+    
+class ChoreCreateRequest(BaseModel):
+    room_id: int
+    name: str
+    frequency: str
+    frequency_value: int | None = None
+    day_of_week: int | None = None
+    timing: time | None = None
+    assigned_to: int | None = None
+    is_active: bool = True

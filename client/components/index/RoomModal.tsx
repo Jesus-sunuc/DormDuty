@@ -32,7 +32,7 @@ export const RoomModal = ({
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 justify-center items-center bg-black/50 px-6">
+      <View className="flex-1 justify-center items-center bg-black/70 px-6">
         <View className="w-full bg-white dark:bg-neutral-900 rounded-xl p-5">
           <ThemedText className="text-lg font-semibold mb-3 dark:text-gray-300">
             {submitLabel} Room
@@ -48,12 +48,12 @@ export const RoomModal = ({
 
           <View className="flex-row justify-end mt-4 space-x-2">
             <TouchableOpacity onPress={onClose} className="px-4 py-2">
-              <ThemedText className="text-red-500">Cancel</ThemedText>
+              <ThemedText className="text-gray-500">Cancel</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleSubmit}
               disabled={isPending}
-              className="px-4 py-2 bg-customGreen-600 rounded-lg"
+              className="px-4 py-2 bg-customGreen-600 rounded-xl"
             >
               <ThemedText className="text-white">{submitLabel}</ThemedText>
             </TouchableOpacity>

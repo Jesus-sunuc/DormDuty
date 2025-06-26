@@ -1,3 +1,4 @@
+from src.models.chore import ChoreCreateRequest
 from fastapi import APIRouter, Path
 from src.repository.chores_repository import ChoreRepository
 from src.errors import error_handler
@@ -20,3 +21,7 @@ def get_chores():
 def get_chores_by_room(room_id: int):
     return repo.get_chores_by_room_id(room_id)
 
+@router.post("/add")
+@error_handler("Error adding chore")
+def add_chore(chore: ChoreCreateRequest):
+    return repo.add_chore(chore)

@@ -1,6 +1,6 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
-import { Chore } from "@/models/Chore";
+import { Chore, ChoreCreateRequest } from "@/models/Chore";
 
 export const choresKeys = {
   all: ["chores"] as const,
@@ -22,6 +22,16 @@ export const useChoresByRoomQuery = (roomId: string) => {
     queryKey: choresKeys.byRoom(roomId),
     queryFn: async (): Promise<Chore[]> => {
       const res = await axiosClient.get(`/api/chores/by-room/${roomId}`);
+      return res.data;
+    },
+  });
+};
+
+export const useAddChoreMutation = () => {
+  return useMutation({
+    mutationFn: async (chore: ChoreCreateRequest): Promise<Chore> => {
+      const res = await axiosClient.post("/api/chores/add", chore);
+      console.log("Chore added:", res.data);
       return res.data;
     },
   });

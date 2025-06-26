@@ -36,6 +36,15 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
+          name="expenses"
+          options={{
+            title: "Expenses",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="wallet-outline" size={24} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="chores"
           options={{
             title: "Chores",
@@ -54,15 +63,6 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="expenses"
-          options={{
-            title: "Expenses",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="wallet-outline" size={24} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
           name="settings"
           options={{
             title: "Settings",
@@ -74,6 +74,6 @@ const TabLayout = () => {
       </Tabs>
     </View>
   );
-}
+};
 
 export default TabLayout;

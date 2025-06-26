@@ -12,3 +12,14 @@ export interface Chore {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface ChoreCreateRequest {
+    roomId: number;
+    name: string;
+    frequency: string;
+    frequencyValue?: number;
+    dayOfWeek?: number;
+    timing?: string;
+    assignedTo?: number;
+    isActive?: boolean;
+}

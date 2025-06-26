@@ -10,13 +10,6 @@ import { getRoomColor } from "@/utils/colorUtils";
 export default function ChoresScreen() {
   const { data: chores = [] } = useChoresQuery();
 
-  const formatDate = (dateString: string | undefined): string => {
-    if (!dateString) return "Never";
-    return formatDistance(new Date(dateString), new Date(), {
-      addSuffix: true,
-    });
-  };
-
   return (
     <>
       <ParallaxScrollView>
@@ -90,3 +83,10 @@ export default function ChoresScreen() {
     </>
   );
 }
+
+export const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return "Never";
+  return formatDistance(new Date(dateString), new Date(), {
+    addSuffix: true,
+  });
+};
