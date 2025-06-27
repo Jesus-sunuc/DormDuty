@@ -65,6 +65,10 @@ export default function RootLayout() {
                 name="rooms/[roomId]"
                 options={{ headerShown: false }}
               />
+              <Stack.Screen
+                name="rooms/[roomId]/add"
+                options={{ headerShown: false }}
+              />
             </Stack>
             <Toast />
             <StatusBar style="auto" />
