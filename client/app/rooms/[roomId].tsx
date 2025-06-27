@@ -10,6 +10,7 @@ import { formatDate } from "../(tabs)/chores";
 import { useState } from "react";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { ChoreModal } from "@/components/chores/ChoreModal";
+import { ChoreCreateRequest } from "@/models/Chore";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
@@ -18,14 +19,19 @@ const RoomChoresScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const { mutate: addChore, isPending } = useAddChoreMutation();
 
-  const handleAddChore = (name: string) => {
-    if (!roomId) return;
+  const handleAddChore = (chore: Partial<ChoreCreateRequest>) => {
+    if (!roomId || !chore.name) return;
+
     addChore(
       {
-        name,
         roomId: parseInt(roomId),
-        frequency: "once", // You can enhance this later
-        isActive: true,
+        name: chore.name,
+        frequency: chore.frequency ?? "once",
+        frequencyValue: chore.frequencyValue,
+        dayOfWeek: chore.dayOfWeek,
+        timing: chore.timing,
+        assignedTo: chore.assignedTo ?? undefined,
+        isActive: chore.isActive ?? true,
       },
       {
         onSuccess: () => {
@@ -48,7 +54,7 @@ const RoomChoresScreen = () => {
         </View>
       </ParallaxScrollView>
       <TouchableOpacity
-        onPress={() => setModalVisible(true)}
+        onPress={() => router.push(`/rooms/${roomId}/add`)}
         className="absolute bottom-10 right-6 bg-customGreen-500 p-4 rounded-full"
         activeOpacity={0.8}
       >

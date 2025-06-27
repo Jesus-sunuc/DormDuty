@@ -31,7 +31,6 @@ export const useAddChoreMutation = () => {
   return useMutation({
     mutationFn: async (chore: ChoreCreateRequest): Promise<Chore> => {
       const res = await axiosClient.post("/api/chores/add", chore);
-      console.log("Chore added:", res.data);
       return res.data;
     },
   });
