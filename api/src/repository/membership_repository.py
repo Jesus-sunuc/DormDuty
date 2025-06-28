@@ -11,3 +11,13 @@ class MembershipRepository:
 
         membership_id, role = result[0]
         return {"membership_id": membership_id, "role": role}
+    
+    
+    def get_members_by_room_id(self, room_id: int):
+        sql = """
+            SELECT u.user_id, u.name, rm.membership_id
+            FROM room_membership rm
+            JOIN "user" u ON rm.user_id = u.user_id
+            WHERE rm.room_id = %s AND rm.is_active = TRUE
+        """
+        return run_sql(sql, (room_id,))

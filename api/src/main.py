@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 
+from src.router import users_router
 from src.router import rooms_router
 from src.router import membership_router
 from src.router import chores_router
@@ -24,6 +25,7 @@ def health_check():
 router.include_router(chores_router.router)
 router.include_router(membership_router.router)
 router.include_router(rooms_router.router)
+router.include_router(users_router.router)
 
 app.include_router(router)
 

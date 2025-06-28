@@ -1,4 +1,4 @@
-import { useChoresQuery } from "@/hooks/choreHooks";
+import { useChoresByUserQuery } from "@/hooks/choreHooks";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { View } from "react-native";
 import { formatDistance } from "date-fns";
@@ -8,7 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { getRoomColor } from "@/utils/colorUtils";
 
 export default function ChoresScreen() {
-  const { data: chores = [] } = useChoresQuery();
+  const { data: chores = [] } = useChoresByUserQuery();
 
   return (
     <>

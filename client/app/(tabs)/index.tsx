@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import {
   useAddRoomMutation,
   useDeleteRoomMutation,
-  useRoomsQuery,
+  useRoomsByUserQuery,
   useUpdateRoomMutation,
 } from "@/hooks/roomHooks";
 import { getRoomColor } from "@/utils/colorUtils";
@@ -18,6 +18,7 @@ import { Room, RoomUpdateRequest } from "@/models/Room";
 import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/hooks/user/useAuth";
 
 const RoomList = ({
   rooms,
@@ -65,7 +66,7 @@ const RoomList = ({
 };
 
 const HomeScreen = () => {
-  const { data: rooms } = useRoomsQuery();
+  const { data: rooms } = useRoomsByUserQuery();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
@@ -77,14 +78,20 @@ const HomeScreen = () => {
     useUpdateRoomMutation();
   const { mutate: deleteRoomMutate } = useDeleteRoomMutation();
 
-  const userId = 3;
+  const { user } = useAuth();
+  const userId = user?.userId;
   const roomId = optionsRoom?.roomId ?? 0;
 
-  const { data: membershipData } = useMembershipQuery(userId, roomId, {
-    enabled: !!optionsRoom?.roomId,
+  const { data: membershipData } = useMembershipQuery(userId!, roomId, {
+    enabled: !!optionsRoom?.roomId && userId !== undefined,
   });
 
   const handleAddRoom = (name: string) => {
+    if (userId === undefined) {
+      toastError("You must be logged in to create a room.");
+      return;
+    }
+
     addRoomMutate(
       { name, createdBy: userId },
       {
@@ -112,6 +119,7 @@ const HomeScreen = () => {
   const handleDeleteRoom = () => {
     if (!optionsRoom || !membershipData) {
       toastError("Couldn't confirm your membership");
+
       return;
     }
 

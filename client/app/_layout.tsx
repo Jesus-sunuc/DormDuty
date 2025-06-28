@@ -23,6 +23,7 @@ import "@/global.css";
 import { View } from "react-native";
 import { useEffect } from "react";
 import Toast from "react-native-toast-message";
+import { AuthProvider } from "@/hooks/user/useAuth";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -55,25 +56,27 @@ export default function RootLayout() {
   return (
     <View className={colorScheme === "dark" ? "dark flex-1" : "flex-1"}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <LoadingAndErrorHandling>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="rooms/[roomId]"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="rooms/[roomId]/add"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-            <Toast />
-            <StatusBar style="auto" />
-          </LoadingAndErrorHandling>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <LoadingAndErrorHandling>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="rooms/[roomId]"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="rooms/[roomId]/add"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+              <Toast />
+              <StatusBar style="auto" />
+            </LoadingAndErrorHandling>
+          </ThemeProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </View>
   );

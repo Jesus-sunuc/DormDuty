@@ -11,10 +11,13 @@ import { useState } from "react";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { ChoreModal } from "@/components/chores/ChoreModal";
 import { ChoreCreateRequest } from "@/models/Chore";
+import { useAuth } from "@/hooks/user/useAuth";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+
 
   const [isModalVisible, setModalVisible] = useState(false);
   const { mutate: addChore, isPending } = useAddChoreMutation();
@@ -32,7 +35,7 @@ const RoomChoresScreen = () => {
         timing: chore.timing,
         description: chore.description,
         startDate: chore.startDate,
-        assignedTo: chore.assignedTo ?? undefined,
+        assignedTo: user?.userId ?? 0,
         isActive: chore.isActive ?? true,
       },
       {

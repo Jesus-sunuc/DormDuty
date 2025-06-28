@@ -1,6 +1,7 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { Chore, ChoreCreateRequest } from "@/models/Chore";
+import { useAuth } from "./user/useAuth";
 
 export const choresKeys = {
   all: ["chores"] as const,
@@ -12,6 +13,19 @@ export const useChoresQuery = () => {
     queryKey: choresKeys.all,
     queryFn: async (): Promise<Chore[]> => {
       const res = await axiosClient.get("/api/chores/all");
+      return res.data;
+    },
+  });
+};
+
+export const useChoresByUserQuery = () => {
+  const { user } = useAuth();
+  const userId = user?.userId;
+
+  return useSuspenseQuery({
+    queryKey: ["chores", "by-user", userId],
+    queryFn: async (): Promise<Chore[]> => {
+      const res = await axiosClient.get(`/api/chores/by-user/${userId}`);
       return res.data;
     },
   });

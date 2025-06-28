@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from src.models.chore import Chore, ChoreCreateRequest
 from src.services.database.helper import run_sql
 
@@ -7,6 +6,15 @@ class ChoreRepository:
     def get_all_chores(self):
         sql = "SELECT * FROM chore"
         return run_sql(sql, output_class=Chore)
+    
+    def get_chores_by_user_id(self, user_id: int):
+        sql = """
+            SELECT c.*
+            FROM chore c
+            JOIN room_membership rm ON c.room_id = rm.room_id
+            WHERE rm.user_id = %s AND rm.is_active = TRUE
+        """
+        return run_sql(sql, (user_id,), output_class=Chore)
     
     def get_chores_by_room_id(self, room_id: int):
         sql = "SELECT * FROM chore WHERE room_id = %s"

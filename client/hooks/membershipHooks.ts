@@ -25,3 +25,16 @@ export const useMembershipQuery = (
     },
     enabled: options?.enabled ?? true,
   });
+
+export const useRoomMembersQuery = (roomId: string) => {
+  return useQuery({
+    queryKey: ["room-members", roomId],
+    queryFn: async (): Promise<
+      { user_id: number; name: string; membership_id: number }[]
+    > => {
+      const res = await axiosClient.get(`/api/membership/${roomId}/members`);
+      return res.data;
+    },
+    enabled: !!roomId,
+  });
+};

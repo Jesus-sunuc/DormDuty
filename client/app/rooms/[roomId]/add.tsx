@@ -6,6 +6,8 @@ import { toastError, toastSuccess } from "@/components/ToastService";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Picker } from "@react-native-picker/picker";
+import { useAuth } from "@/hooks/user/useAuth";
+import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 
 const frequencyOptions = ["One Time", "As Needed", "Weekly", "Monthly"];
 const daysOfWeek = [
@@ -21,6 +23,8 @@ const daysOfWeek = [
 const AddChoreScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+  const { data: members = [] } = useRoomMembersQuery(roomId);
 
   const { mutate: addChore, isPending } = useAddChoreMutation();
 
@@ -29,6 +33,7 @@ const AddChoreScreen = () => {
   const [frequencyValue, setFrequencyValue] = useState<number | undefined>();
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
+  const [assignedTo, setAssignedTo] = useState<number | undefined>();
 
   const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
     const hour = Math.floor(i / 2)
@@ -37,6 +42,14 @@ const AddChoreScreen = () => {
     const minute = i % 2 === 0 ? "00" : "30";
     return `${hour}:${minute}`;
   });
+
+  const formattedMembers = (
+    members as unknown as [number, string, number][]
+  ).map(([userId, name, membershipId]) => ({
+    userId,
+    name,
+    membershipId,
+  }));
 
   const handleSubmit = () => {
     if (!name.trim() || !roomId) return;
@@ -51,6 +64,7 @@ const AddChoreScreen = () => {
         timing: timingInput ? `${timingInput}:00` : undefined,
         description: undefined,
         startDate: undefined,
+        assignedTo: user?.userId ?? 0,
         isActive: true,
       },
       {
@@ -90,6 +104,25 @@ const AddChoreScreen = () => {
         onChangeText={setName}
         className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-black dark:text-white"
       />
+
+      <ThemedText className="mb-1">Assign to</ThemedText>
+      <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
+        <Picker
+          selectedValue={assignedTo}
+          onValueChange={(value) => setAssignedTo(value)}
+          style={{ color: "black" }}
+          dropdownIconColor="black"
+        >
+          <Picker.Item label="Unassigned" value={undefined} key="unassigned" />
+          {formattedMembers.map((member) => (
+            <Picker.Item
+              key={member.userId}
+              label={member.name}
+              value={member.userId}
+            />
+          ))}
+        </Picker>
+      </View>
 
       <ThemedText className="mb-1 mt-4">Repetition</ThemedText>
       <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">

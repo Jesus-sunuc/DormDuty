@@ -9,6 +9,16 @@ class RoomRepository:
         query = "SELECT * FROM room"
         return run_sql(query, output_class=Room)
     
+    def get_rooms_by_user_id(self, user_id: int):
+        sql = """
+            SELECT r.*
+            FROM room r
+            JOIN room_membership rm ON r.room_id = rm.room_id
+            WHERE rm.user_id = %s AND rm.is_active = TRUE
+        """
+        return run_sql(sql, (user_id,), output_class=Room)
+    
+    
     def generate_room_code(self) -> str:
         return str(uuid.uuid4())[:6].upper()
     

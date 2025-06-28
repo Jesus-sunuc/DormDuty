@@ -16,6 +16,12 @@ repo = RoomRepository()
 def get_all_rooms():
     return repo.get_all_rooms()
 
+@router.get("/by-user/{user_id}")
+@error_handler("Error fetching rooms by user")
+def get_rooms_by_user(user_id: int):
+    return repo.get_rooms_by_user_id(user_id)
+
+
 @router.post("/admin/add_room")
 @error_handler("Error creating room")
 def add_room_admin(room: RoomCreateRequest):

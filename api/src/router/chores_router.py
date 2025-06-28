@@ -16,6 +16,11 @@ repo = ChoreRepository()
 def get_chores():
     return repo.get_all_chores()
 
+@router.get("/by-user/{user_id}")
+@error_handler("Error fetching chores by user")
+def get_chores_by_user(user_id: int):
+    return repo.get_chores_by_user_id(user_id)
+
 @router.get("/by-room/{room_id}")
 @error_handler("Error fetching chores by room")
 def get_chores_by_room(room_id: int):
