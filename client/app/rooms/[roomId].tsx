@@ -26,10 +26,12 @@ const RoomChoresScreen = () => {
       {
         roomId: parseInt(roomId),
         name: chore.name,
-        frequency: chore.frequency ?? "once",
+        frequency: chore.frequency ?? "One Time",
         frequencyValue: chore.frequencyValue,
         dayOfWeek: chore.dayOfWeek,
         timing: chore.timing,
+        description: chore.description,
+        startDate: chore.startDate,
         assignedTo: chore.assignedTo ?? undefined,
         isActive: chore.isActive ?? true,
       },

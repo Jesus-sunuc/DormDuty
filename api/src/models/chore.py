@@ -9,6 +9,8 @@ class Chore(BaseModel):
     frequency_value: int | None = None
     day_of_week: int | None = None
     timing: time | None = None
+    description: str | None = None
+    start_date: datetime | None = None
     last_completed: datetime | None = None
     assigned_to: int | None = None
     is_active: bool
@@ -22,5 +24,7 @@ class ChoreCreateRequest(BaseModel):
     frequency_value: int | None = None
     day_of_week: int | None = None
     timing: time | None = None
+    description: str | None = None
+    start_date: datetime | None = None
     assigned_to: int | None = None
     is_active: bool = True

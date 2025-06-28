@@ -76,6 +76,8 @@ CREATE TABLE
     "frequency_value" INTEGER,
     "day_of_week" INTEGER,
     "timing" TIME,
+    "description" TEXT,
+    "start_date" DATE,
     "last_completed" TIMESTAMP,
     "assigned_to" INTEGER,
     "is_active" BOOLEAN DEFAULT TRUE,

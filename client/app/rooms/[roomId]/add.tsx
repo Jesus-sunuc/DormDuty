@@ -1,20 +1,13 @@
 import { useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import { useAddChoreMutation } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Picker } from "@react-native-picker/picker";
 
-const frequencyOptions = ["once", "daily", "weekly", "custom"];
+const frequencyOptions = ["One Time", "As Needed", "Weekly", "Monthly"];
 const daysOfWeek = [
   "Sunday",
   "Monday",
@@ -32,7 +25,7 @@ const AddChoreScreen = () => {
   const { mutate: addChore, isPending } = useAddChoreMutation();
 
   const [name, setName] = useState("");
-  const [frequency, setFrequency] = useState("once");
+  const [frequency, setFrequency] = useState("One Time");
   const [frequencyValue, setFrequencyValue] = useState<number | undefined>();
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
@@ -56,7 +49,8 @@ const AddChoreScreen = () => {
         frequencyValue,
         dayOfWeek,
         timing: timingInput ? `${timingInput}:00` : undefined,
-
+        description: undefined,
+        startDate: undefined,
         isActive: true,
       },
       {
@@ -72,18 +66,21 @@ const AddChoreScreen = () => {
   return (
     <ParallaxScrollView>
       <View className="flex-row justify-between">
-        <TouchableOpacity onPress={() => router.back()} className="p-3">
-          <Text className="text-gray-600 dark:text-gray-400">Cancel</Text>
+        <TouchableOpacity onPress={() => router.back()} className="py-2">
+          <Text className="text-gray-600 dark:text-gray-400 text-base">
+            Cancel
+          </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           disabled={isPending}
           onPress={handleSubmit}
-          className="bg-customGreen-500 px-4 py-2 rounded-xl"
+          className="bg-customGreen-500 px-4 py-2 rounded-lg"
         >
-          <Text className="text-white font-semibold">Save</Text>
+          <Text className="text-gray-100">Save</Text>
         </TouchableOpacity>
       </View>
-      <ThemedText className="text-xl font-semibold dark:text-gray-300">
+      <ThemedText className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-0">
         Create Chore
       </ThemedText>
       <TextInput
@@ -91,7 +88,7 @@ const AddChoreScreen = () => {
         placeholderTextColor="#9ca3af"
         value={name}
         onChangeText={setName}
-        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-black dark:text-white"
+        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-black dark:text-white"
       />
 
       <ThemedText className="mb-1 mt-4">Repetition</ThemedText>

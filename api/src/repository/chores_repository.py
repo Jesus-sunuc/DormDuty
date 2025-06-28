@@ -16,9 +16,9 @@ class ChoreRepository:
         sql = """
             INSERT INTO chore (
                 room_id, name, frequency, frequency_value,
-                day_of_week, timing, assigned_to, is_active
+                day_of_week, timing, description, start_date, assigned_to, is_active
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING chore_id
         """
         params = (
@@ -28,6 +28,8 @@ class ChoreRepository:
             chore.frequency_value,
             chore.day_of_week,
             chore.timing,
+            chore.description,
+            chore.start_date,
             chore.assigned_to,
             chore.is_active,
         )

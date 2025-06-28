@@ -76,6 +76,8 @@ CREATE TABLE
     "frequency_value" INTEGER,
     "day_of_week" INTEGER,
     "timing" TIME,
+    "description" TEXT,
+    "start_date" DATE,
     "last_completed" TIMESTAMP,
     "assigned_to" INTEGER,
     "is_active" BOOLEAN DEFAULT TRUE,
@@ -94,7 +96,7 @@ CREATE TABLE
     "photo_url" TEXT,
     "status" VARCHAR(50) DEFAULT 'pending',
     "points_earned" INTEGER DEFAULT 0,
-    "created_at" TIMESTAMPTZ DEFAULT now (),
+    "created_at" TIMESTAMPTZ DEFAULT now(),
     CONSTRAINT "FK_chore_completion_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
     CONSTRAINT "FK_chore_completion_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id")
   );
@@ -106,7 +108,7 @@ CREATE TABLE
     "verified_by" INTEGER NOT NULL,
     "verification_type" VARCHAR(20) NOT NULL,
     "comment" TEXT,
-    "verified_at" TIMESTAMPTZ DEFAULT now (),
+    "verified_at" TIMESTAMPTZ DEFAULT now(),
     CONSTRAINT "FK_chore_verification_completion_id" FOREIGN KEY ("completion_id") REFERENCES "chore_completion" ("completion_id"),
     CONSTRAINT "FK_chore_verification_verified_by" FOREIGN KEY ("verified_by") REFERENCES "room_membership" ("membership_id")
   );
@@ -116,7 +118,7 @@ CREATE TABLE
     "assignment_id" SERIAL PRIMARY KEY,
     "chore_id" INTEGER NOT NULL,
     "membership_id" INTEGER NOT NULL,
-    "assigned_at" TIMESTAMPTZ DEFAULT now (),
+    "assigned_at" TIMESTAMPTZ DEFAULT now(),
     "completed_at" TIMESTAMPTZ,
     "status" VARCHAR(50) DEFAULT 'assigned',
     CONSTRAINT "FK_chore_assignment_history_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
@@ -131,7 +133,7 @@ CREATE TABLE
     "to_membership" INTEGER NOT NULL,
     "status" VARCHAR(50) DEFAULT 'pending',
     "message" TEXT,
-    "requested_at" TIMESTAMPTZ DEFAULT now (),
+    "requested_at" TIMESTAMPTZ DEFAULT now(),
     "responded_at" TIMESTAMPTZ,
     CONSTRAINT "FK_chore_swap_request_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
     CONSTRAINT "FK_chore_swap_request_from_membership" FOREIGN KEY ("from_membership") REFERENCES "room_membership" ("membership_id"),
@@ -148,7 +150,7 @@ CREATE TABLE
     "category" VARCHAR(100),
     "expense_date" DATE NOT NULL,
     "receipt_url" TEXT,
-    "created_at" TIMESTAMPTZ DEFAULT now (),
+    "created_at" TIMESTAMPTZ DEFAULT now(),
     CONSTRAINT "FK_expense_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id"),
     CONSTRAINT "FK_expense_payer_membership_id" FOREIGN KEY ("payer_membership_id") REFERENCES "room_membership" ("membership_id")
   );

@@ -20,6 +20,8 @@ export interface ChoreCreateRequest {
     frequencyValue?: number;
     dayOfWeek?: number;
     timing?: string;
+    description?: string;
+    startDate?: string;
     assignedTo?: number;
     isActive?: boolean;
 }
