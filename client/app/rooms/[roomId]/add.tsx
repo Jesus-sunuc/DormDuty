@@ -11,7 +11,6 @@ import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 
-
 const frequencyOptions = [
   "As Needed",
   "One Time",
@@ -61,15 +60,6 @@ const AddChoreScreen = () => {
   const [description, setDescription] = useState<string | undefined>();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-
-  const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
-    const hour = Math.floor(i / 2)
-      .toString()
-      .padStart(2, "0");
-    const minute = i % 2 === 0 ? "00" : "30";
-    return `${hour}:${minute}`;
-  });
-
   const formattedMembers = (
     members as unknown as [number, string, number][]
   ).map(([userId, name, membershipId]) => ({
@@ -104,6 +94,16 @@ const AddChoreScreen = () => {
     );
   };
 
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<Date | undefined>(undefined);
+
+  const onTimeChange = (event: any, selected: Date | undefined) => {
+    setShowTimePicker(false);
+    if (selected) {
+      setSelectedTime(selected);
+      setTimingInput(selected.toTimeString().slice(0, 5)); // format "HH:MM"
+    }
+  };
 
   return (
     <ParallaxScrollView>
@@ -190,7 +190,7 @@ const AddChoreScreen = () => {
         />
       )}
 
-      <ThemedText className="mb-1">Day of Week</ThemedText>
+      <ThemedText className="mb-1">Always on?</ThemedText>
       <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
         <Picker
           selectedValue={dayOfWeek}
@@ -205,19 +205,24 @@ const AddChoreScreen = () => {
       </View>
 
       <ThemedText className="mb-1">Time</ThemedText>
-      <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
-        <Picker
-          selectedValue={timingInput}
-          onValueChange={(value) => setTimingInput(value)}
-          style={{ color: "#9ca3af" }}
-          dropdownIconColor="#9ca3af"
-        >
-          <Picker.Item label="Select time" value={undefined} />
-          {timeOptions.map((time) => (
-            <Picker.Item key={time} label={time} value={time} />
-          ))}
-        </Picker>
-      </View>
+      <TouchableOpacity
+        onPress={() => setShowTimePicker(true)}
+        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-4 mb-4"
+      >
+        <Text className="text-gray-700 dark:text-gray-400 text-lg">
+          {timingInput || "Select time"}
+        </Text>
+      </TouchableOpacity>
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={selectedTime ?? new Date()}
+          mode="time"
+          is24Hour={true}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={onTimeChange}
+        />
+      )}
 
       <ThemedText className="mb-1">Description</ThemedText>
       <TextInput
