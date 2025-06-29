@@ -12,6 +12,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 
 const frequencyOptions = [
+  "Choose a day",
   "As Needed",
   "One Time",
   "Daily",
@@ -33,6 +34,7 @@ const frequencyOptions = [
   "Yearly",
 ];
 const daysOfWeek = [
+  "Select a day",
   "Sunday",
   "Monday",
   "Tuesday",
@@ -50,9 +52,8 @@ const AddChoreScreen = () => {
 
   const { mutate: addChore, isPending } = useAddChoreMutation();
 
-  const [name, setName] = useState("");
-  const [frequency, setFrequency] = useState("One Time");
-  const [frequencyValue, setFrequencyValue] = useState<number | undefined>();
+  const [name, setName] = useState("New Chore");
+  const [frequency, setFrequency] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
   const [assignedTo, setAssignedTo] = useState<number | undefined>();
@@ -76,7 +77,6 @@ const AddChoreScreen = () => {
         roomId: parseInt(roomId),
         name: name.trim(),
         frequency,
-        frequencyValue,
         dayOfWeek,
         timing: timingInput ? `${timingInput}:00` : undefined,
         description: description?.trim(),
@@ -101,7 +101,7 @@ const AddChoreScreen = () => {
     setShowTimePicker(false);
     if (selected) {
       setSelectedTime(selected);
-      setTimingInput(selected.toTimeString().slice(0, 5)); // format "HH:MM"
+      setTimingInput(selected.toTimeString().slice(0, 5)); 
     }
   };
 
