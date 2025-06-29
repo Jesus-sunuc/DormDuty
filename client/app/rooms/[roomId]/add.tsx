@@ -101,13 +101,13 @@ const AddChoreScreen = () => {
     setShowTimePicker(false);
     if (selected) {
       setSelectedTime(selected);
-      setTimingInput(selected.toTimeString().slice(0, 5)); 
+      setTimingInput(selected.toTimeString().slice(0, 5));
     }
   };
 
   return (
     <ParallaxScrollView>
-      <View className="flex-row justify-between items-center mb-4">
+      <View className="flex-row justify-between items-center">
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-gray-600 dark:text-gray-400 text-lg">
             Cancel
@@ -131,111 +131,125 @@ const AddChoreScreen = () => {
         onChangeText={setName}
         className="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-4 text-lg text-black dark:text-white"
       />
-
-      <ThemedText className="mb-0">Assign to</ThemedText>
-      <View className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-        <Picker
-          selectedValue={assignedTo}
-          onValueChange={(value) => setAssignedTo(value)}
-          style={{ color: "#9ca3af" }}
-          dropdownIconColor="#9ca3af"
-        >
-          <Picker.Item label="Unassigned" value={undefined} key="unassigned" />
-          {formattedMembers.map((member) => (
+      <View>
+        <ThemedText>Assign to</ThemedText>
+        <View className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden mt-2">
+          <Picker
+            selectedValue={assignedTo}
+            onValueChange={(value) => setAssignedTo(value)}
+            style={{ color: "#9ca3af" }}
+            dropdownIconColor="#9ca3af"
+          >
             <Picker.Item
-              key={member.userId}
-              label={member.name}
-              value={member.userId}
+              label="Unassigned"
+              value={undefined}
+              key="unassigned"
             />
-          ))}
-        </Picker>
+            {formattedMembers.map((member) => (
+              <Picker.Item
+                key={member.userId}
+                label={member.name}
+                value={member.userId}
+              />
+            ))}
+          </Picker>
+        </View>
       </View>
 
-      <ThemedText className="mb-1 mt-4">Repetition</ThemedText>
-      <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
-        <Picker
-          selectedValue={frequency}
-          onValueChange={(itemValue) => setFrequency(itemValue)}
-          style={{ color: "#9ca3af" }}
-          dropdownIconColor="#9ca3af"
+      <View>
+        <ThemedText>Repetition</ThemedText>
+        <View className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden mt-2">
+          <Picker
+            selectedValue={frequency}
+            onValueChange={(itemValue) => setFrequency(itemValue)}
+            style={{ color: "#9ca3af" }}
+            dropdownIconColor="#9ca3af"
+          >
+            {frequencyOptions.map((option) => (
+              <Picker.Item key={option} label={option} value={option} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+
+      <View>
+        <ThemedText>Start Date</ThemedText>
+        <TouchableOpacity
+          onPress={() => setShowDatePicker(true)}
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-4 mt-2"
         >
-          {frequencyOptions.map((option) => (
-            <Picker.Item key={option} label={option} value={option} />
-          ))}
-        </Picker>
+          <Text className="text-gray-700 dark:text-gray-400 text-lg">
+            {startDate || "Select a start date"}
+          </Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={startDate ? new Date(startDate) : new Date()}
+            mode="date"
+            display={Platform.OS === "ios" ? "inline" : "default"}
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(Platform.OS === "ios");
+              if (selectedDate) {
+                const iso = selectedDate.toISOString().split("T")[0];
+                setStartDate(iso);
+              }
+            }}
+          />
+        )}
       </View>
 
-      <ThemedText className="mb-1">Start Date</ThemedText>
-      <TouchableOpacity
-        onPress={() => setShowDatePicker(true)}
-        className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 px-4 py-4"
-      >
-        <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {startDate || "Select a start date"}
-        </Text>
-      </TouchableOpacity>
+      <View>
+        <ThemedText>Always on?</ThemedText>
+        <View className="border border-gray-300 dark:border-gray-600 rounded-lg mt-2 overflow-hidden">
+          <Picker
+            selectedValue={dayOfWeek}
+            onValueChange={(itemValue) => setDayOfWeek(itemValue)}
+            style={{ color: "#9ca3af" }}
+            dropdownIconColor="#9ca3af"
+          >
+            {daysOfWeek.map((day, index) => (
+              <Picker.Item key={day} label={day} value={index} />
+            ))}
+          </Picker>
+        </View>
+      </View>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={startDate ? new Date(startDate) : new Date()}
-          mode="date"
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(Platform.OS === "ios");
-            if (selectedDate) {
-              const iso = selectedDate.toISOString().split("T")[0];
-              setStartDate(iso);
-            }
-          }}
-        />
-      )}
-
-      <ThemedText className="mb-1">Always on?</ThemedText>
-      <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
-        <Picker
-          selectedValue={dayOfWeek}
-          onValueChange={(itemValue) => setDayOfWeek(itemValue)}
-          style={{ color: "#9ca3af" }}
-          dropdownIconColor="#9ca3af"
+      <View>
+        <ThemedText>Time</ThemedText>
+        <TouchableOpacity
+          onPress={() => setShowTimePicker(true)}
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-4 mb-2"
         >
-          {daysOfWeek.map((day, index) => (
-            <Picker.Item key={day} label={day} value={index} />
-          ))}
-        </Picker>
+          <Text className="text-gray-700 dark:text-gray-400 text-lg">
+            {timingInput || "Select time"}
+          </Text>
+        </TouchableOpacity>
+
+        {showTimePicker && (
+          <DateTimePicker
+            value={selectedTime ?? new Date()}
+            mode="time"
+            is24Hour={true}
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={onTimeChange}
+          />
+        )}
       </View>
-
-      <ThemedText className="mb-1">Time</ThemedText>
-      <TouchableOpacity
-        onPress={() => setShowTimePicker(true)}
-        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-4 mb-4"
-      >
-        <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {timingInput || "Select time"}
-        </Text>
-      </TouchableOpacity>
-
-      {showTimePicker && (
-        <DateTimePicker
-          value={selectedTime ?? new Date()}
-          mode="time"
-          is24Hour={true}
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={onTimeChange}
+      <View>
+        <ThemedText>Description</ThemedText>
+        <TextInput
+          placeholder="Describe this chore..."
+          placeholderTextColor="#9ca3af"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          numberOfLines={6}
+          textAlignVertical="top"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 mt-2 text-black dark:text-white"
+          style={{ minHeight: 120 }}
         />
-      )}
-
-      <ThemedText className="mb-1">Description</ThemedText>
-      <TextInput
-        placeholder="Describe this chore..."
-        placeholderTextColor="#9ca3af"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        numberOfLines={6}
-        textAlignVertical="top"
-        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 mb-4 text-black dark:text-white"
-        style={{ minHeight: 120 }}
-      />
+      </View>
     </ParallaxScrollView>
   );
 };
