@@ -148,7 +148,7 @@ const HomeScreen = () => {
             type="title"
             className="text-2xl font-grotesk mb-4 dark:text-gray-200"
           >
-            Your Rooms
+            Your Apartments
           </ThemedText>
           <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
         </View>
