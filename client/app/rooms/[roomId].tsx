@@ -12,12 +12,13 @@ import { toastError, toastSuccess } from "@/components/ToastService";
 import { ChoreModal } from "@/components/chores/ChoreModal";
 import { ChoreCreateRequest } from "@/models/Chore";
 import { useAuth } from "@/hooks/user/useAuth";
+import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
+
   const router = useRouter();
   const { user } = useAuth();
-
 
   const [isModalVisible, setModalVisible] = useState(false);
   const { mutate: addChore, isPending } = useAddChoreMutation();
@@ -80,6 +81,7 @@ export default RoomChoresScreen;
 
 const ChoreList = ({ roomId }: { roomId: string }) => {
   const { data: chores } = useChoresByRoomQuery(roomId);
+  const { data: members = [] } = useRoomMembersQuery(roomId);
 
   if (!chores.length) {
     return (
@@ -88,6 +90,13 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
       </ThemedText>
     );
   }
+
+  const memberMap = new Map(
+    (members as unknown as [number, string, number][]).map(([userId, name]) => [
+      userId,
+      name,
+    ])
+  );
 
   return (
     <>
@@ -115,7 +124,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
               </ThemedText>
             </View>
             <ThemedText className="text-sm font-medium dark:text-gray-100">
-              {chore.assignedTo?.toString() || "Unassigned"}
+              {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
             </ThemedText>
           </View>
         </Card>

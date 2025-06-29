@@ -81,7 +81,7 @@ const AddChoreScreen = () => {
         timing: timingInput ? `${timingInput}:00` : undefined,
         description: description?.trim(),
         startDate,
-        assignedTo: user?.userId ?? 0,
+        assignedTo: assignedTo,
         isActive: true,
       },
       {
