@@ -8,8 +8,31 @@ import { ThemedText } from "@/components/ThemedText";
 import { Picker } from "@react-native-picker/picker";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Platform } from "react-native";
 
-const frequencyOptions = ["One Time", "As Needed", "Weekly", "Monthly"];
+
+const frequencyOptions = [
+  "As Needed",
+  "One Time",
+  "Daily",
+  "Every Other Day",
+  "Every 3 Days",
+  "Every 4 Days",
+  "Every 5 Days",
+  "Every 6 Days",
+  "Weekly",
+  "Every 10 Days",
+  "Every Other Week",
+  "Every 3 Weeks",
+  "Every 4 Weeks",
+  "Every 5 Weeks",
+  "Every 6 Weeks",
+  "Every 2 Months",
+  "Every 3 Months",
+  "Every 6 Months",
+  "Yearly",
+];
 const daysOfWeek = [
   "Sunday",
   "Monday",
@@ -34,6 +57,10 @@ const AddChoreScreen = () => {
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
   const [assignedTo, setAssignedTo] = useState<number | undefined>();
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [description, setDescription] = useState<string | undefined>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
 
   const timeOptions = Array.from({ length: 24 * 2 }, (_, i) => {
     const hour = Math.floor(i / 2)
@@ -62,8 +89,8 @@ const AddChoreScreen = () => {
         frequencyValue,
         dayOfWeek,
         timing: timingInput ? `${timingInput}:00` : undefined,
-        description: undefined,
-        startDate: undefined,
+        description: description?.trim(),
+        startDate,
         assignedTo: user?.userId ?? 0,
         isActive: true,
       },
@@ -77,24 +104,24 @@ const AddChoreScreen = () => {
     );
   };
 
+
   return (
     <ParallaxScrollView>
-      <View className="flex-row justify-between">
-        <TouchableOpacity onPress={() => router.back()} className="py-2">
-          <Text className="text-gray-600 dark:text-gray-400 text-base">
+      <View className="flex-row justify-between items-center mb-4">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text className="text-gray-600 dark:text-gray-400 text-lg">
             Cancel
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           disabled={isPending}
           onPress={handleSubmit}
-          className="bg-customGreen-500 px-4 py-2 rounded-lg"
+          className="bg-customGreen-500 px-4 py-2 rounded-xl shadow"
         >
-          <Text className="text-gray-100">Save</Text>
+          <Text className="text-white font-semibold">Save</Text>
         </TouchableOpacity>
       </View>
-      <ThemedText className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-0">
+      <ThemedText className="text-2xl font-semibold text-gray-700 dark:text-gray-300">
         Create Chore
       </ThemedText>
       <TextInput
@@ -102,16 +129,16 @@ const AddChoreScreen = () => {
         placeholderTextColor="#9ca3af"
         value={name}
         onChangeText={setName}
-        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-black dark:text-white"
+        className="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-4 text-lg text-black dark:text-white"
       />
 
-      <ThemedText className="mb-1">Assign to</ThemedText>
-      <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
+      <ThemedText className="mb-0">Assign to</ThemedText>
+      <View className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
         <Picker
           selectedValue={assignedTo}
           onValueChange={(value) => setAssignedTo(value)}
-          style={{ color: "black" }}
-          dropdownIconColor="black"
+          style={{ color: "#9ca3af" }}
+          dropdownIconColor="#9ca3af"
         >
           <Picker.Item label="Unassigned" value={undefined} key="unassigned" />
           {formattedMembers.map((member) => (
@@ -129,8 +156,8 @@ const AddChoreScreen = () => {
         <Picker
           selectedValue={frequency}
           onValueChange={(itemValue) => setFrequency(itemValue)}
-          style={{ color: "black" }}
-          dropdownIconColor="black"
+          style={{ color: "#9ca3af" }}
+          dropdownIconColor="#9ca3af"
         >
           {frequencyOptions.map((option) => (
             <Picker.Item key={option} label={option} value={option} />
@@ -138,23 +165,38 @@ const AddChoreScreen = () => {
         </Picker>
       </View>
 
-      <TextInput
-        placeholder="Frequency Value (e.g., every 2 days)"
-        keyboardType="numeric"
-        value={frequencyValue?.toString() ?? ""}
-        onChangeText={(text) =>
-          setFrequencyValue(text ? parseInt(text) : undefined)
-        }
-        className="border p-2 rounded-lg mb-4 text-black dark:text-white"
-      />
+      <ThemedText className="mb-1">Start Date</ThemedText>
+      <TouchableOpacity
+        onPress={() => setShowDatePicker(true)}
+        className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 px-4 py-4"
+      >
+        <Text className="text-gray-700 dark:text-gray-400 text-lg">
+          {startDate || "Select a start date"}
+        </Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={startDate ? new Date(startDate) : new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "inline" : "default"}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(Platform.OS === "ios");
+            if (selectedDate) {
+              const iso = selectedDate.toISOString().split("T")[0];
+              setStartDate(iso);
+            }
+          }}
+        />
+      )}
 
       <ThemedText className="mb-1">Day of Week</ThemedText>
       <View className="border border-gray-300 dark:border-gray-600 rounded-lg mb-4 overflow-hidden">
         <Picker
           selectedValue={dayOfWeek}
           onValueChange={(itemValue) => setDayOfWeek(itemValue)}
-          style={{ color: "black" }}
-          dropdownIconColor="black"
+          style={{ color: "#9ca3af" }}
+          dropdownIconColor="#9ca3af"
         >
           {daysOfWeek.map((day, index) => (
             <Picker.Item key={day} label={day} value={index} />
@@ -167,8 +209,8 @@ const AddChoreScreen = () => {
         <Picker
           selectedValue={timingInput}
           onValueChange={(value) => setTimingInput(value)}
-          style={{ color: "black" }}
-          dropdownIconColor="black"
+          style={{ color: "#9ca3af" }}
+          dropdownIconColor="#9ca3af"
         >
           <Picker.Item label="Select time" value={undefined} />
           {timeOptions.map((time) => (
@@ -176,6 +218,19 @@ const AddChoreScreen = () => {
           ))}
         </Picker>
       </View>
+
+      <ThemedText className="mb-1">Description</ThemedText>
+      <TextInput
+        placeholder="Describe this chore..."
+        placeholderTextColor="#9ca3af"
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        numberOfLines={6}
+        textAlignVertical="top"
+        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 mb-4 text-black dark:text-white"
+        style={{ minHeight: 120 }}
+      />
     </ParallaxScrollView>
   );
 };
