@@ -146,7 +146,7 @@ const HomeScreen = () => {
         <View>
           <ThemedText
             type="title"
-            className="text-2xl font-grotesk mb-4 dark:text-gray-200"
+            className="text-2xl font-grotesk mb-7 dark:text-gray-200"
           >
             Your Apartments
           </ThemedText>
@@ -159,10 +159,10 @@ const HomeScreen = () => {
           setRoomToEdit(null);
           setModalVisible(true);
         }}
-        className="absolute bottom-6 right-6 bg-customGreen-500 p-4 rounded-full"
+        className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
         activeOpacity={0.8}
       >
-        <Ionicons name="add" size={28} color="white" />
+        <Ionicons name="add" size={18} color="whitesmoke" />
       </TouchableOpacity>
 
       <RoomModal

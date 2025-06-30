@@ -53,7 +53,7 @@ const RoomChoresScreen = () => {
     <LoadingAndErrorHandling>
       <ParallaxScrollView>
         <View>
-          <Pressable onPress={() => router.back()} className="mb-4">
+          <Pressable onPress={() => router.back()} className="mb-7">
             <Ionicons name="arrow-back" size={24} color="#9ca3af" />
           </Pressable>
           <ChoreList roomId={roomId} />
@@ -61,10 +61,10 @@ const RoomChoresScreen = () => {
       </ParallaxScrollView>
       <TouchableOpacity
         onPress={() => router.push(`/rooms/${roomId}/add`)}
-        className="absolute bottom-10 right-6 bg-customGreen-500 p-4 rounded-full"
+        className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
         activeOpacity={0.8}
       >
-        <Ionicons name="add" size={28} color="white" />
+        <Ionicons name="add" size={18} color="whitesmoke" />
       </TouchableOpacity>
 
       <ChoreModal
