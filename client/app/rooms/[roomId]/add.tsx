@@ -109,7 +109,7 @@ const AddChoreScreen = () => {
     <ParallaxScrollView>
       <View className="flex-row justify-between items-center">
         <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-gray-600 dark:text-gray-400 text-lg">
+          <Text className="text-gray-600 dark:text-gray-300 text-lg">
             Cancel
           </Text>
         </TouchableOpacity>
