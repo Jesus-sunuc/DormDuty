@@ -19,6 +19,11 @@ class ChoreRepository:
     def get_chores_by_room_id(self, room_id: int):
         sql = "SELECT * FROM chore WHERE room_id = %s"
         return run_sql(sql, (room_id,), output_class=Chore)
+    
+    def get_chore_by_id(self, chore_id: int):
+        sql = "SELECT * FROM chore WHERE chore_id = %s"
+        result = run_sql(sql, (chore_id,), output_class=Chore)
+        return result[0] if result else None
 
     def add_chore(self, chore: ChoreCreateRequest):
         sql = """
@@ -44,3 +49,4 @@ class ChoreRepository:
 
         result = run_sql(sql, params)
         return {"chore_id": result[0][0]}
+    

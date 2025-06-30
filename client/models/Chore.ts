@@ -6,6 +6,8 @@ export interface Chore {
     frequencyValue?: number;
     dayOfWeek?: number;
     timing?: string;
+    description?: string;
+    startDate?: string;
     lastCompleted?: string;
     assignedTo?: number;
     isActive: boolean;

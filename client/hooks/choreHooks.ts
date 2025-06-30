@@ -9,6 +9,7 @@ const queryClient = getQueryClient();
 export const choresKeys = {
   all: ["chores"] as const,
   byRoom: (roomId: string) => ["chores", "by-room", roomId] as const,
+  byId: (choreId: number) => ["chores", "by-id", choreId] as const,
 };
 
 export const useChoresQuery = () => {
@@ -39,6 +40,16 @@ export const useChoresByRoomQuery = (roomId: string) => {
     queryKey: choresKeys.byRoom(roomId),
     queryFn: async (): Promise<Chore[]> => {
       const res = await axiosClient.get(`/api/chores/by-room/${roomId}`);
+      return res.data;
+    },
+  });
+};
+
+export const useChoreByIdQuery = (choreId: number) => {
+  return useSuspenseQuery({
+    queryKey: choresKeys.byId(choreId),
+    queryFn: async (): Promise<Chore> => {
+      const res = await axiosClient.get(`/api/chores/${choreId}`);
       return res.data;
     },
   });

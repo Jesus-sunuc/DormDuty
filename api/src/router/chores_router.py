@@ -26,6 +26,11 @@ def get_chores_by_user(user_id: int):
 def get_chores_by_room(room_id: int):
     return repo.get_chores_by_room_id(room_id)
 
+@router.get("/{chore_id}")
+@error_handler("Error fetching chore by ID")
+def get_chore(chore_id: int):
+    return repo.get_chore_by_id(chore_id)
+
 @router.post("/add")
 @error_handler("Error adding chore")
 def add_chore(chore: ChoreCreateRequest):

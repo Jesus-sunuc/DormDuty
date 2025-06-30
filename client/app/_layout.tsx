@@ -71,7 +71,11 @@ export default function RootLayout() {
                   name="rooms/[roomId]/add"
                   options={{ headerShown: false }}
                 />
-              </Stack>
+              <Stack.Screen
+                name="chores/[choreId]"
+                options={{ headerShown: false }}
+                />
+                </Stack>
               <Toast />
               <StatusBar style="auto" />
             </LoadingAndErrorHandling>

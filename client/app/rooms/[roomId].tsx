@@ -83,6 +83,8 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   const { data: chores } = useChoresByRoomQuery(roomId);
   const { data: members = [] } = useRoomMembersQuery(roomId);
 
+  const router = useRouter();
+
   if (!chores.length) {
     return (
       <ThemedText className="text-center text-gray-400">
@@ -101,33 +103,35 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   return (
     <>
       {chores.map((chore) => (
-        <Card key={chore.choreId}>
-          <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-100">
-            {chore.name}
-          </ThemedText>
-          <View className="flex-row justify-between mb-1">
-            <View className="flex-row items-center space-x-1">
-              <Ionicons name="time-outline" size={16} color="#9ca3af" />
-              <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
-                Last completed:
+        <Pressable onPress={() => router.push(`/chores/${chore.choreId}`)}>
+          <Card key={chore.choreId}>
+            <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-100">
+              {chore.name}
+            </ThemedText>
+            <View className="flex-row justify-between mb-1">
+              <View className="flex-row items-center space-x-1">
+                <Ionicons name="time-outline" size={16} color="#9ca3af" />
+                <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
+                  Last completed:
+                </ThemedText>
+              </View>
+              <ThemedText className="text-sm font-medium dark:text-gray-100">
+                {formatDate(chore.lastCompleted)}
               </ThemedText>
             </View>
-            <ThemedText className="text-sm font-medium dark:text-gray-100">
-              {formatDate(chore.lastCompleted)}
-            </ThemedText>
-          </View>
-          <View className="flex-row justify-between">
-            <View className="flex-row items-center space-x-1">
-              <Ionicons name="person-outline" size={16} color="#9ca3af" />
-              <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
-                Assigned to:
+            <View className="flex-row justify-between">
+              <View className="flex-row items-center space-x-1">
+                <Ionicons name="person-outline" size={16} color="#9ca3af" />
+                <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
+                  Assigned to:
+                </ThemedText>
+              </View>
+              <ThemedText className="text-sm font-medium dark:text-gray-100">
+                {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
               </ThemedText>
             </View>
-            <ThemedText className="text-sm font-medium dark:text-gray-100">
-              {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
-            </ThemedText>
-          </View>
-        </Card>
+          </Card>
+        </Pressable>
       ))}
     </>
   );
