@@ -6,12 +6,13 @@ import { Card } from "@/components/Card";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getRoomColor } from "@/utils/colorUtils";
+import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 
 export default function ChoresScreen() {
   const { data: chores = [] } = useChoresByUserQuery();
 
   return (
-    <>
+    <LoadingAndErrorHandling>
       <ParallaxScrollView>
         <View className="pt-3">
           <ThemedText
@@ -80,7 +81,7 @@ export default function ChoresScreen() {
           )}
         </View>
       </ParallaxScrollView>
-    </>
+    </LoadingAndErrorHandling>
   );
 }
 

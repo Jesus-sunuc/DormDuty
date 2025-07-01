@@ -63,19 +63,7 @@ export default function RootLayout() {
             <LoadingAndErrorHandling>
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="rooms/[roomId]"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="rooms/[roomId]/add"
-                  options={{ headerShown: false }}
-                />
-              <Stack.Screen
-                name="chores/[choreId]"
-                options={{ headerShown: false }}
-                />
-                </Stack>
+              </Stack>
               <Toast />
               <StatusBar style="auto" />
             </LoadingAndErrorHandling>

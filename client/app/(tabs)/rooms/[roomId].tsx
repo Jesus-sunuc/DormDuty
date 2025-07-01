@@ -6,7 +6,7 @@ import { View, Pressable, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { Card } from "@/components/Card";
-import { formatDate } from "../(tabs)/chores";
+import { formatDate } from "../chores";
 import { useState } from "react";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { ChoreModal } from "@/components/chores/ChoreModal";
@@ -105,7 +105,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
       {chores.map((chore) => (
         <Pressable
           key={chore.choreId}
-          onPress={() => router.push(`/chores/${chore.choreId}`)}
+          onPress={() => router.push(`/chore-details/${chore.choreId}`)}
         >
           <Card>
             <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-100">
