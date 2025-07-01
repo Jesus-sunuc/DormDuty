@@ -1,5 +1,4 @@
 import { Card } from "@/components/Card";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import {
   useAddRoomMutation,
@@ -19,6 +18,8 @@ import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomShee
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/hooks/user/useAuth";
+import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 const RoomList = ({
   rooms,
@@ -141,56 +142,58 @@ const HomeScreen = () => {
   };
 
   return (
-    <>
-      <ParallaxScrollView>
-        <View>
+    <LoadingAndErrorHandling>
+      <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-black">
           <ThemedText
             type="title"
-            className="text-2xl font-grotesk mb-7 dark:text-gray-200"
+            className="text-2xl font-grotesk mb-1 dark:text-gray-200"
           >
             Your Apartments
           </ThemedText>
-          <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
         </View>
-      </ParallaxScrollView>
+        <ParallaxScrollViewY>
+          <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
+        </ParallaxScrollViewY>
 
-      <TouchableOpacity
-        onPress={() => {
-          setRoomToEdit(null);
-          setModalVisible(true);
-        }}
-        className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={18} color="whitesmoke" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setRoomToEdit(null);
+            setModalVisible(true);
+          }}
+          className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
+          activeOpacity={0.8}
+        >
+          <Ionicons name="add" size={18} color="whitesmoke" />
+        </TouchableOpacity>
 
-      <RoomModal
-        visible={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          setRoomToEdit(null);
-        }}
-        onSubmit={roomToEdit ? handleUpdateRoom : handleAddRoom}
-        defaultName={roomToEdit?.name ?? ""}
-        submitLabel={roomToEdit ? "Update" : "Create"}
-        isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
-      />
+        <RoomModal
+          visible={modalVisible}
+          onClose={() => {
+            setModalVisible(false);
+            setRoomToEdit(null);
+          }}
+          onSubmit={roomToEdit ? handleUpdateRoom : handleAddRoom}
+          defaultName={roomToEdit?.name ?? ""}
+          submitLabel={roomToEdit ? "Update" : "Create"}
+          isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
+        />
 
-      <RoomOptionsBottomSheet
-        visible={!!optionsRoom}
-        onClose={() => setOptionsRoom(null)}
-        onEdit={() => {
-          if (!optionsRoom) return;
-          setRoomToEdit(optionsRoom);
-          setModalVisible(true);
-        }}
-        onShareCode={() =>
-          toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
-        }
-        onDelete={handleDeleteRoom}
-      />
-    </>
+        <RoomOptionsBottomSheet
+          visible={!!optionsRoom}
+          onClose={() => setOptionsRoom(null)}
+          onEdit={() => {
+            if (!optionsRoom) return;
+            setRoomToEdit(optionsRoom);
+            setModalVisible(true);
+          }}
+          onShareCode={() =>
+            toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
+          }
+          onDelete={handleDeleteRoom}
+        />
+      </View>
+    </LoadingAndErrorHandling>
   );
 };
 
