@@ -9,15 +9,19 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 
 const ChoreDetailsScreen = () => {
-  const { choreId, roomId } = useLocalSearchParams<{ choreId: string; roomId?: string }>();
+  const { choreId, roomId } = useLocalSearchParams<{
+    choreId: string;
+    roomId?: string;
+  }>();
   const router = useRouter();
 
   const choreIdNumber = choreId ? Number(choreId) : 0;
   const { data: chore } = useChoreByIdQuery(choreIdNumber);
-  
-  const effectiveRoomId = roomId || (chore?.roomId ? String(chore.roomId) : undefined);
+
+  const effectiveRoomId =
+    roomId || (chore?.roomId ? String(chore.roomId) : undefined);
   const { data: members = [] } = useRoomMembersQuery(effectiveRoomId || "");
-  
+
   const memberMap = new Map(
     (members as unknown as [number, string, number][]).map(([userId, name]) => [
       userId,
@@ -77,7 +81,8 @@ const ChoreDetailsScreen = () => {
         <View className="flex-row items-center">
           <Ionicons name="person" size={20} color="#6b7280" />
           <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
-            Assigned To: {memberMap.get(chore?.assignedTo ?? -1) || "Unassigned"}
+            Assigned To:{" "}
+            {memberMap.get(chore?.assignedTo ?? -1) || "Unassigned"}
           </ThemedText>
         </View>
 
