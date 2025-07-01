@@ -147,25 +147,24 @@ const HomeScreen = () => {
         <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-black">
           <ThemedText
             type="title"
-            className="text-2xl font-grotesk mb-1 dark:text-gray-200"
+            className="text-2xl font-grotesk dark:text-gray-200"
           >
             Your Apartments
           </ThemedText>
+          <TouchableOpacity
+            onPress={() => {
+              setRoomToEdit(null);
+              setModalVisible(true);
+            }}
+            className="bg-customGreen-500 p-2 rounded-full"
+            activeOpacity={0.8}
+          >
+            <Ionicons name="add" size={18} color="whitesmoke" />
+          </TouchableOpacity>
         </View>
         <ParallaxScrollViewY>
           <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
         </ParallaxScrollViewY>
-
-        <TouchableOpacity
-          onPress={() => {
-            setRoomToEdit(null);
-            setModalVisible(true);
-          }}
-          className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
-          activeOpacity={0.8}
-        >
-          <Ionicons name="add" size={18} color="whitesmoke" />
-        </TouchableOpacity>
 
         <RoomModal
           visible={modalVisible}

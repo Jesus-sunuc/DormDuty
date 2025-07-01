@@ -66,7 +66,7 @@ const ChoreDetailsScreen = () => {
         </TouchableOpacity>
 
         <View className="bg-white dark:bg-neutral-800 rounded-xl p-5 shadow mb-2">
-          <ThemedText className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
+          <ThemedText className="text-3xl font-grotesk font-bold mb-2 text-gray-900 dark:text-white">
             {chore?.name || "Unnamed Chore"}
           </ThemedText>
           <ThemedText className="text-sm text-gray-500 dark:text-gray-400">

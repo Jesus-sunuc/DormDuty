@@ -7,21 +7,23 @@ import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getRoomColor } from "@/utils/colorUtils";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 export default function ChoresScreen() {
   const { data: chores = [] } = useChoresByUserQuery();
 
   return (
     <LoadingAndErrorHandling>
-      <ParallaxScrollView>
-        <View className="pt-3">
+      <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-black">
           <ThemedText
             type="title"
-            className="text-2xl font-grotesk mb-3 dark:text-gray-200"
+            className="text-2xl font-grotesk dark:text-gray-200 mb-1"
           >
             My Chores
           </ThemedText>
-
+        </View>
+        <ParallaxScrollViewY>
           {chores.length === 0 ? (
             <ThemedText className="text-center text-muted mt-10">
               No chores assigned yet!
@@ -79,8 +81,8 @@ export default function ChoresScreen() {
               );
             })
           )}
-        </View>
-      </ParallaxScrollView>
+        </ParallaxScrollViewY>
+      </View>
     </LoadingAndErrorHandling>
   );
 }
