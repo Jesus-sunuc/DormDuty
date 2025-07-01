@@ -111,7 +111,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
       {chores.map((chore) => (
         <Pressable
           key={chore.choreId}
-          onPress={() => router.push(`/chore-details/${chore.choreId}`)}
+          onPress={() => router.push(`/chore-details/${chore.choreId}?roomId=${roomId}`)}
         >
           <Card>
             <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-100">

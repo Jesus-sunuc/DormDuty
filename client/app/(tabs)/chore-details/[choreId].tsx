@@ -8,10 +8,18 @@ import { formatDate } from "../chores";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 
 const ChoreDetailsScreen = () => {
-  const { choreId } = useLocalSearchParams<{ choreId: string }>();
+  const { choreId, roomId } = useLocalSearchParams<{ choreId: string; roomId?: string }>();
   const router = useRouter();
 
   const { data: chore } = useChoreByIdQuery(Number(choreId));
+
+  const handleBack = () => {
+    if (roomId) {
+      router.push(`/rooms/${roomId}`);
+    } else {
+      router.back();
+    }
+  };
 
   const days = [
     "Sunday",
@@ -26,7 +34,7 @@ const ChoreDetailsScreen = () => {
   return (
     <LoadingAndErrorHandling>
       <ParallaxScrollView>
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
+        <TouchableOpacity onPress={handleBack} className="mb-4">
           <Ionicons name="arrow-back" size={24} color="#9ca3af" />
         </TouchableOpacity>
 
