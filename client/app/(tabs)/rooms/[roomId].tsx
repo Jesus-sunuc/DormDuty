@@ -4,7 +4,6 @@ import { useAddChoreMutation, useChoresByRoomQuery } from "@/hooks/choreHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { View, Pressable, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { Card } from "@/components/Card";
 import { formatDate } from "../chores";
 import { useState } from "react";
@@ -13,6 +12,7 @@ import { ChoreModal } from "@/components/chores/ChoreModal";
 import { ChoreCreateRequest } from "@/models/Chore";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
@@ -51,28 +51,34 @@ const RoomChoresScreen = () => {
 
   return (
     <LoadingAndErrorHandling>
-      <ParallaxScrollView>
-        <View>
-          <Pressable onPress={() => router.back()} className="mb-7">
+      <View className="flex-1 bg-white dark:bg-black">
+        <View className="flex-row justify-between items-center px-6 mt-14 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black z-10">
+          <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="#9ca3af" />
-          </Pressable>
-          <ChoreList roomId={roomId} />
+          </TouchableOpacity>
+          <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
+            Room Chores
+          </ThemedText>
+          <TouchableOpacity
+            onPress={() => router.push(`/rooms/${roomId}/add`)}
+            className="bg-customGreen-500 p-2 rounded-full"
+            activeOpacity={0.8}
+          >
+            <Ionicons name="add" size={20} color="white" />
+          </TouchableOpacity>
         </View>
-      </ParallaxScrollView>
-      <TouchableOpacity
-        onPress={() => router.push(`/rooms/${roomId}/add`)}
-        className="absolute top-16 right-6 bg-customGreen-500 p-2 rounded-full"
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={18} color="whitesmoke" />
-      </TouchableOpacity>
 
-      <ChoreModal
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onSubmit={handleAddChore}
-        isPending={isPending}
-      />
+        <ParallaxScrollViewY >
+          <ChoreList roomId={roomId} />
+        </ParallaxScrollViewY>
+
+        <ChoreModal
+          visible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          onSubmit={handleAddChore}
+          isPending={isPending}
+        />
+      </View>
     </LoadingAndErrorHandling>
   );
 };
