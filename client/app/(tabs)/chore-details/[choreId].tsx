@@ -11,7 +11,8 @@ const ChoreDetailsScreen = () => {
   const { choreId, roomId } = useLocalSearchParams<{ choreId: string; roomId?: string }>();
   const router = useRouter();
 
-  const { data: chore } = useChoreByIdQuery(Number(choreId));
+  const choreIdNumber = choreId ? Number(choreId) : 0;
+  const { data: chore } = useChoreByIdQuery(choreIdNumber);
 
   const handleBack = () => {
     if (roomId) {
@@ -31,6 +32,21 @@ const ChoreDetailsScreen = () => {
     "Saturday",
   ];
 
+  if (!chore) {
+    return (
+      <LoadingAndErrorHandling>
+        <ParallaxScrollView>
+          <TouchableOpacity onPress={handleBack} className="mb-4">
+            <Ionicons name="arrow-back" size={24} color="#9ca3af" />
+          </TouchableOpacity>
+          <ThemedText className="text-center text-gray-400 mt-10">
+            Chore not found
+          </ThemedText>
+        </ParallaxScrollView>
+      </LoadingAndErrorHandling>
+    );
+  }
+
   return (
     <LoadingAndErrorHandling>
       <ParallaxScrollView>
@@ -40,7 +56,7 @@ const ChoreDetailsScreen = () => {
 
         <View className="bg-white dark:bg-neutral-800 rounded-xl p-5 shadow mb-6">
           <ThemedText className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
-            {chore.name}
+            {chore?.name || "Unnamed Chore"}
           </ThemedText>
           <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
             Chore Details
@@ -50,18 +66,18 @@ const ChoreDetailsScreen = () => {
         <View className="flex-row items-center mb-4">
           <Ionicons name="person" size={20} color="#6b7280" />
           <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
-            Assigned To: {chore.assignedTo || "Unassigned"}
+            Assigned To: {chore?.assignedTo || "Unassigned"}
           </ThemedText>
         </View>
 
         <View className="flex-row items-center mb-4">
           <Ionicons name="repeat" size={20} color="#6b7280" />
           <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
-            Frequency: {chore.frequency}
+            Frequency: {chore?.frequency || "Not set"}
           </ThemedText>
         </View>
 
-        {chore.startDate && (
+        {chore?.startDate && (
           <View className="flex-row items-center mb-4">
             <Ionicons name="calendar" size={20} color="#6b7280" />
             <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
@@ -70,26 +86,26 @@ const ChoreDetailsScreen = () => {
           </View>
         )}
 
-        {chore.dayOfWeek !== undefined && chore.dayOfWeek !== null && (
+        {chore?.dayOfWeek !== undefined && chore?.dayOfWeek !== null && (
           <View className="flex-row items-center mb-4">
             <Ionicons name="calendar-outline" size={20} color="#6b7280" />
             <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
-              Day of Week: {days[chore.dayOfWeek]}
+              Day of Week: {days[chore.dayOfWeek] || "Invalid day"}
             </ThemedText>
           </View>
         )}
 
-        {chore.timing && (
+        {chore?.timing && (
           <View className="flex-row items-center mb-4">
             <Ionicons name="time-outline" size={20} color="#6b7280" />
             <ThemedText className="ml-2 text-base text-gray-700 dark:text-gray-300">
-              Time: {chore.timing}
+              Due at: {chore.timing}
             </ThemedText>
           </View>
         )}
 
-        {chore.description && (
-          <View className="bg-gray-100 dark:bg-neutral-900 rounded-lg p-4 mt-6">
+        {chore?.description && (
+          <View className="bg-white dark:bg-neutral-900 rounded-xl p-4 mt-6">
             <ThemedText className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
               Description
             </ThemedText>
