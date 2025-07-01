@@ -52,7 +52,7 @@ const RoomChoresScreen = () => {
   return (
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-white dark:bg-black">
-        <View className="flex-row justify-between items-center px-6 mt-14 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black z-10">
+        <View className="flex-row justify-between items-center px-6 mt-14 py-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-black z-10">
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="#9ca3af" />
           </TouchableOpacity>
