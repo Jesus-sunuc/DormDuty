@@ -72,19 +72,13 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="rooms/[roomId]"
+          name="rooms"
           options={{
             href: null,
           }}
         />
         <Tabs.Screen
-          name="rooms/[roomId]/add"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="chore-details/[choreId]"
+          name="chore-details"
           options={{
             href: null,
           }}
