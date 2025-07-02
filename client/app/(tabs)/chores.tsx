@@ -1,5 +1,4 @@
 import { useChoresAssignedToUserQuery } from "@/hooks/choreHooks";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { View, Pressable } from "react-native";
 import { formatDistance } from "date-fns";
 import { Card } from "@/components/Card";
@@ -35,9 +34,7 @@ export default function ChoresScreen() {
               return (
                 <Pressable
                   key={chore.choreId}
-                  onPress={() =>
-                    router.push(`/chore-details/${chore.choreId}`)
-                  }
+                  onPress={() => router.push(`/chore-details/${chore.choreId}`)}
                 >
                   <Card className="flex-row items-center">
                     <View
@@ -67,6 +64,20 @@ export default function ChoresScreen() {
                         <ThemedText className="text-sm font-medium dark:text-gray-100">
                           {formatDate(chore.lastCompleted)}
                         </ThemedText>
+                      </View>
+                      <View className="flex-row justify-between">
+                        <View className="flex-row items-center space-x-1">
+                          <Ionicons
+                            name="time-outline"
+                            size={16}
+                            color="#9ca3af"
+                          />
+                          <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
+                            Due At:
+                          </ThemedText>
+                        </View>
+                        <ThemedText className="text-sm font-medium dark:text-gray-100">
+                          {chore.timing || "Not set"}</ThemedText>
                       </View>
                     </View>
                   </Card>
