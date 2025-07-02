@@ -89,7 +89,7 @@ const ChoreDetailsScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4 mt-5">
+          <View className="flex-row items-center justify-between mb-4 mt-6">
             <TouchableOpacity 
               onPress={handleBack} 
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
