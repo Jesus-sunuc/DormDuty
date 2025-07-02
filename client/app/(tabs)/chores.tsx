@@ -36,7 +36,9 @@ export default function ChoresScreen() {
                 <Pressable
                   key={chore.choreId}
                   onPress={() =>
-                    router.push(`/chore-details/${chore.choreId}?roomId=${chore.roomId}`)
+                    router.push(
+                      `/chore-details/${chore.choreId}?roomId=${chore.roomId}`
+                    )
                   }
                 >
                   <Card className="flex-row items-center">
@@ -66,22 +68,6 @@ export default function ChoresScreen() {
                         </View>
                         <ThemedText className="text-sm font-medium dark:text-gray-100">
                           {formatDate(chore.lastCompleted)}
-                        </ThemedText>
-                      </View>
-
-                      <View className="flex-row justify-between">
-                        <View className="flex-row items-center space-x-1">
-                          <Ionicons
-                            name="person-outline"
-                            size={16}
-                            color="#9ca3af"
-                          />
-                          <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
-                            Assigned to:
-                          </ThemedText>
-                        </View>
-                        <ThemedText className="text-sm font-medium dark:text-gray-100">
-                          {chore.assignedTo?.toString() || "Unassigned"}
                         </ThemedText>
                       </View>
                     </View>
