@@ -30,7 +30,7 @@ const ChoreDetailsScreen = () => {
     if (roomId) {
       router.push(`/rooms/${roomId}`);
     } else {
-      router.back();
+      router.push('/chores');
     }
   };
 

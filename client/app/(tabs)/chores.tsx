@@ -36,9 +36,7 @@ export default function ChoresScreen() {
                 <Pressable
                   key={chore.choreId}
                   onPress={() =>
-                    router.push(
-                      `/chore-details/${chore.choreId}?roomId=${chore.roomId}`
-                    )
+                    router.push(`/chore-details/${chore.choreId}`)
                   }
                 >
                   <Card className="flex-row items-center">
