@@ -7,6 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
+import { LinearGradient } from "expo-linear-gradient";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
@@ -17,9 +18,9 @@ const RoomChoresScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
-            <TouchableOpacity 
-              onPress={() => router.push('/')} 
+          <View className="flex-row items-center justify-between mb-4 mt-5">
+            <TouchableOpacity
+              onPress={() => router.push("/")}
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
             >
               <Ionicons name="arrow-back" size={20} color="#6b7280" />
@@ -33,10 +34,32 @@ const RoomChoresScreen = () => {
             
             <TouchableOpacity
               onPress={() => router.push(`/rooms/${roomId}/add`)}
-              className="w-10 h-10 rounded-full bg-green-500 items-center justify-center shadow-md"
               activeOpacity={0.8}
+              style={{
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 6,
+                borderRadius: 20,
+              }}
             >
-              <Ionicons name="add" size={20} color="white" />
+              <LinearGradient
+                colors={["#3b82f6", "#1d4ed8", "#1e40af"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 1,
+                  borderColor: "rgba(59, 130, 246, 0.3)",
+                }}
+              >
+                <Ionicons name="add" size={22} color="white" />
+              </LinearGradient>
             </TouchableOpacity>
           </View>
           

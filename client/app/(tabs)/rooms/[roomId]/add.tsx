@@ -11,6 +11,8 @@ import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import { LinearGradient } from "expo-linear-gradient";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 const frequencyOptions = [
   "Choose a day",
@@ -109,9 +111,8 @@ const AddChoreScreen = () => {
   return (
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        {/* Enhanced Header */}
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center justify-between mb-4 mt-5">
             <TouchableOpacity 
               onPress={() => router.back()}
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
@@ -128,14 +129,35 @@ const AddChoreScreen = () => {
             <TouchableOpacity
               disabled={isPending}
               onPress={handleSubmit}
-              className="bg-green-500 px-4 py-2 rounded-full shadow-md"
+              activeOpacity={0.8}
+              style={{
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 4,
+                borderRadius: 20,
+              }}
             >
-              <Text className="text-white font-semibold">Save</Text>
+              <LinearGradient
+                colors={['#3b82f6', '#1d4ed8', '#1e40af']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                  opacity: isPending ? 0.6 : 1,
+                }}
+              >
+                <Text className="text-white font-semibold">
+                  {isPending ? "Saving..." : "Save"}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
           
-          {/* Page Title */}
-          <View className="mt-2">
+          <View>
             <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
               Create Chore
             </ThemedText>
@@ -148,9 +170,8 @@ const AddChoreScreen = () => {
           </View>
         </View>
 
-        <ParallaxScrollView>
+        <ParallaxScrollViewY>
           <View className="px-6 pt-6">
-            {/* Chore Name Input */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Chore Name
@@ -164,7 +185,6 @@ const AddChoreScreen = () => {
               />
             </View>
 
-            {/* Assign to */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Assign to
@@ -192,7 +212,6 @@ const AddChoreScreen = () => {
               </View>
             </View>
 
-            {/* Repetition */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Repetition
@@ -211,7 +230,6 @@ const AddChoreScreen = () => {
               </View>
             </View>
 
-            {/* Start Date */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Start Date
@@ -241,7 +259,6 @@ const AddChoreScreen = () => {
               )}
             </View>
 
-            {/* Day of Week */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Always on?
@@ -260,7 +277,6 @@ const AddChoreScreen = () => {
               </View>
             </View>
 
-            {/* Time */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Time
@@ -285,7 +301,6 @@ const AddChoreScreen = () => {
               )}
             </View>
 
-            {/* Description */}
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description
@@ -303,7 +318,7 @@ const AddChoreScreen = () => {
               />
             </View>
           </View>
-        </ParallaxScrollView>
+        </ParallaxScrollViewY>
       </View>
     </LoadingAndErrorHandling>
   );

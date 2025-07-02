@@ -7,6 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 const ChoreDetailsScreen = () => {
   const { choreId, roomId } = useLocalSearchParams<{
@@ -88,7 +89,7 @@ const ChoreDetailsScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center justify-between mb-4 mt-5">
             <TouchableOpacity 
               onPress={handleBack} 
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
@@ -120,7 +121,7 @@ const ChoreDetailsScreen = () => {
           </View>
         </View>
 
-        <ParallaxScrollView>
+        <ParallaxScrollViewY>
           <View className="px-6 pt-6">
             <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
               <ThemedText className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
@@ -203,7 +204,7 @@ const ChoreDetailsScreen = () => {
               </View>
             )}
           </View>
-        </ParallaxScrollView>
+        </ParallaxScrollViewY>
       </View>
     </LoadingAndErrorHandling>
   );

@@ -57,7 +57,7 @@ export const RoomModal = ({
             />
           </View>
 
-          <View className="flex-row space-x-3">
+          <View className="flex-row gap-2">
             <TouchableOpacity 
               onPress={onClose} 
               className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-2xl py-4 border border-gray-200 dark:border-neutral-700"

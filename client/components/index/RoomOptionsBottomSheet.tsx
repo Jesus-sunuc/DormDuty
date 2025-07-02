@@ -27,7 +27,7 @@ export const RoomOptionsBottomSheet = ({
 }: Props) => {
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={visible}
       onRequestClose={onClose}

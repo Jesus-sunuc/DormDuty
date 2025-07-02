@@ -18,6 +18,7 @@ import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomShee
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/hooks/user/useAuth";
+import { LinearGradient } from "expo-linear-gradient";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
@@ -29,7 +30,7 @@ const RoomList = ({
   onOptionsPress: (room: Room) => void;
 }) => {
   const router = useRouter();
-  
+
   if (!rooms.length) {
     return (
       <View className="flex-1 items-center justify-center px-6 py-20">
@@ -43,7 +44,7 @@ const RoomList = ({
       </View>
     );
   }
-  
+
   return (
     <View className="px-6 pt-6">
       {rooms.map((room) => (
@@ -58,7 +59,7 @@ const RoomList = ({
                 style={{ backgroundColor: getRoomColor(room.roomId) }}
                 className="w-1 h-20"
               />
-              
+
               <View className="flex-1 p-5">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
@@ -77,18 +78,18 @@ const RoomList = ({
                       </View>
                     </View>
                   </View>
-                  
+
                   <TouchableOpacity
                     onPress={() => onOptionsPress(room)}
                     className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-3"
                   >
-                    <Entypo name="dots-three-vertical" size={16} color="#6b7280" />
+                    <Entypo
+                      name="dots-three-vertical"
+                      size={16}
+                      color="#6b7280"
+                    />
                   </TouchableOpacity>
                 </View>
-              </View>
-              
-              <View className="absolute top-5 right-12">
-                <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
               </View>
             </View>
           </TouchableOpacity>
@@ -177,36 +178,53 @@ const HomeScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center justify-between mt-4">
             <View className="flex-1">
-              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Welcome Home
+              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                Your Apartments
               </ThemedText>
+              <View className="flex-row items-center">
+                <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
+                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  Manage your living spaces
+                </ThemedText>
+              </View>
             </View>
-            
+
             <TouchableOpacity
               onPress={() => {
                 setRoomToEdit(null);
                 setModalVisible(true);
               }}
-              className="w-10 h-10 rounded-full bg-green-500 items-center justify-center shadow-md"
               activeOpacity={0.8}
+              style={{
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+                borderRadius: 16,
+              }}
             >
-              <Ionicons name="add" size={20} color="white" />
+              <LinearGradient
+                colors={["#3b82f6", "#1d4ed8", "#1e40af"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 1,
+                  borderColor: "rgba(59, 130, 246, 0.3)",
+                }}
+              >
+                <Ionicons name="add" size={22} color="white" />
+              </LinearGradient>
             </TouchableOpacity>
           </View>
-          
-          <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              Your Apartments
-            </ThemedText>
-            <View className="flex-row items-center">
-              <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                Manage your living spaces
-              </ThemedText>
-            </View>
-          </View>
+
         </View>
         <ParallaxScrollViewY>
           <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
