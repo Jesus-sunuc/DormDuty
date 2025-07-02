@@ -78,7 +78,6 @@ export const useAddChoreMutation = () => {
       queryClient.invalidateQueries({
         queryKey: choresKeys.byRoom(variables.roomId.toString()),
       });
-      // Also invalidate the assigned chores query
       queryClient.invalidateQueries({
         queryKey: ["chores", "assigned-to-user"],
       });
