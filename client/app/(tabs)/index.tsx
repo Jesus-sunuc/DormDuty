@@ -29,40 +29,72 @@ const RoomList = ({
   onOptionsPress: (room: Room) => void;
 }) => {
   const router = useRouter();
+  
+  if (!rooms.length) {
+    return (
+      <View className="flex-1 items-center justify-center px-6 py-20">
+        <Ionicons name="home-outline" size={64} color="#9ca3af" />
+        <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+          No apartments yet
+        </ThemedText>
+        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+          Create your first apartment to start organizing chores
+        </ThemedText>
+      </View>
+    );
+  }
+  
   return (
-    <>
+    <View className="px-6 pt-6">
       {rooms.map((room) => (
-        <Card key={room.roomId} className="flex-row items-center pe-2 ps-2">
-          <View
-            style={{
-              backgroundColor: getRoomColor(room.roomId),
-              width: 6,
-              height: "100%",
-            }}
-            className="rounded-l-xl"
-          />
+        <View key={room.roomId} className="mb-4">
           <TouchableOpacity
             onPress={() => router.push(`/rooms/${room.roomId}`)}
-            className="p-3 flex-1"
+            className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden"
             activeOpacity={0.8}
           >
             <View className="flex-row items-center">
-              <Ionicons name="people-outline" size={22} color="#9ca3af" />
-              <ThemedText className="ml-2 text-lg font-semibold dark:text-gray-100">
-                {room.name}
-              </ThemedText>
+              <View
+                style={{ backgroundColor: getRoomColor(room.roomId) }}
+                className="w-1 h-20"
+              />
+              
+              <View className="flex-1 p-5">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+                      <Ionicons name="home" size={20} color="#3b82f6" />
+                    </View>
+                    <View className="flex-1">
+                      <ThemedText className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                        {room.name}
+                      </ThemedText>
+                      <View className="flex-row items-center">
+                        <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                          Active apartment
+                        </ThemedText>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <TouchableOpacity
+                    onPress={() => onOptionsPress(room)}
+                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-3"
+                  >
+                    <Entypo name="dots-three-vertical" size={16} color="#6b7280" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              
+              <View className="absolute top-5 right-12">
+                <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+              </View>
             </View>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => onOptionsPress(room)}
-            className="ml-2"
-          >
-            <Entypo name="dots-three-vertical" size={20} color="#9ca3af" />
-          </TouchableOpacity>
-        </Card>
+        </View>
       ))}
-    </>
+    </View>
   );
 };
 
@@ -143,24 +175,38 @@ const HomeScreen = () => {
 
   return (
     <LoadingAndErrorHandling>
-      <View className="flex-1 bg-white dark:bg-black">
-        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b-2 border-gray-200 dark:border-gray-500 bg-white dark:bg-black">
-          <ThemedText
-            type="title"
-            className="text-2xl font-grotesk dark:text-gray-200"
-          >
-            Your Apartments
-          </ThemedText>
-          <TouchableOpacity
-            onPress={() => {
-              setRoomToEdit(null);
-              setModalVisible(true);
-            }}
-            className="bg-customGreen-500 p-2 rounded-full"
-            activeOpacity={0.8}
-          >
-            <Ionicons name="add" size={18} color="whitesmoke" />
-          </TouchableOpacity>
+      <View className="flex-1 bg-gray-50 dark:bg-black">
+        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-1">
+              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Welcome Home
+              </ThemedText>
+            </View>
+            
+            <TouchableOpacity
+              onPress={() => {
+                setRoomToEdit(null);
+                setModalVisible(true);
+              }}
+              className="w-10 h-10 rounded-full bg-green-500 items-center justify-center shadow-md"
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+          
+          <View className="mt-2">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              Your Apartments
+            </ThemedText>
+            <View className="flex-row items-center">
+              <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
+              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                Manage your living spaces
+              </ThemedText>
+            </View>
+          </View>
         </View>
         <ParallaxScrollViewY>
           <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
