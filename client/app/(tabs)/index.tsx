@@ -144,7 +144,7 @@ const HomeScreen = () => {
   return (
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-white dark:bg-black">
-        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-black">
+        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b-2 border-gray-200 dark:border-gray-500 bg-white dark:bg-black">
           <ThemedText
             type="title"
             className="text-2xl font-grotesk dark:text-gray-200"
