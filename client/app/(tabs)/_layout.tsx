@@ -5,7 +5,6 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import clsx from "clsx";
 
 const TabLayout = () => {
@@ -16,22 +15,58 @@ const TabLayout = () => {
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
           headerShown: false,
           tabBarBackground: TabBarBackground,
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
+              backgroundColor: colorScheme === "dark" ? "#171717" : "#ffffff",
+              borderTopWidth: 1,
+              borderTopColor: colorScheme === "dark" ? "#404040" : "#e5e7eb",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 8,
+              height: 85,
+              paddingBottom: 20,
+              paddingTop: 8,
             },
-            default: {},
+            default: {
+              backgroundColor: colorScheme === "dark" ? "#171717" : "#ffffff",
+              borderTopWidth: 1,
+              borderTopColor: colorScheme === "dark" ? "#404040" : "#e5e7eb",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 8,
+              height: 65,
+              paddingBottom: 8,
+              paddingTop: 8,
+            },
           }),
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "500",
+            marginTop: 4,
+          },
+          tabBarIconStyle: {
+            marginBottom: 2,
+          },
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="home-outline" size={24} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons 
+                name={focused ? "home" : "home-outline"} 
+                size={24} 
+                color={color} 
+              />
             ),
           }}
         />
@@ -39,8 +74,12 @@ const TabLayout = () => {
           name="expenses"
           options={{
             title: "Expenses",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="wallet-outline" size={24} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons 
+                name={focused ? "wallet" : "wallet-outline"} 
+                size={24} 
+                color={color} 
+              />
             ),
           }}
         />
@@ -48,8 +87,12 @@ const TabLayout = () => {
           name="chores"
           options={{
             title: "Chores",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome name="tasks" size={23} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons 
+                name={focused ? "checkmark-circle" : "checkmark-circle-outline"} 
+                size={24} 
+                color={color} 
+              />
             ),
           }}
         />
@@ -57,8 +100,12 @@ const TabLayout = () => {
           name="rewards"
           options={{
             title: "Rewards",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="gift-outline" size={24} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons 
+                name={focused ? "gift" : "gift-outline"} 
+                size={24} 
+                color={color} 
+              />
             ),
           }}
         />
@@ -66,8 +113,12 @@ const TabLayout = () => {
           name="settings"
           options={{
             title: "Settings",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="settings-outline" size={24} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons 
+                name={focused ? "settings" : "settings-outline"} 
+                size={24} 
+                color={color} 
+              />
             ),
           }}
         />
