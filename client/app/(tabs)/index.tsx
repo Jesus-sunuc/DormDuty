@@ -68,7 +68,7 @@ const RoomList = ({
                       <Ionicons name="home" size={20} color="#3b82f6" />
                     </View>
                     <View className="flex-1">
-                      <ThemedText className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                      <ThemedText className="text-lg font-bold text-gray-900 dark:text-gray-300 mb-1">
                         {room.name}
                       </ThemedText>
                       <View className="flex-row items-center">
@@ -183,7 +183,7 @@ const HomeScreen = () => {
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
           <View className="flex-row items-center justify-between mt-4">
             <View className="flex-1">
-              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
                 Your Apartments
               </ThemedText>
               <View className="flex-row items-center">

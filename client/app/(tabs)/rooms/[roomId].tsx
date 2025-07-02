@@ -67,7 +67,7 @@ const RoomChoresScreen = () => {
           </View>
           
           <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
               Room #{roomId}
             </ThemedText>
             <View className="flex-row items-center">
@@ -127,7 +127,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
           className="mb-4"
         >
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-neutral-800">
-            <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-white">
+            <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
               {chore.name}
             </ThemedText>
             

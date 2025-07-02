@@ -16,7 +16,7 @@ export default function ChoresScreen() {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center justify-between mb-4 mt-5">
             <View className="flex-1">
               <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                 Your Tasks
@@ -25,7 +25,7 @@ export default function ChoresScreen() {
           </View>
           
           <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
               My Chores
             </ThemedText>
             <View className="flex-row items-center">
@@ -64,7 +64,7 @@ export default function ChoresScreen() {
                         />
                         
                         <View className="flex-1 p-5">
-                          <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-white">
+                          <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
                             {chore.name}
                           </ThemedText>
                           

@@ -109,7 +109,7 @@ const ChoreDetailsScreen = () => {
           </View>
           
           <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
               {chore?.name || "Unnamed Chore"}
             </ThemedText>
             <View className="flex-row items-center">
