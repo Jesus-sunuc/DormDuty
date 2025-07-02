@@ -23,10 +23,7 @@ const ChoreDetailsScreen = () => {
   const { data: members = [] } = useRoomMembersQuery(effectiveRoomId || "");
 
   const memberMap = new Map(
-    (members as unknown as [number, string, number][]).map(([userId, name]) => [
-      userId,
-      name,
-    ])
+    members.map((member) => [member.user_id, member.name])
   );
 
   const handleBack = () => {
