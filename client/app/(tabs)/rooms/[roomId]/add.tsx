@@ -161,7 +161,7 @@ const AddChoreScreen = () => {
           </View>
           
           <View>
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
               Create Chore
             </ThemedText>
             <View className="flex-row items-center">
@@ -196,7 +196,7 @@ const AddChoreScreen = () => {
                 <Picker
                   selectedValue={assignedTo}
                   onValueChange={(value) => setAssignedTo(value)}
-                  style={{ color: "#374151" }}
+                  style={{ color: "#9ca3af" }}
                   dropdownIconColor="#9ca3af"
                 >
                   <Picker.Item
@@ -223,7 +223,7 @@ const AddChoreScreen = () => {
                 <Picker
                   selectedValue={frequency}
                   onValueChange={(itemValue) => setFrequency(itemValue)}
-                  style={{ color: "#374151" }}
+                  style={{ color: "#9ca3af" }}
                   dropdownIconColor="#9ca3af"
                 >
                   {frequencyOptions.map((option) => (
@@ -270,7 +270,7 @@ const AddChoreScreen = () => {
                 <Picker
                   selectedValue={dayOfWeek}
                   onValueChange={(itemValue) => setDayOfWeek(itemValue)}
-                  style={{ color: "#374151" }}
+                  style={{ color: "#9ca3af" }}
                   dropdownIconColor="#9ca3af"
                 >
                   {daysOfWeek.map((day, index) => (
