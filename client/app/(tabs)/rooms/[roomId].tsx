@@ -51,18 +51,42 @@ const RoomChoresScreen = () => {
 
   return (
     <LoadingAndErrorHandling>
-      <View className="flex-1 bg-white dark:bg-black">
-        <View className="flex-row justify-between items-center px-6 mt-12 py-4 border-b-2 border-gray-200 dark:border-gray-500 bg-white dark:bg-black">
-          <TouchableOpacity onPress={() => router.push('/')}>
-            <Ionicons name="arrow-back" size={24} color="#9ca3af" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push(`/rooms/${roomId}/add`)}
-            className="bg-customGreen-500 p-2 rounded-full"
-            activeOpacity={0.8}
-          >
-            <Ionicons name="add" size={18} color="white" />
-          </TouchableOpacity>
+      <View className="flex-1 bg-gray-50 dark:bg-black">
+        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+          <View className="flex-row items-center justify-between mb-4">
+            <TouchableOpacity 
+              onPress={() => router.push('/')} 
+              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+            >
+              <Ionicons name="arrow-back" size={20} color="#6b7280" />
+            </TouchableOpacity>
+            
+            <View className="flex-1 mx-4">
+              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Room Chores
+              </ThemedText>
+            </View>
+            
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              className="w-10 h-10 rounded-full bg-green-500 items-center justify-center shadow-md"
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+          
+          <View className="mt-2">
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              Room #{roomId}
+            </ThemedText>
+            <View className="flex-row items-center">
+              <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                Manage and track chores
+              </ThemedText>
+            </View>
+          </View>
         </View>
 
         <ParallaxScrollViewY>
@@ -90,9 +114,15 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
 
   if (!chores.length) {
     return (
-      <ThemedText className="text-center text-gray-400">
-        No chores in this room yet.
-      </ThemedText>
+      <View className="flex-1 items-center justify-center px-6 py-20">
+        <Ionicons name="clipboard-outline" size={64} color="#9ca3af" />
+        <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+          No chores yet
+        </ThemedText>
+        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+          Add your first chore to get started with room management
+        </ThemedText>
+      </View>
     );
   }
 
@@ -104,43 +134,59 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   );
 
   return (
-    <>
+    <View className="px-6 pt-6">
       {chores.map((chore) => (
         <Pressable
           key={chore.choreId}
           onPress={() =>
             router.push(`/chore-details/${chore.choreId}?roomId=${roomId}`)
           }
+          className="mb-4"
         >
-          <Card>
-            <ThemedText className="text-lg font-semibold mb-2 font-grotesk dark:text-gray-100">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-white">
               {chore.name}
             </ThemedText>
-            <View className="flex-row justify-between mb-1">
-              <View className="flex-row items-center space-x-1">
-                <Ionicons name="time-outline" size={16} color="#9ca3af" />
-                <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
-                  Last completed:
+            
+            <View className="space-y-2">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center">
+                  <View className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-2">
+                    <Ionicons name="time-outline" size={12} color="#f59e0b" />
+                  </View>
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    Last completed:
+                  </ThemedText>
+                </View>
+                <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {formatDate(chore.lastCompleted)}
                 </ThemedText>
               </View>
-              <ThemedText className="text-sm font-medium dark:text-gray-100">
-                {formatDate(chore.lastCompleted)}
-              </ThemedText>
-            </View>
-            <View className="flex-row justify-between">
-              <View className="flex-row items-center space-x-1">
-                <Ionicons name="person-outline" size={16} color="#9ca3af" />
-                <ThemedText className="text-sm text-muted dark:text-gray-300 ms-1">
-                  Assigned to:
-                </ThemedText>
+              
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center">
+                  <View className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-2">
+                    <Ionicons name="person-outline" size={12} color="#3b82f6" />
+                  </View>
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    Assigned to:
+                  </ThemedText>
+                </View>
+                <View className="flex-row items-center">
+                  <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                  <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
+                  </ThemedText>
+                </View>
               </View>
-              <ThemedText className="text-sm font-medium dark:text-gray-100">
-                {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
-              </ThemedText>
             </View>
-          </Card>
+            
+            <View className="absolute top-5 right-5">
+              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+            </View>
+          </View>
         </Pressable>
       ))}
-    </>
+    </View>
   );
 };
