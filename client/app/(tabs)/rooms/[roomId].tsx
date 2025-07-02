@@ -1,16 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import { useAddChoreMutation, useChoresByRoomQuery } from "@/hooks/choreHooks";
+import { useChoresByRoomQuery } from "@/hooks/choreHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { View, Pressable, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Card } from "@/components/Card";
 import { formatDate } from "../chores";
-import { useState } from "react";
-import { toastError, toastSuccess } from "@/components/ToastService";
-import { ChoreModal } from "@/components/chores/ChoreModal";
-import { ChoreCreateRequest } from "@/models/Chore";
-import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
@@ -18,36 +12,6 @@ const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
 
   const router = useRouter();
-  const { user } = useAuth();
-
-  const [isModalVisible, setModalVisible] = useState(false);
-  const { mutate: addChore, isPending } = useAddChoreMutation();
-
-  const handleAddChore = (chore: Partial<ChoreCreateRequest>) => {
-    if (!roomId || !chore.name) return;
-
-    addChore(
-      {
-        roomId: parseInt(roomId),
-        name: chore.name,
-        frequency: chore.frequency ?? "One Time",
-        frequencyValue: chore.frequencyValue,
-        dayOfWeek: chore.dayOfWeek,
-        timing: chore.timing,
-        description: chore.description,
-        startDate: chore.startDate,
-        assignedTo: user?.userId ?? 0,
-        isActive: chore.isActive ?? true,
-      },
-      {
-        onSuccess: () => {
-          toastSuccess("Chore added!");
-          setModalVisible(false);
-        },
-        onError: () => toastError("Failed to add chore"),
-      }
-    );
-  };
 
   return (
     <LoadingAndErrorHandling>
@@ -68,7 +32,7 @@ const RoomChoresScreen = () => {
             </View>
             
             <TouchableOpacity
-              onPress={() => setModalVisible(true)}
+              onPress={() => router.push(`/rooms/${roomId}/add`)}
               className="w-10 h-10 rounded-full bg-green-500 items-center justify-center shadow-md"
               activeOpacity={0.8}
             >
@@ -92,13 +56,6 @@ const RoomChoresScreen = () => {
         <ParallaxScrollViewY>
           <ChoreList roomId={roomId} />
         </ParallaxScrollViewY>
-
-        <ChoreModal
-          visible={isModalVisible}
-          onClose={() => setModalVisible(false)}
-          onSubmit={handleAddChore}
-          isPending={isPending}
-        />
       </View>
     </LoadingAndErrorHandling>
   );
