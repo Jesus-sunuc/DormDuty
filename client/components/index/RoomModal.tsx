@@ -22,7 +22,7 @@ export const RoomModal = ({
   const [name, setName] = useState(defaultRoomName);
 
   useEffect(() => {
-    if (visible) setName(defaultRoomName); // Reset when reopened
+    if (visible) setName(defaultRoomName);
   }, [visible, defaultRoomName]);
 
   const handleSubmit = () => {
@@ -32,30 +32,56 @@ export const RoomModal = ({
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 justify-center items-center bg-black/70 px-6">
-        <View className="w-full bg-white dark:bg-neutral-900 rounded-xl p-5">
-          <ThemedText className="text-lg font-semibold mb-3 dark:text-gray-300">
-            {submitLabel} Room
-          </ThemedText>
+      <View className="flex-1 justify-center items-center bg-black/50 px-6">
+        <View className="w-full bg-white dark:bg-neutral-900 rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-neutral-800">
+          <View className="mb-6">
+            <ThemedText className="text-xl font-bold text-gray-900 dark:text-white text-center">
+              {submitLabel} Room
+            </ThemedText>
+            <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center mt-1">
+              {submitLabel === "Create" ? "Create a new apartment space" : "Update apartment details"}
+            </ThemedText>
+          </View>
 
-          <TextInput
-            placeholder="Room name"
-            placeholderTextColor="#9ca3af"
-            className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-black dark:text-white"
-            value={name}
-            onChangeText={setName}
-          />
+          <View className="mb-6">
+            <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Room Name
+            </ThemedText>
+            <TextInput
+              placeholder="Enter room name"
+              placeholderTextColor="#9ca3af"
+              className="bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 text-lg text-black dark:text-white shadow-sm"
+              value={name}
+              onChangeText={setName}
+              autoFocus
+            />
+          </View>
 
-          <View className="flex-row justify-end mt-4 space-x-2">
-            <TouchableOpacity onPress={onClose} className="px-4 py-2">
-              <ThemedText className="text-gray-500">Cancel</ThemedText>
+          <View className="flex-row space-x-3">
+            <TouchableOpacity 
+              onPress={onClose} 
+              className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-2xl py-4 border border-gray-200 dark:border-neutral-700"
+            >
+              <ThemedText className="text-center text-gray-600 dark:text-gray-400 font-medium">
+                Cancel
+              </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleSubmit}
-              disabled={isPending}
-              className="px-4 py-2 bg-customGreen-600 rounded-xl"
+              disabled={isPending || !name.trim()}
+              className={`flex-1 rounded-2xl py-4 shadow-md ${
+                isPending || !name.trim()
+                  ? 'bg-gray-300 dark:bg-neutral-700'
+                  : 'bg-green-500'
+              }`}
             >
-              <ThemedText className="text-white">{submitLabel}</ThemedText>
+              <ThemedText className={`text-center font-medium ${
+                isPending || !name.trim()
+                  ? 'text-gray-500'
+                  : 'text-white'
+              }`}>
+                {isPending ? 'Saving...' : submitLabel}
+              </ThemedText>
             </TouchableOpacity>
           </View>
         </View>
