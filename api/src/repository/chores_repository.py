@@ -16,6 +16,15 @@ class ChoreRepository:
         """
         return run_sql(sql, (user_id,), output_class=Chore)
     
+    def get_chores_assigned_to_user(self, user_id: int):
+        sql = """
+            SELECT c.*
+            FROM chore c
+            JOIN room_membership rm ON c.assigned_to = rm.membership_id
+            WHERE rm.user_id = %s AND rm.is_active = TRUE
+        """
+        return run_sql(sql, (user_id,), output_class=Chore)
+    
     def get_chores_by_room_id(self, room_id: int):
         sql = "SELECT * FROM chore WHERE room_id = %s"
         return run_sql(sql, (room_id,), output_class=Chore)
@@ -49,4 +58,4 @@ class ChoreRepository:
 
         result = run_sql(sql, params)
         return {"chore_id": result[0][0]}
-    
+

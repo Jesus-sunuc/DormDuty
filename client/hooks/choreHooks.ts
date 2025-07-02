@@ -35,6 +35,19 @@ export const useChoresByUserQuery = () => {
   });
 };
 
+export const useChoresAssignedToUserQuery = () => {
+  const { user } = useAuth();
+  const userId = user?.userId;
+
+  return useSuspenseQuery({
+    queryKey: ["chores", "assigned-to-user", userId],
+    queryFn: async (): Promise<Chore[]> => {
+      const res = await axiosClient.get(`/api/chores/assigned-to-user/${userId}`);
+      return res.data;
+    },
+  });
+};
+
 export const useChoresByRoomQuery = (roomId: string) => {
   return useSuspenseQuery({
     queryKey: choresKeys.byRoom(roomId),
@@ -64,6 +77,10 @@ export const useAddChoreMutation = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: choresKeys.byRoom(variables.roomId.toString()),
+      });
+      // Also invalidate the assigned chores query
+      queryClient.invalidateQueries({
+        queryKey: ["chores", "assigned-to-user"],
       });
     },
   });

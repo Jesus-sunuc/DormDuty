@@ -1,4 +1,4 @@
-import { useChoresByUserQuery } from "@/hooks/choreHooks";
+import { useChoresAssignedToUserQuery } from "@/hooks/choreHooks";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { View } from "react-native";
 import { formatDistance } from "date-fns";
@@ -10,7 +10,7 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 export default function ChoresScreen() {
-  const { data: chores = [] } = useChoresByUserQuery();
+  const { data: chores = [] } = useChoresAssignedToUserQuery();
 
   return (
     <LoadingAndErrorHandling>
