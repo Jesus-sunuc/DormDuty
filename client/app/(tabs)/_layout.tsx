@@ -44,16 +44,16 @@ const TabLayout = () => {
               elevation: 8,
               height: 65,
               paddingBottom: 8,
-              paddingTop: 8,
+              paddingTop: 4,
             },
           }),
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: "500",
-            marginTop: 4,
+            marginTop: 2,
           },
           tabBarIconStyle: {
-            marginBottom: 2,
+            marginBottom: 0,
           },
         }}
       >

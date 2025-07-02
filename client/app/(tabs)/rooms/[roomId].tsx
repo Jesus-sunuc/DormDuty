@@ -2,15 +2,18 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useChoresByRoomQuery } from "@/hooks/choreHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import { View, Pressable, TouchableOpacity } from "react-native";
+import { View, Pressable, TouchableOpacity, useColorScheme } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@/constants/Colors";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   const router = useRouter();
 
@@ -36,7 +39,7 @@ const RoomChoresScreen = () => {
               onPress={() => router.push(`/rooms/${roomId}/add`)}
               activeOpacity={0.8}
               style={{
-                shadowColor: "#3b82f6",
+                shadowColor: colors.shadowColor,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 6,
@@ -45,7 +48,7 @@ const RoomChoresScreen = () => {
               }}
             >
               <LinearGradient
-                colors={["#3b82f6", "#1d4ed8", "#1e40af"]}
+                colors={colors.gradientPrimary}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{

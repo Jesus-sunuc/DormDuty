@@ -4,6 +4,7 @@ import { Text, Pressable, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 const SettingsScreen = () => {
   const { user, users, switchUser } = useAuth();
@@ -12,15 +13,9 @@ const SettingsScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4">
-            <View className="flex-1">
-              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                App Configuration
-              </ThemedText>
-            </View>
-          </View>
+
           
-          <View className="mt-2">
+          <View className="mt-7">
             <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
               Settings
             </ThemedText>
@@ -33,12 +28,9 @@ const SettingsScreen = () => {
           </View>
         </View>
 
-        <ParallaxScrollView>
+        <ParallaxScrollViewY>
           <View className="px-6 pt-6">
             <View className="mb-6">
-              <ThemedText className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Developer Settings
-              </ThemedText>
               
               <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-neutral-800">
                 <View className="mb-4">
@@ -92,7 +84,7 @@ const SettingsScreen = () => {
               </View>
             </View>
           </View>
-        </ParallaxScrollView>
+        </ParallaxScrollViewY>
       </View>
     </LoadingAndErrorHandling>
   );

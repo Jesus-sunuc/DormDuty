@@ -10,7 +10,7 @@ import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, useColorScheme } from "react-native";
 import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/user/useAuth";
 import { LinearGradient } from "expo-linear-gradient";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
+import { Colors } from "@/constants/Colors";
 
 const RoomList = ({
   rooms,
@@ -101,6 +102,8 @@ const RoomList = ({
 
 const HomeScreen = () => {
   const { data: rooms } = useRoomsByUserQuery();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
@@ -198,7 +201,7 @@ const HomeScreen = () => {
               }}
               activeOpacity={0.8}
               style={{
-                shadowColor: "#3b82f6",
+                shadowColor: colors.shadowColor,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,
                 shadowRadius: 8,
@@ -207,7 +210,7 @@ const HomeScreen = () => {
               }}
             >
               <LinearGradient
-                colors={["#3b82f6", "#1d4ed8", "#1e40af"]}
+                colors={colors.gradientPrimary}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
@@ -217,7 +220,7 @@ const HomeScreen = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   borderWidth: 1,
-                  borderColor: "rgba(59, 130, 246, 0.3)",
+                  borderColor: colors.borderAccent,
                 }}
               >
                 <Ionicons name="add" size={22} color="white" />

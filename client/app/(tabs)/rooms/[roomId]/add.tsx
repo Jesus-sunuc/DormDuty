@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { View, TextInput, TouchableOpacity, Text } from "react-native";
+import { View, TextInput, TouchableOpacity, Text, useColorScheme } from "react-native";
 import { useAddChoreMutation } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -13,6 +13,7 @@ import { Platform } from "react-native";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { LinearGradient } from "expo-linear-gradient";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
+import { Colors } from "@/constants/Colors";
 
 const frequencyOptions = [
   "Choose a day",
@@ -52,6 +53,8 @@ const AddChoreScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
   const { data: members = [] } = useRoomMembersQuery(roomId);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   const { mutate: addChore, isPending } = useAddChoreMutation();
 
@@ -131,7 +134,7 @@ const AddChoreScreen = () => {
               onPress={handleSubmit}
               activeOpacity={0.8}
               style={{
-                shadowColor: "#3b82f6",
+                shadowColor: colors.shadowColor,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.2,
                 shadowRadius: 4,
@@ -140,7 +143,7 @@ const AddChoreScreen = () => {
               }}
             >
               <LinearGradient
-                colors={['#3b82f6', '#1d4ed8', '#1e40af']}
+                colors={colors.gradientPrimary}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
