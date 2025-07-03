@@ -1,5 +1,5 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { StyleSheet, View, Text } from "react-native";
+import { View, Text } from "react-native";
 
 const RewardsScreen = () => {
   return (

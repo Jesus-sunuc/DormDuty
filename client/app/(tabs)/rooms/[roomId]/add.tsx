@@ -3,7 +3,6 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, TextInput, TouchableOpacity, Text, useColorScheme } from "react-native";
 import { useAddChoreMutation } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Picker } from "@react-native-picker/picker";
 import { useAuth } from "@/hooks/user/useAuth";

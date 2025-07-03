@@ -1,4 +1,3 @@
-import { Card } from "@/components/Card";
 import { ThemedText } from "@/components/ThemedText";
 import {
   useAddRoomMutation,
