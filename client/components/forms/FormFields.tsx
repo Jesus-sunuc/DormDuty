@@ -108,6 +108,21 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     }
   };
 
+  const getDateValue = (): Date => {
+    if (value) {
+      try {
+        const dateValue = typeof value === 'string' ? value : String(value);
+        const date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+          return date;
+        }
+      } catch (error) {
+        console.warn('Error parsing date value:', error);
+      }
+    }
+    return new Date();
+  };
+
   return (
     <FormField label={label}>
       <TouchableOpacity
@@ -115,13 +130,13 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
         className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
       >
         <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {value || placeholder}
+          {(value ? String(value) : placeholder)}
         </Text>
       </TouchableOpacity>
 
       {showPicker && (
         <DateTimePicker
-          value={value ? new Date(value) : new Date()}
+          value={getDateValue()}
           mode="date"
           display={Platform.OS === "ios" ? "inline" : "default"}
           onChange={handleDateChange}
@@ -145,14 +160,25 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = ({
   placeholder,
 }) => {
   const [showPicker, setShowPicker] = React.useState(false);
-  const [selectedTime, setSelectedTime] = React.useState<Date | undefined>(undefined);
 
   const handleTimeChange = (event: any, selected: Date | undefined) => {
     setShowPicker(false);
     if (selected) {
-      setSelectedTime(selected);
       onTimeChange(selected.toTimeString().slice(0, 5));
     }
+  };
+
+  // Create a safe time value - convert HH:MM to a Date object for today
+  const getTimeValue = (): Date => {
+    if (value && value.includes(':')) {
+      const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
+      if (!isNaN(hours) && !isNaN(minutes) && hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+        return date;
+      }
+    }
+    return new Date(); // Fallback to current time
   };
 
   return (
@@ -162,13 +188,13 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = ({
         className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
       >
         <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {value || placeholder}
+          {(value ? String(value) : placeholder)}
         </Text>
       </TouchableOpacity>
 
       {showPicker && (
         <DateTimePicker
-          value={selectedTime ?? new Date()}
+          value={getTimeValue()}
           mode="time"
           is24Hour={true}
           display={Platform.OS === "ios" ? "spinner" : "default"}

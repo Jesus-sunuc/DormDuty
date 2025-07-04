@@ -84,3 +84,57 @@ export const useAddChoreMutation = () => {
     },
   });
 };
+
+export const useUpdateChoreMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      choreId,
+      chore,
+    }: {
+      choreId: number;
+      chore: ChoreCreateRequest;
+    }): Promise<Chore> => {
+      const res = await axiosClient.put(`/api/chores/${choreId}/update`, chore);
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: choresKeys.byId(variables.choreId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: choresKeys.byRoom(variables.chore.roomId.toString()),
+      });
+      queryClient.invalidateQueries({
+        queryKey: choresKeys.all,
+      });
+      queryClient.invalidateQueries({
+        predicate: (query) => 
+          query.queryKey[0] === "chores" && query.queryKey[1] === "assigned-to-user",
+      });
+    },
+  });
+};
+
+export const useDeleteChoreMutation = () => {
+  return useMutation({
+    mutationFn: async (choreId: number): Promise<void> => {
+      await axiosClient.post(`/api/chores/${choreId}/delete`);
+    },
+    onSuccess: (_, choreId) => {
+      // Invalidate the specific chore
+      queryClient.invalidateQueries({
+        queryKey: choresKeys.byId(choreId),
+      });
+      // Invalidate all chores queries to refresh the lists
+      queryClient.invalidateQueries({
+        queryKey: choresKeys.all,
+      });
+      // Invalidate all room-based queries
+      queryClient.invalidateQueries({
+        predicate: (query) => 
+          query.queryKey[0] === "chores" && 
+          (query.queryKey[1] === "by-room" || query.queryKey[1] === "assigned-to-user"),
+      });
+    },
+  });
+};

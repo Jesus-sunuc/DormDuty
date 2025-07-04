@@ -40,3 +40,13 @@ def get_chore(chore_id: int):
 @error_handler("Error adding chore")
 def add_chore(chore: ChoreCreateRequest):
     return repo.add_chore(chore)
+
+@router.put("/{chore_id}/update")
+@error_handler("Error updating chore")
+def update_chore(chore_id: int, chore: ChoreCreateRequest):
+    return repo.update_chore(chore_id, chore)
+
+@router.post("/{chore_id}/delete")
+@error_handler("Error deleting chore")
+def delete_chore(chore_id: int):
+    return repo.delete_chore(chore_id)

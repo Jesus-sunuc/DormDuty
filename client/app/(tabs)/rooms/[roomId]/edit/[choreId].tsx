@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
-import { useAddChoreMutation } from "@/hooks/choreHooks";
+import { View, TouchableOpacity, Text } from "react-native";
+import { useUpdateChoreMutation, useChoreByIdQuery } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
+import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
@@ -10,22 +11,37 @@ import ParallaxScrollView from "@/components/ParallaxScrollViewY";
 import { AddChoreHeader } from "@/components/chores/AddChoreHeader";
 import { AddChoreForm } from "@/components/chores/AddChoreForm";
 import { validateChoreRequest } from "@/utils/choreUtils";
+import { toISODateString, toTimeString } from "@/utils/dateUtils";
 
-const AddChoreScreen = () => {
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+const EditChoreScreen = () => {
+  const { roomId, choreId } = useLocalSearchParams<{ roomId: string; choreId: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const { data: members = [] } = useRoomMembersQuery(roomId);
 
-  const { mutate: addChore, isPending } = useAddChoreMutation();
+  const choreIdNumber = choreId ? Number(choreId) : 0;
+  const { data: chore } = useChoreByIdQuery(choreIdNumber);
+  const { mutate: updateChore, isPending } = useUpdateChoreMutation();
 
-  const [name, setName] = useState("New Chore");
+  const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
   const [assignedTo, setAssignedTo] = useState<number | undefined>();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (chore) {
+      setName(chore.name || "");
+      setFrequency(chore.frequency || "");
+      setDayOfWeek(chore.dayOfWeek);
+      setTimingInput(toTimeString(chore.timing));
+      setAssignedTo(chore.assignedTo);
+      setStartDate(toISODateString(chore.startDate as any));
+      setDescription(chore.description);
+    }
+  }, [chore]);
 
   const formattedMembers = (
     members as unknown as [number, string, number][]
@@ -36,9 +52,9 @@ const AddChoreScreen = () => {
   }));
 
   const handleSubmit = () => {
-    if (!name.trim() || !roomId) return;
+    if (!name.trim() || !roomId || !choreId) return;
 
-    const choreRequest = {
+    const updateRequest = {
       roomId: parseInt(roomId),
       name: name.trim(),
       frequency,
@@ -47,27 +63,56 @@ const AddChoreScreen = () => {
       description: description?.trim(),
       startDate,
       assignedTo: assignedTo,
-      isActive: true,
+      isActive: chore?.isActive ?? true,
     };
 
-    // Validate the request
-    const validationErrors = validateChoreRequest(choreRequest);
+    const validationErrors = validateChoreRequest(updateRequest);
     if (validationErrors.length > 0) {
-      toastError(validationErrors[0]); // Show first validation error
+      toastError(validationErrors[0]);
       return;
     }
 
-    addChore(
-      choreRequest,
+    updateChore(
+      {
+        choreId: choreIdNumber,
+        chore: updateRequest,
+      },
       {
         onSuccess: () => {
-          toastSuccess("Chore added!");
+          toastSuccess("Chore updated successfully!");
           router.back();
         },
-        onError: () => toastError("Failed to add chore"),
+        onError: (error) => {
+          console.error("Error updating chore:", error);
+          toastError("Failed to update chore. Please try again.");
+        },
       }
     );
   };
+
+  if (!chore) {
+    return (
+      <LoadingAndErrorHandling>
+        <View className="flex-1 bg-gray-50 dark:bg-black">
+          <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+            <View className="flex-row items-center justify-between mb-4">
+              <TouchableOpacity 
+                onPress={() => router.back()}
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+              >
+                <Text className="text-gray-600 dark:text-gray-300 text-sm font-medium">✕</Text>
+              </TouchableOpacity>
+              <View className="flex-1 mx-4">
+                <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Loading...
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
 
   return (
     <LoadingAndErrorHandling>
@@ -77,6 +122,8 @@ const AddChoreScreen = () => {
           isPending={isPending}
           onBack={() => router.back()}
           onSave={handleSubmit}
+          isEdit={true}
+          choreName={chore.name}
         />
 
         <ParallaxScrollView>
@@ -105,4 +152,4 @@ const AddChoreScreen = () => {
   );
 };
 
-export default AddChoreScreen;
+export default EditChoreScreen;

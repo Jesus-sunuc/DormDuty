@@ -59,3 +59,29 @@ class ChoreRepository:
         result = run_sql(sql, params)
         return {"chore_id": result[0][0]}
 
+    def update_chore(self, chore_id: int, chore: ChoreCreateRequest):
+        sql = """
+            UPDATE chore
+            SET room_id = %s, name = %s, frequency = %s, frequency_value = %s,
+                day_of_week = %s, timing = %s, description = %s, start_date = %s,
+                assigned_to = %s, is_active = %s
+            WHERE chore_id = %s
+        """
+        params = (
+            chore.room_id,
+            chore.name,
+            chore.frequency,
+            chore.frequency_value,
+            chore.day_of_week,
+            chore.timing,
+            chore.description,
+            chore.start_date,
+            chore.assigned_to,
+            chore.is_active,
+            chore_id
+        )
+        run_sql(sql, params)
+
+    def delete_chore(self, chore_id: int):
+        sql = "DELETE FROM chore WHERE chore_id = %s"
+        run_sql(sql, (chore_id,))

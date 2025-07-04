@@ -15,6 +15,12 @@ export default function RoomsLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[roomId]/edit/[choreId]"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

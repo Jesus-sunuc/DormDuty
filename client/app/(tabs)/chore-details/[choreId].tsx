@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useChoreByIdQuery } from "@/hooks/choreHooks";
-import { View, Alert } from "react-native";
+import { useChoreByIdQuery, useDeleteChoreMutation } from "@/hooks/choreHooks";
+import { View } from "react-native";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollView from "@/components/ParallaxScrollViewY";
@@ -11,6 +11,7 @@ import { ChoreInfoCard } from "@/components/chores/ChoreInfoCard";
 import { ChoreDescriptionCard } from "@/components/chores/ChoreDescriptionCard";
 import { ChoreOptionsModal } from "@/components/chores/ChoreOptionsModal";
 import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
+import { toastError, toastSuccess } from "@/components/ToastService";
 
 const ChoreDetailsScreen = () => {
   const { choreId, roomId } = useLocalSearchParams<{
@@ -23,6 +24,7 @@ const ChoreDetailsScreen = () => {
 
   const choreIdNumber = choreId ? Number(choreId) : 0;
   const { data: chore } = useChoreByIdQuery(choreIdNumber);
+  const { mutate: deleteChore, isPending: isDeleting } = useDeleteChoreMutation();
 
   const effectiveRoomId =
     roomId || (chore?.roomId ? String(chore.roomId) : undefined);
@@ -45,8 +47,9 @@ const ChoreDetailsScreen = () => {
 
   const handleEdit = () => {
     setShowOptionsModal(false);
-    // TODO: Navigate to edit chore screen
-    Alert.alert("Edit Chore", "Edit functionality will be implemented soon");
+    if (chore && effectiveRoomId) {
+      router.push(`/rooms/${effectiveRoomId}/edit/${choreIdNumber}`);
+    }
   };
 
   const handleDelete = () => {
@@ -55,9 +58,20 @@ const ChoreDetailsScreen = () => {
   };
 
   const confirmDelete = () => {
-    setShowDeleteConfirmation(false);
-    // TODO: Implement delete chore mutation
-    Alert.alert("Delete", "Delete functionality will be implemented soon");
+    if (!chore) return;
+    
+    deleteChore(choreIdNumber, {
+      onSuccess: () => {
+        setShowDeleteConfirmation(false);
+        toastSuccess("Chore deleted successfully!");
+        handleBack();
+      },
+      onError: (error) => {
+        setShowDeleteConfirmation(false);
+        console.error("Error deleting chore:", error);
+        toastError("Failed to delete chore. Please try again.");
+      }
+    });
   };
 
   if (!chore) {
@@ -104,11 +118,11 @@ const ChoreDetailsScreen = () => {
 
         <ConfirmationModal
           visible={showDeleteConfirmation}
-          onClose={() => setShowDeleteConfirmation(false)}
+          onClose={() => !isDeleting && setShowDeleteConfirmation(false)}
           onConfirm={confirmDelete}
           title="Delete Chore"
           message={`Are you sure you want to delete "${chore?.name}"? This action cannot be undone.`}
-          confirmText="Delete"
+          confirmText={isDeleting ? "Deleting..." : "Delete"}
           cancelText="Cancel"
           destructive={true}
           icon="trash-outline"

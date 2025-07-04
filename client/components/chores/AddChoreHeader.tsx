@@ -9,6 +9,8 @@ interface AddChoreHeaderProps {
   isPending: boolean;
   onBack: () => void;
   onSave: () => void;
+  isEdit?: boolean;
+  choreName?: string;
 }
 
 export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
@@ -16,6 +18,8 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
   isPending,
   onBack,
   onSave,
+  isEdit = false,
+  choreName,
 }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -32,7 +36,7 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
         
         <View className="flex-1 mx-4">
           <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            New Chore
+            {isEdit ? "Edit Chore" : "New Chore"}
           </ThemedText>
         </View>
         
@@ -61,7 +65,7 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
             }}
           >
             <Text className="text-white font-semibold">
-              {isPending ? "Saving..." : "Save"}
+              {isPending ? (isEdit ? "Updating..." : "Saving...") : (isEdit ? "Update" : "Save")}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -69,12 +73,15 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
       
       <View>
         <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-          Create Chore
+          {isEdit ? "Edit Chore" : "Create Chore"}
         </ThemedText>
         <View className="flex-row items-center">
           <View className="w-2 h-2 rounded-full bg-orange-500 mr-2" />
           <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-            Add a new task to room #{roomId}
+            {isEdit 
+              ? `Editing "${choreName}" in room #${roomId}`
+              : `Add a new task to room #${roomId}`
+            }
           </ThemedText>
         </View>
       </View>
