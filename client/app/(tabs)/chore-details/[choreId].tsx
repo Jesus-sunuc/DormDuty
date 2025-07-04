@@ -8,6 +8,7 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { useState } from "react";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 
 const ChoreDetailsScreen = () => {
   const { choreId, roomId } = useLocalSearchParams<{
@@ -16,6 +17,7 @@ const ChoreDetailsScreen = () => {
   }>();
   const router = useRouter();
   const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const choreIdNumber = choreId ? Number(choreId) : 0;
   const { data: chore } = useChoreByIdQuery(choreIdNumber);
@@ -47,21 +49,13 @@ const ChoreDetailsScreen = () => {
 
   const handleDelete = () => {
     setShowOptionsModal(false);
-    Alert.alert(
-      "Delete Chore",
-      `Are you sure you want to delete "${chore?.name}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          style: "destructive",
-          onPress: () => {
-            // TODO: Implement delete chore mutation
-            Alert.alert("Delete", "Delete functionality will be implemented soon");
-          }
-        }
-      ]
-    );
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = () => {
+    setShowDeleteConfirmation(false);
+    // TODO: Implement delete chore mutation
+    Alert.alert("Delete", "Delete functionality will be implemented soon");
   };
 
   const days = [
@@ -291,6 +285,18 @@ const ChoreDetailsScreen = () => {
             </View>
           </TouchableOpacity>
         </Modal>
+
+        <ConfirmationModal
+          visible={showDeleteConfirmation}
+          onClose={() => setShowDeleteConfirmation(false)}
+          onConfirm={confirmDelete}
+          title="Delete Chore"
+          message={`Are you sure you want to delete "${chore?.name}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          destructive={true}
+          icon="trash-outline"
+        />
       </View>
     </LoadingAndErrorHandling>
   );

@@ -21,6 +21,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 
 const RoomList = ({
   rooms,
@@ -107,6 +108,8 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
   const [optionsRoom, setOptionsRoom] = useState<Room | null>(null);
+  const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const { mutate: addRoomMutate, isPending: addRoomIsPending } =
     useAddRoomMutation();
@@ -116,10 +119,10 @@ const HomeScreen = () => {
 
   const { user } = useAuth();
   const userId = user?.userId;
-  const roomId = optionsRoom?.roomId ?? 0;
+  const roomId = roomToDelete?.roomId ?? 0;
 
   const { data: membershipData } = useMembershipQuery(userId!, roomId, {
-    enabled: !!optionsRoom?.roomId && userId !== undefined,
+    enabled: !!roomToDelete?.roomId && userId !== undefined,
   });
 
   const handleAddRoom = (name: string) => {
@@ -153,25 +156,39 @@ const HomeScreen = () => {
   };
 
   const handleDeleteRoom = () => {
-    if (!optionsRoom || !membershipData) {
-      toastError("Couldn't confirm your membership");
+    if (optionsRoom) {
+      setRoomToDelete(optionsRoom);
+      setOptionsRoom(null);
+      setShowDeleteConfirmation(true);
+    }
+  };
 
+  const confirmDeleteRoom = () => {
+    if (!roomToDelete || !membershipData) {
+      toastError("Couldn't confirm your membership");
+      setShowDeleteConfirmation(false);
+      setRoomToDelete(null);
       return;
     }
 
     const { membershipId, role } = membershipData;
     deleteRoomMutate(
       {
-        roomId: optionsRoom.roomId,
+        roomId: roomToDelete.roomId,
         membershipId: membershipId,
         isAdmin: role === "admin",
       },
       {
         onSuccess: () => {
-          toastSuccess(`Room "${optionsRoom.name}" deleted`);
-          setOptionsRoom(null);
+          toastSuccess(`Room "${roomToDelete.name}" deleted`);
+          setShowDeleteConfirmation(false);
+          setRoomToDelete(null);
         },
-        onError: () => toastError("Failed to delete room"),
+        onError: () => {
+          toastError("Failed to delete room");
+          setShowDeleteConfirmation(false);
+          setRoomToDelete(null);
+        },
       }
     );
   };
@@ -256,6 +273,21 @@ const HomeScreen = () => {
             toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
           }
           onDelete={handleDeleteRoom}
+        />
+
+        <ConfirmationModal
+          visible={showDeleteConfirmation}
+          onClose={() => {
+            setShowDeleteConfirmation(false);
+            setRoomToDelete(null);
+          }}
+          onConfirm={confirmDeleteRoom}
+          title="Delete Room"
+          message={`Are you sure you want to delete "${roomToDelete?.name}"? This will permanently remove the room and all its chores. This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          destructive={true}
+          icon="home-outline"
         />
       </View>
     </LoadingAndErrorHandling>
