@@ -1,0 +1,180 @@
+import React from 'react';
+import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+interface FormFieldProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+export const FormField: React.FC<FormFieldProps> = ({ label, children }) => (
+  <View className="mb-6">
+    <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      {label}
+    </ThemedText>
+    {children}
+  </View>
+);
+
+interface TextInputFieldProps {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  multiline?: boolean;
+  numberOfLines?: number;
+  style?: any;
+}
+
+export const TextInputField: React.FC<TextInputFieldProps> = ({
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  multiline = false,
+  numberOfLines,
+  style,
+}) => (
+  <FormField label={label}>
+    <TextInput
+      placeholder={placeholder}
+      placeholderTextColor="#9ca3af"
+      value={value}
+      onChangeText={onChangeText}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
+      textAlignVertical={multiline ? "top" : "center"}
+      className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 text-lg text-black dark:text-white shadow-sm"
+      style={style}
+    />
+  </FormField>
+);
+
+interface PickerFieldProps {
+  label: string;
+  selectedValue: any;
+  onValueChange: (value: any) => void;
+  items: Array<{ label: string; value: any; key?: string }>;
+}
+
+export const PickerField: React.FC<PickerFieldProps> = ({
+  label,
+  selectedValue,
+  onValueChange,
+  items,
+}) => (
+  <FormField label={label}>
+    <View className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl overflow-hidden shadow-sm">
+      <Picker
+        selectedValue={selectedValue}
+        onValueChange={onValueChange}
+        style={{ color: "#9ca3af" }}
+        dropdownIconColor="#9ca3af"
+      >
+        {items.map((item) => (
+          <Picker.Item
+            key={item.key || item.value}
+            label={item.label}
+            value={item.value}
+          />
+        ))}
+      </Picker>
+    </View>
+  </FormField>
+);
+
+interface DatePickerFieldProps {
+  label: string;
+  value: string | undefined;
+  onDateChange: (date: string) => void;
+  placeholder: string;
+}
+
+export const DatePickerField: React.FC<DatePickerFieldProps> = ({
+  label,
+  value,
+  onDateChange,
+  placeholder,
+}) => {
+  const [showPicker, setShowPicker] = React.useState(false);
+
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowPicker(Platform.OS === "ios");
+    if (selectedDate) {
+      const iso = selectedDate.toISOString().split("T")[0];
+      onDateChange(iso);
+    }
+  };
+
+  return (
+    <FormField label={label}>
+      <TouchableOpacity
+        onPress={() => setShowPicker(true)}
+        className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
+      >
+        <Text className="text-gray-700 dark:text-gray-400 text-lg">
+          {value || placeholder}
+        </Text>
+      </TouchableOpacity>
+
+      {showPicker && (
+        <DateTimePicker
+          value={value ? new Date(value) : new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "inline" : "default"}
+          onChange={handleDateChange}
+        />
+      )}
+    </FormField>
+  );
+};
+
+interface TimePickerFieldProps {
+  label: string;
+  value: string;
+  onTimeChange: (time: string) => void;
+  placeholder: string;
+}
+
+export const TimePickerField: React.FC<TimePickerFieldProps> = ({
+  label,
+  value,
+  onTimeChange,
+  placeholder,
+}) => {
+  const [showPicker, setShowPicker] = React.useState(false);
+  const [selectedTime, setSelectedTime] = React.useState<Date | undefined>(undefined);
+
+  const handleTimeChange = (event: any, selected: Date | undefined) => {
+    setShowPicker(false);
+    if (selected) {
+      setSelectedTime(selected);
+      onTimeChange(selected.toTimeString().slice(0, 5));
+    }
+  };
+
+  return (
+    <FormField label={label}>
+      <TouchableOpacity
+        onPress={() => setShowPicker(true)}
+        className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
+      >
+        <Text className="text-gray-700 dark:text-gray-400 text-lg">
+          {value || placeholder}
+        </Text>
+      </TouchableOpacity>
+
+      {showPicker && (
+        <DateTimePicker
+          value={selectedTime ?? new Date()}
+          mode="time"
+          is24Hour={true}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={handleTimeChange}
+        />
+      )}
+    </FormField>
+  );
+};
