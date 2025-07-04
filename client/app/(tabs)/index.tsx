@@ -8,7 +8,7 @@ import {
 import { getRoomColor } from "@/utils/colorUtils";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TouchableOpacity, View, useColorScheme } from "react-native";
 import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
@@ -121,9 +121,26 @@ const HomeScreen = () => {
   const userId = user?.userId;
   const roomId = roomToDelete?.roomId ?? 0;
 
+  // Only query membership when we actually need to delete a room
   const { data: membershipData } = useMembershipQuery(userId!, roomId, {
-    enabled: !!roomToDelete?.roomId && userId !== undefined,
+    enabled: !!roomToDelete?.roomId && !!userId && showDeleteConfirmation,
   });
+
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Cleanup any pending state when component unmounts
+      if (showDeleteConfirmation) {
+        setShowDeleteConfirmation(false);
+      }
+      if (roomToDelete) {
+        setRoomToDelete(null);
+      }
+      if (optionsRoom) {
+        setOptionsRoom(null);
+      }
+    };
+  }, []);
 
   const handleAddRoom = (name: string) => {
     if (userId === undefined) {
@@ -138,7 +155,10 @@ const HomeScreen = () => {
           toastSuccess(`Room "${name}" created successfully`);
           setModalVisible(false);
         },
-        onError: () => toastError("Failed to create room"),
+        onError: (error) => {
+          console.error("Failed to create room:", error);
+          toastError("Failed to create room");
+        },
       }
     );
   };
@@ -151,7 +171,10 @@ const HomeScreen = () => {
         setRoomToEdit(null);
         setModalVisible(false);
       },
-      onError: () => toastError("Failed to update room"),
+      onError: (error) => {
+        console.error("Failed to update room:", error);
+        toastError("Failed to update room");
+      },
     });
   };
 
@@ -165,6 +188,10 @@ const HomeScreen = () => {
 
   const confirmDeleteRoom = () => {
     if (!roomToDelete || !membershipData) {
+      console.warn("Delete room failed: missing room or membership data", {
+        roomToDelete: !!roomToDelete,
+        membershipData: !!membershipData,
+      });
       toastError("Couldn't confirm your membership");
       setShowDeleteConfirmation(false);
       setRoomToDelete(null);
@@ -184,7 +211,8 @@ const HomeScreen = () => {
           setShowDeleteConfirmation(false);
           setRoomToDelete(null);
         },
-        onError: () => {
+        onError: (error) => {
+          console.error("Failed to delete room:", error);
           toastError("Failed to delete room");
           setShowDeleteConfirmation(false);
           setRoomToDelete(null);

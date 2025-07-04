@@ -232,7 +232,7 @@ const ChoreDetailsScreen = () => {
         <Modal
           visible={showOptionsModal}
           transparent={true}
-          animationType="slide"
+          animationType="fade"
           onRequestClose={() => setShowOptionsModal(false)}
         >
           <TouchableOpacity

@@ -31,7 +31,7 @@ export const RoomModal = ({
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 justify-center items-center bg-black/50 px-6">
         <View className="w-full bg-white dark:bg-neutral-900 rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-neutral-800">
           <View className="mb-6">
