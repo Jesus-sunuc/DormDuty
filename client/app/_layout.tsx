@@ -24,6 +24,7 @@ import { View } from "react-native";
 import { useEffect } from "react";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "@/hooks/user/useAuth";
+import { toastConfig } from "@/components/ToastService";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -64,7 +65,7 @@ export default function RootLayout() {
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               </Stack>
-              <Toast />
+              <Toast config={toastConfig} />
               <StatusBar style="auto" />
             </LoadingAndErrorHandling>
           </ThemeProvider>

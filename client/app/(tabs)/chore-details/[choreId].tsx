@@ -1,12 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useChoreByIdQuery } from "@/hooks/choreHooks";
 import { ThemedText } from "@/components/ThemedText";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Modal, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
+import { useState } from "react";
 
 const ChoreDetailsScreen = () => {
   const { choreId, roomId } = useLocalSearchParams<{
@@ -14,6 +15,7 @@ const ChoreDetailsScreen = () => {
     roomId?: string;
   }>();
   const router = useRouter();
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
 
   const choreIdNumber = choreId ? Number(choreId) : 0;
   const { data: chore } = useChoreByIdQuery(choreIdNumber);
@@ -35,6 +37,31 @@ const ChoreDetailsScreen = () => {
     } else {
       router.push('/chores');
     }
+  };
+
+  const handleEdit = () => {
+    setShowOptionsModal(false);
+    // TODO: Navigate to edit chore screen
+    Alert.alert("Edit Chore", "Edit functionality will be implemented soon");
+  };
+
+  const handleDelete = () => {
+    setShowOptionsModal(false);
+    Alert.alert(
+      "Delete Chore",
+      `Are you sure you want to delete "${chore?.name}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => {
+            // TODO: Implement delete chore mutation
+            Alert.alert("Delete", "Delete functionality will be implemented soon");
+          }
+        }
+      ]
+    );
   };
 
   const days = [
@@ -102,7 +129,10 @@ const ChoreDetailsScreen = () => {
               </ThemedText>
             </View>
             
-            <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center opacity-50">
+            <TouchableOpacity 
+              onPress={() => setShowOptionsModal(true)}
+              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+            >
               <Ionicons name="ellipsis-horizontal" size={20} color="#6b7280" />
             </TouchableOpacity>
           </View>
@@ -204,6 +234,64 @@ const ChoreDetailsScreen = () => {
             )}
           </View>
         </ParallaxScrollViewY>
+
+        {/* Options Modal */}
+        <Modal
+          visible={showOptionsModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowOptionsModal(false)}
+        >
+          <TouchableOpacity
+            className="flex-1 bg-black/50 justify-end"
+            activeOpacity={1}
+            onPress={() => setShowOptionsModal(false)}
+          >
+            <View className="bg-white dark:bg-neutral-900 rounded-t-3xl p-6 pb-8">
+              <View className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full self-center mb-6" />
+              
+              <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Chore Options
+              </ThemedText>
+              
+              <TouchableOpacity
+                onPress={handleEdit}
+                className="flex-row items-center py-4 px-2 rounded-xl mb-2 active:bg-gray-100 dark:active:bg-neutral-800"
+              >
+                <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+                  <Ionicons name="create-outline" size={20} color="#3b82f6" />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium text-gray-900 dark:text-white">
+                    Edit Chore
+                  </ThemedText>
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    Modify chore details
+                  </ThemedText>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="flex-row items-center py-4 px-2 rounded-xl active:bg-red-50 dark:active:bg-red-900/20"
+              >
+                <View className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 items-center justify-center mr-3">
+                  <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium text-red-600 dark:text-red-400">
+                    Delete Chore
+                  </ThemedText>
+                  <ThemedText className="text-sm text-red-500 dark:text-red-400">
+                    Remove this chore permanently
+                  </ThemedText>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
     </LoadingAndErrorHandling>
   );

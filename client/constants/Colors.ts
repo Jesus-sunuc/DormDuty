@@ -9,7 +9,7 @@ export const Colors = {
     tabIconDefault: "#a3bcc9ad",
     tabIconSelected: "#27ae60",
     // Gradient colors for buttons and interactive elements
-    gradientPrimary: ["#27ae60", "#219a52", "#1e8449"] as const,
+    gradientPrimary: ["#22c55e", "#16a34a", "#15803d"] as const,
     gradientSecondary: ["#6b9080", "#5a7d6e", "#4a6b5c"] as const,
     // Shadow and accent colors
     shadowColor: "#27ae60",
@@ -25,7 +25,7 @@ export const Colors = {
     tabIconDefault: "#a3bcc9ad",
     tabIconSelected: "#34d399",
     // Gradient colors for buttons and interactive elements
-    gradientPrimary: ["#34d399", "#10b981", "#059669"] as const,
+    gradientPrimary: ["#20573e", "#132d21", "#132d21"] as const,
     gradientSecondary: ["#6ee7b7", "#4ade80", "#22c55e"] as const,
     // Shadow and accent colors
     shadowColor: "#34d399",

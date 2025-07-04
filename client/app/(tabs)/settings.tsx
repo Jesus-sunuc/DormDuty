@@ -13,7 +13,6 @@ const SettingsScreen = () => {
     <LoadingAndErrorHandling>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-
           
           <View className="mt-7">
             <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white mb-1">

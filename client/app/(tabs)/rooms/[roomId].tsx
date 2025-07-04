@@ -2,18 +2,24 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useChoresByRoomQuery } from "@/hooks/choreHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import { View, Pressable, TouchableOpacity, useColorScheme } from "react-native";
+import {
+  View,
+  Pressable,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
-import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { LinearGradient } from "expo-linear-gradient";
 
 const RoomChoresScreen = () => {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const colors = Colors[colorScheme ?? "light"];
 
   const router = useRouter();
 
@@ -28,23 +34,23 @@ const RoomChoresScreen = () => {
             >
               <Ionicons name="arrow-back" size={20} color="#6b7280" />
             </TouchableOpacity>
-            
+
             <View className="flex-1 mx-4">
               <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                 Room Chores
               </ThemedText>
             </View>
-            
+
             <TouchableOpacity
               onPress={() => router.push(`/rooms/${roomId}/add`)}
               activeOpacity={0.8}
               style={{
                 shadowColor: colors.shadowColor,
-                shadowOffset: { width: 0, height: 2 },
+                shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,
-                shadowRadius: 6,
-                elevation: 6,
-                borderRadius: 20,
+                shadowRadius: 8,
+                elevation: 8,
+                borderRadius: 16,
               }}
             >
               <LinearGradient
@@ -58,14 +64,14 @@ const RoomChoresScreen = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   borderWidth: 1,
-                  borderColor: "rgba(59, 130, 246, 0.3)",
+                  borderColor: colors.borderAccent,
                 }}
               >
                 <Ionicons name="add" size={22} color="white" />
               </LinearGradient>
             </TouchableOpacity>
           </View>
-          
+
           <View className="mt-2">
             <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
               Room #{roomId}
@@ -130,7 +136,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
             <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
               {chore.name}
             </ThemedText>
-            
+
             <View className="space-y-2">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center">
@@ -145,7 +151,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                   {formatDate(chore.lastCompleted)}
                 </ThemedText>
               </View>
-              
+
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center">
                   <View className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-2">
@@ -163,7 +169,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                 </View>
               </View>
             </View>
-            
+
             <View className="absolute top-5 right-5">
               <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
             </View>
