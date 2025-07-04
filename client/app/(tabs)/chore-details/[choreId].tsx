@@ -235,11 +235,10 @@ const ChoreDetailsScreen = () => {
           </View>
         </ParallaxScrollViewY>
 
-        {/* Options Modal */}
         <Modal
           visible={showOptionsModal}
           transparent={true}
-          animationType="fade"
+          animationType="slide"
           onRequestClose={() => setShowOptionsModal(false)}
         >
           <TouchableOpacity
