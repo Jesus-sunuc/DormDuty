@@ -1,7 +1,6 @@
 from src.models.chore import Chore, ChoreCreateRequest
 from src.services.database.helper import run_sql
 
-
 class ChoreRepository:
     def get_all_chores(self):
         sql = "SELECT * FROM chore"

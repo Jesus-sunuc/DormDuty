@@ -1,5 +1,5 @@
 from src.models.chore import ChoreCreateRequest
-from fastapi import APIRouter, Path
+from fastapi import APIRouter
 from src.repository.chores_repository import ChoreRepository
 from src.errors import error_handler
 
