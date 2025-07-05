@@ -8,14 +8,16 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import clsx from "clsx";
 
 const TabLayout = () => {
-  const colorScheme = useColorScheme();
+  const rawColorScheme = useColorScheme();
+  const colorScheme = rawColorScheme === "dark" ? "dark" : "light";
 
   return (
     <View className={clsx(colorScheme === "dark" && "dark", "flex-1")}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-          tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
+          tabBarInactiveTintColor:
+            Colors[colorScheme ?? "light"].tabIconDefault,
           headerShown: false,
           tabBarBackground: TabBarBackground,
           tabBarStyle: Platform.select({
@@ -62,10 +64,10 @@ const TabLayout = () => {
           options={{
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons 
-                name={focused ? "home" : "home-outline"} 
-                size={24} 
-                color={color} 
+              <Ionicons
+                name={focused ? "home" : "home-outline"}
+                size={24}
+                color={color}
               />
             ),
           }}
@@ -75,10 +77,10 @@ const TabLayout = () => {
           options={{
             title: "Expenses",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons 
-                name={focused ? "wallet" : "wallet-outline"} 
-                size={24} 
-                color={color} 
+              <Ionicons
+                name={focused ? "wallet" : "wallet-outline"}
+                size={24}
+                color={color}
               />
             ),
           }}
@@ -88,10 +90,10 @@ const TabLayout = () => {
           options={{
             title: "Chores",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons 
-                name={focused ? "checkmark-circle" : "checkmark-circle-outline"} 
-                size={24} 
-                color={color} 
+              <Ionicons
+                name={focused ? "checkmark-circle" : "checkmark-circle-outline"}
+                size={24}
+                color={color}
               />
             ),
           }}
@@ -101,10 +103,10 @@ const TabLayout = () => {
           options={{
             title: "Rewards",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons 
-                name={focused ? "gift" : "gift-outline"} 
-                size={24} 
-                color={color} 
+              <Ionicons
+                name={focused ? "gift" : "gift-outline"}
+                size={24}
+                color={color}
               />
             ),
           }}
@@ -114,10 +116,10 @@ const TabLayout = () => {
           options={{
             title: "Settings",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons 
-                name={focused ? "settings" : "settings-outline"} 
-                size={24} 
-                color={color} 
+              <Ionicons
+                name={focused ? "settings" : "settings-outline"}
+                size={24}
+                color={color}
               />
             ),
           }}

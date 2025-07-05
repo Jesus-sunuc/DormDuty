@@ -31,14 +31,16 @@ export default function RootLayout() {
 
   SplashScreen.preventAutoHideAsync();
 
-  const [interLoaded] = useInter({
+  const interResult = useInter({
     Inter_400Regular,
     Inter_600SemiBold,
   });
+  const interLoaded = interResult[0];
 
-  const [groteskLoaded] = useGrotesk({
+  const groteskResult = useGrotesk({
     SpaceGrotesk_700Bold,
   });
+  const groteskLoaded = groteskResult[0];
 
   const fontsLoaded = interLoaded && groteskLoaded;
 

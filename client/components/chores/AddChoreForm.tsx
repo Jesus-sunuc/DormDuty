@@ -1,7 +1,12 @@
-import React from 'react';
-import { View } from 'react-native';
-import { TextInputField, PickerField, DatePickerField, TimePickerField } from '@/components/forms/FormFields';
-import { frequencyOptions, daysOfWeek } from '@/constants/choreConstants';
+import React from "react";
+import { View } from "react-native";
+import {
+  TextInputField,
+  PickerField,
+  DatePickerField,
+  TimePickerField,
+} from "@/components/forms/FormFields";
+import { frequencyOptions, daysOfWeek } from "@/constants/choreConstants";
 
 interface Member {
   userId: number;
@@ -44,12 +49,16 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   setDescription,
   members,
 }) => {
+  const safeMembers = Array.isArray(members)
+    ? members.filter((member) => member != null)
+    : [];
+
   const memberItems = [
     { label: "Unassigned", value: undefined, key: "unassigned" },
-    ...members.map((member) => ({
-      label: member.name,
-      value: member.userId,
-      key: member.userId.toString(),
+    ...safeMembers.map((member) => ({
+      label: member?.name || "Unknown",
+      value: member?.userId,
+      key: member?.userId?.toString() || `member-${Math.random()}`,
     })),
   ];
 

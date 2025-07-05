@@ -12,20 +12,30 @@ import { AddChoreForm } from "@/components/chores/AddChoreForm";
 import { validateChoreRequest } from "@/utils/choreUtils";
 import { toISODateString, toTimeString } from "@/utils/dateUtils";
 
-const EditChoreScreen = () => {
+const getSafeParams = () => {
   const params = useLocalSearchParams();
+  if (!params || typeof params !== "object") {
+    return { roomId: undefined, choreId: undefined };
+  }
+
   const roomId = Array.isArray(params.roomId)
     ? params.roomId[0]
     : typeof params.roomId === "string"
       ? params.roomId
       : undefined;
+
   const choreId = Array.isArray(params.choreId)
     ? params.choreId[0]
     : typeof params.choreId === "string"
       ? params.choreId
       : undefined;
 
+  return { roomId, choreId };
+};
+
+const EditChoreScreen = () => {
   const router = useRouter();
+  const { roomId, choreId } = getSafeParams();
 
   if (!roomId || !choreId) {
     return (
@@ -63,40 +73,51 @@ const EditChoreScreen = () => {
     );
   }
 
-  const {
-    data: members = [],
-    error: membersError,
-    isLoading: membersLoading,
-  } = useRoomMembersQuery(roomId);
-  const {
-    data: chore,
-    error: choreError,
-    isLoading: choreLoading,
-  } = useChoreByIdQuery(choreIdNumber);
-  const {
-    mutate: updateChore,
-    isPending,
-    error: mutationError,
-  } = useUpdateChoreMutation();
+  const membersResult = useRoomMembersQuery(roomId);
+  const members = membersResult.data || [];
+  const membersError = membersResult.error;
+  const membersLoading = membersResult.isLoading;
+
+  const choreResult = useChoreByIdQuery(choreIdNumber);
+  const chore = choreResult.data;
+  const choreError = choreResult.error;
+  const choreLoading = choreResult.isLoading;
+
+  const mutationResult = useUpdateChoreMutation();
+  const updateChore = mutationResult.mutate;
+  const isPending = mutationResult.isPending;
+  const mutationError = mutationResult.error;
 
   const isLoading = membersLoading || choreLoading;
   const error = membersError || choreError;
 
-  if (choreError) {
-    console.error("Error fetching chore:", choreError);
-  }
+  const nameState = useState("");
+  const name = nameState[0];
+  const setName = nameState[1];
 
-  if (mutationError) {
-    console.error("Error with mutation:", mutationError);
-  }
+  const frequencyState = useState("");
+  const frequency = frequencyState[0];
+  const setFrequency = frequencyState[1];
 
-  const [name, setName] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
-  const [timingInput, setTimingInput] = useState("");
-  const [assignedTo, setAssignedTo] = useState<number | undefined>();
-  const [startDate, setStartDate] = useState<string | undefined>();
-  const [description, setDescription] = useState<string | undefined>();
+  const dayOfWeekState = useState<number | undefined>();
+  const dayOfWeek = dayOfWeekState[0];
+  const setDayOfWeek = dayOfWeekState[1];
+
+  const timingInputState = useState("");
+  const timingInput = timingInputState[0];
+  const setTimingInput = timingInputState[1];
+
+  const assignedToState = useState<number | undefined>();
+  const assignedTo = assignedToState[0];
+  const setAssignedTo = assignedToState[1];
+
+  const startDateState = useState<string | undefined>();
+  const startDate = startDateState[0];
+  const setStartDate = startDateState[1];
+
+  const descriptionState = useState<string | undefined>();
+  const description = descriptionState[0];
+  const setDescription = descriptionState[1];
 
   useEffect(() => {
     if (chore) {
@@ -112,11 +133,16 @@ const EditChoreScreen = () => {
 
   const formattedMembers = (
     members as unknown as [number, string, number][]
-  ).map(([userId, name, membershipId]) => ({
-    userId,
-    name,
-    membershipId,
-  }));
+  ).map((member) => {
+    const userId = member[0];
+    const name = member[1];
+    const membershipId = member[2];
+    return {
+      userId,
+      name,
+      membershipId,
+    };
+  });
 
   const handleSubmit = () => {
     if (!name.trim() || !roomId || !choreId) return;
@@ -150,7 +176,6 @@ const EditChoreScreen = () => {
           router.back();
         },
         onError: (error: any) => {
-          console.error("Error updating chore:", error);
           toastError("Failed to update chore. Please try again.");
         },
       }

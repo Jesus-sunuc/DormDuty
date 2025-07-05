@@ -20,9 +20,16 @@ const AuthContext = createContext<AuthContextType>({
   users: [],
 });
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = (props: { children: ReactNode }) => {
+  const children = props?.children;
+
+  const usersState = useState<User[]>([]);
+  const users = usersState[0];
+  const setUsers = usersState[1];
+
+  const userState = useState<User | null>(null);
+  const user = userState[0];
+  const setUser = userState[1];
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -55,8 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    console.warn("useAuth must be used within an AuthProvider");
-    return { user: null, switchUser: () => {}, users: [] };
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

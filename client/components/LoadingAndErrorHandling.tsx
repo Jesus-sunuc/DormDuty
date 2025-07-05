@@ -9,12 +9,12 @@ export const LoadingAndErrorHandling: FC<{
   isLoading?: boolean;
   error?: Error | null;
   loadingText?: string;
-}> = ({
-  children,
-  isLoading = false,
-  error = null,
-  loadingText = "Loading...",
-}) => {
+}> = (props) => {
+  const children = props?.children;
+  const isLoading = props?.isLoading || false;
+  const error = props?.error || null;
+  const loadingText = props?.loadingText || "Loading...";
+
   const validChildren = React.isValidElement(children) ? (
     children
   ) : typeof children === "string" ? (
