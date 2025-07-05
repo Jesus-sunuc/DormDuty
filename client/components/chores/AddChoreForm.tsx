@@ -74,7 +74,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   }));
 
   return (
-    <View className="px-6 pt-6">
+    <View className="px-6">
       <TextInputField
         label="Chore Name"
         placeholder="Enter chore name"
