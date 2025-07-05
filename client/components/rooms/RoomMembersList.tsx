@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Role } from "@/models/Membership";
@@ -11,9 +11,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface RoomMembersListProps {
   roomId: string | undefined;
+  onExpandChange?: (expanded: boolean) => void;
+  forceExpanded?: boolean;
 }
 
-export const RoomMembersList: React.FC<RoomMembersListProps> = ({ roomId }) => {
+export const RoomMembersList: React.FC<RoomMembersListProps> = ({
+  roomId,
+  onExpandChange,
+  forceExpanded = false,
+}) => {
   if (
     !roomId ||
     typeof roomId !== "string" ||
@@ -30,10 +36,20 @@ export const RoomMembersList: React.FC<RoomMembersListProps> = ({ roomId }) => {
     );
   }
 
-  return <RoomMembersListContent roomId={roomId} />;
+  return (
+    <RoomMembersListContent
+      roomId={roomId}
+      onExpandChange={onExpandChange}
+      forceExpanded={forceExpanded}
+    />
+  );
 };
 
-const RoomMembersListContent: React.FC<{ roomId: string }> = ({ roomId }) => {
+const RoomMembersListContent: React.FC<{
+  roomId: string;
+  onExpandChange?: (expanded: boolean) => void;
+  forceExpanded?: boolean;
+}> = ({ roomId, onExpandChange, forceExpanded = false }) => {
   const colorScheme = useColorScheme();
   const roomIdNum = parseInt(roomId, 10);
   const { isAdmin } = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
@@ -45,6 +61,17 @@ const RoomMembersListContent: React.FC<{ roomId: string }> = ({ roomId }) => {
     role: Role;
   } | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(forceExpanded);
+
+  const handleExpandToggle = () => {
+    const newExpanded = !isExpanded;
+    setIsExpanded(newExpanded);
+    onExpandChange?.(newExpanded);
+  };
+
+  useEffect(() => {
+    setIsExpanded(forceExpanded);
+  }, [forceExpanded]);
 
   const handleManageRole = (member: any) => {
     setSelectedMember({
@@ -63,15 +90,17 @@ const RoomMembersListContent: React.FC<{ roomId: string }> = ({ roomId }) => {
 
   if (isLoading) {
     return (
-      <View className="p-4">
-        <ThemedText className="text-center">Loading members...</ThemedText>
+      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+        <ThemedText className="text-center text-gray-500">
+          Loading members...
+        </ThemedText>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="p-4">
+      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
         <ThemedText className="text-center text-red-500">
           Error loading members
         </ThemedText>
@@ -79,8 +108,39 @@ const RoomMembersListContent: React.FC<{ roomId: string }> = ({ roomId }) => {
     );
   }
 
+  const renderMemberPreview = (member: any, index: number) => {
+    const isAdmin = member?.role === "admin";
+    return (
+      <View
+        key={`preview-${member.membershipId || index}`}
+        className={`flex-row items-center ${index > 0 ? "ml-2" : ""}`}
+      >
+        <View
+          className={`w-8 h-8 rounded-full items-center justify-center ${
+            isAdmin
+              ? "bg-green-100 dark:bg-green-900"
+              : "bg-blue-100 dark:bg-blue-900"
+          }`}
+        >
+          <Text
+            className={`text-xs font-bold ${
+              isAdmin
+                ? "text-green-800 dark:text-green-200"
+                : "text-blue-800 dark:text-blue-200"
+            }`}
+          >
+            {member?.name?.charAt(0)?.toUpperCase() || "?"}
+          </Text>
+        </View>
+        {isAdmin && (
+          <View className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-neutral-900" />
+        )}
+      </View>
+    );
+  };
+
   const renderMember = ({ item }: { item: any }) => (
-    <View className="flex-row items-center justify-between p-4 bg-white dark:bg-neutral-800 rounded-lg mb-2">
+    <View className="flex-row items-center justify-between p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg mb-2">
       <View className="flex-1">
         <Text className="font-semibold text-gray-900 dark:text-white">
           {item?.name || "Unknown User"}
@@ -123,34 +183,96 @@ const RoomMembersListContent: React.FC<{ roomId: string }> = ({ roomId }) => {
   );
 
   return (
-    <View className="flex-1">
-      <View className="flex-row items-center justify-between mb-4">
-        <ThemedText className="text-xl font-bold">
-          Room Members ({members.length})
-        </ThemedText>
-        {isAdmin && (
-          <View className="px-3 py-1 bg-green-100 dark:bg-green-900 rounded-full">
-            <Text className="text-xs font-medium text-green-800 dark:text-green-200">
-              Admin
-            </Text>
+    <View
+      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border-2 border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800`}
+    >
+      <TouchableOpacity
+        onPress={handleExpandToggle}
+        className="p-4 flex-row items-center justify-between"
+        activeOpacity={0.7}
+      >
+        <View className="flex-row items-center flex-1">
+          <View className="flex-row items-center">
+            <Ionicons
+              name="people-outline"
+              size={20}
+              color={Colors[colorScheme ?? "light"].text}
+            />
+            <ThemedText className="text-lg text-gray-700 dark:text-gray-300 font-semibold ml-2">
+              Members ({members.length})
+            </ThemedText>
           </View>
-        )}
-      </View>
 
-      <View style={{ paddingBottom: 20 }}>
-        {members.map((item) => (
-          <View
-            key={
-              item.membershipId?.toString() ||
-              `member-${item.userId || Math.random()}`
+         
+        </View>
+
+        <View className="flex-row items-center">
+          {!isExpanded && (
+            <View className="flex-row items-center mr-3">
+              {members
+                .slice(0, 3)
+                .map((member, index) => renderMemberPreview(member, index))}
+              {members.length > 3 && (
+                <View className="ml-2 w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-700 items-center justify-center">
+                  <Text className="text-xs font-bold text-gray-600 dark:text-gray-300">
+                    +{members.length - 3}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          <Ionicons
+            name={
+              isExpanded
+                ? forceExpanded
+                  ? "close"
+                  : "chevron-up"
+                : "chevron-down"
             }
-          >
-            {renderMember({ item })}
-          </View>
-        ))}
-      </View>
+            size={20}
+            color={Colors[colorScheme ?? "light"].text}
+          />
+        </View>
+      </TouchableOpacity>
 
-      {/* Role Management Modal */}
+      {isExpanded && (
+        <View className="px-4 pb-4">
+          <View className="border-t border-gray-100 dark:border-neutral-700 pt-4">
+            {forceExpanded ? (
+              <ScrollView
+                className="max-h-60"
+                showsVerticalScrollIndicator={false}
+              >
+                {members.map((item) => (
+                  <View
+                    key={
+                      item.membershipId?.toString() ||
+                      `member-${item.userId || Math.random()}`
+                    }
+                  >
+                    {renderMember({ item })}
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
+              <View>
+                {members.map((item) => (
+                  <View
+                    key={
+                      item.membershipId?.toString() ||
+                      `member-${item.userId || Math.random()}`
+                    }
+                  >
+                    {renderMember({ item })}
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+      )}
+
       <Modal
         visible={showRoleModal}
         transparent={true}

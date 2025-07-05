@@ -16,6 +16,7 @@ import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
 
 const RoomChoresScreen = () => {
   const params = useLocalSearchParams();
@@ -33,6 +34,8 @@ const RoomChoresScreen = () => {
   const isAdmin = permissions?.isAdmin || false;
   const role = permissions?.role || "member";
 
+  const [membersExpanded, setMembersExpanded] = useState(false);
+
   const router = useRouter();
 
   if (!roomId) {
@@ -44,102 +47,133 @@ const RoomChoresScreen = () => {
   }
 
   return (
-    <LoadingAndErrorHandling>
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4 mt-5">
-            <TouchableOpacity
-              onPress={() => router.push("/")}
-              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
-            >
-              <Ionicons name="arrow-back" size={20} color="#6b7280" />
-            </TouchableOpacity>
-
-            <View className="flex-1 mx-4">
-              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Room Chores
-              </ThemedText>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
-              activeOpacity={0.8}
-              style={{
-                shadowColor: colors.shadowColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
-                borderRadius: 16,
-              }}
-            >
-              <LinearGradient
-                colors={colors.gradientPrimary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1,
-                  borderColor: colors.borderAccent,
-                }}
+    <View style={{ flex: 1 }}>
+      <LoadingAndErrorHandling>
+        <View className="flex-1 bg-gray-50 dark:bg-black">
+          <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+            <View className="flex-row items-center justify-between mb-4 mt-5">
+              <TouchableOpacity
+                onPress={() => router.push("/")}
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
               >
-                <Ionicons name="add" size={22} color="white" />
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
+                <Ionicons name="arrow-back" size={20} color="#6b7280" />
+              </TouchableOpacity>
 
-          <View className="mt-2">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1">
-                <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-                  Room #{roomId || "Loading..."}
+              <View className="flex-1 mx-4">
+                <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Room Chores
                 </ThemedText>
-                <View className="flex-row items-center">
-                  <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                    Manage and track chores
-                  </ThemedText>
-                </View>
               </View>
 
-              {role && (
-                <View
-                  className={
-                    isAdmin
-                      ? "px-3 py-1 rounded-full bg-green-100 dark:bg-green-900"
-                      : "px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900"
-                  }
+              <TouchableOpacity
+                onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
+                activeOpacity={0.8}
+                style={{
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
+                  borderRadius: 16,
+                }}
+              >
+                <LinearGradient
+                  colors={colors.gradientPrimary}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1,
+                    borderColor: colors.borderAccent,
+                  }}
                 >
-                  <ThemedText
-                    className={
-                      isAdmin
-                        ? "text-xs font-medium capitalize text-green-800 dark:text-green-200"
-                        : "text-xs font-medium capitalize text-blue-800 dark:text-blue-200"
-                    }
-                  >
-                    {role || "member"}
+                  <Ionicons name="add" size={22} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            <View className="mt-2">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1">
+                  <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
+                    Room #{roomId || "Loading..."}
                   </ThemedText>
+                  <View className="flex-row items-center">
+                    <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+                    <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                      Manage and track chores
+                    </ThemedText>
+                  </View>
                 </View>
-              )}
+              </View>
             </View>
           </View>
+
+          <ParallaxScrollViewY>
+            {roomId && <ChoreList roomId={roomId} />}
+          </ParallaxScrollViewY>
+          <View>
+            {roomId &&
+              roomId !== "undefined" &&
+              roomId !== "" &&
+              !membersExpanded && (
+                <View className="mx-6 mb-6">
+                  <RoomMembersList
+                    roomId={roomId}
+                    onExpandChange={setMembersExpanded}
+                  />
+                </View>
+              )}
+          </View>
         </View>
+      </LoadingAndErrorHandling>
 
-        <ParallaxScrollViewY>
-          {roomId && <ChoreList roomId={roomId} />}
+      {membersExpanded && roomId && roomId !== "undefined" && roomId !== "" && (
+        <View>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setMembersExpanded(false)}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              zIndex: 1000,
+            }}
+          />
 
-          {roomId && roomId !== "undefined" && roomId !== "" && (
-            <View className="mt-8 px-4">
-              <RoomMembersList roomId={roomId} />
-            </View>
-          )}
-        </ParallaxScrollViewY>
-      </View>
-    </LoadingAndErrorHandling>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
+            style={{
+              position: "absolute",
+              bottom: 24,
+              left: 24,
+              right: 24,
+              zIndex: 1001,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: -4 },
+              shadowOpacity: 0.25,
+              shadowRadius: 16,
+              elevation: 16,
+              paddingBottom: 20,
+            }}
+          >
+            <RoomMembersList
+              roomId={roomId}
+              onExpandChange={setMembersExpanded}
+              forceExpanded={true}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -183,7 +217,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   );
 
   return (
-    <View className="px-6 pt-6">
+    <View className="px-6 pt-6 pb-4">
       {chores.map((chore) => (
         <Pressable
           key={chore.choreId}
