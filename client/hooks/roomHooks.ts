@@ -1,4 +1,4 @@
-import { useSuspenseQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import {
   Room,
@@ -19,7 +19,7 @@ export const roomKeys = {
 };
 
 export const useRoomsQuery = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: roomKeys.all,
     queryFn: async (): Promise<Room[]> => {
       const res = await axiosClient.get("/api/rooms/all");
@@ -32,12 +32,23 @@ export const useRoomsByUserQuery = () => {
   const { user } = useAuth();
   const userId = user?.userId;
 
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["rooms", "by-user", userId],
     queryFn: async (): Promise<Room[]> => {
-      const res = await axiosClient.get(`/api/rooms/by-user/${userId}`);
-      return res.data;
+      if (!userId) {
+        console.log("No userId available, returning empty rooms array");
+        return [];
+      }
+
+      try {
+        const res = await axiosClient.get(`/api/rooms/by-user/${userId}`);
+        return res.data;
+      } catch (error) {
+        console.error("Failed to fetch rooms for user:", error);
+        return [];
+      }
     },
+    enabled: !!userId,
   });
 };
 

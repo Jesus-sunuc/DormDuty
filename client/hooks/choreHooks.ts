@@ -1,4 +1,4 @@
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { Chore, ChoreCreateRequest } from "@/models/Chore";
 import { useAuth } from "./user/useAuth";
@@ -13,7 +13,7 @@ export const choresKeys = {
 };
 
 export const useChoresQuery = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: choresKeys.all,
     queryFn: async (): Promise<Chore[]> => {
       const res = await axiosClient.get("/api/chores/all");
@@ -26,12 +26,14 @@ export const useChoresByUserQuery = () => {
   const { user } = useAuth();
   const userId = user?.userId;
 
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["chores", "by-user", userId],
     queryFn: async (): Promise<Chore[]> => {
+      if (!userId) return [];
       const res = await axiosClient.get(`/api/chores/by-user/${userId}`);
       return res.data;
     },
+    enabled: !!userId,
   });
 };
 
@@ -39,32 +41,39 @@ export const useChoresAssignedToUserQuery = () => {
   const { user } = useAuth();
   const userId = user?.userId;
 
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["chores", "assigned-to-user", userId],
     queryFn: async (): Promise<Chore[]> => {
-      const res = await axiosClient.get(`/api/chores/assigned-to-user/${userId}`);
+      if (!userId) return [];
+      const res = await axiosClient.get(
+        `/api/chores/assigned-to-user/${userId}`
+      );
       return res.data;
     },
+    enabled: !!userId,
   });
 };
 
 export const useChoresByRoomQuery = (roomId: string) => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: choresKeys.byRoom(roomId),
     queryFn: async (): Promise<Chore[]> => {
+      if (!roomId) return [];
       const res = await axiosClient.get(`/api/chores/by-room/${roomId}`);
       return res.data;
     },
+    enabled: !!roomId,
   });
 };
 
 export const useChoreByIdQuery = (choreId: number) => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: choresKeys.byId(choreId),
     queryFn: async (): Promise<Chore> => {
       const res = await axiosClient.get(`/api/chores/${choreId}`);
       return res.data;
     },
+    enabled: !!choreId && choreId > 0,
   });
 };
 
@@ -108,8 +117,9 @@ export const useUpdateChoreMutation = () => {
         queryKey: choresKeys.all,
       });
       queryClient.invalidateQueries({
-        predicate: (query) => 
-          query.queryKey[0] === "chores" && query.queryKey[1] === "assigned-to-user",
+        predicate: (query) =>
+          query.queryKey[0] === "chores" &&
+          query.queryKey[1] === "assigned-to-user",
       });
     },
   });
@@ -121,19 +131,17 @@ export const useDeleteChoreMutation = () => {
       await axiosClient.post(`/api/chores/${choreId}/delete`);
     },
     onSuccess: (_, choreId) => {
-      // Invalidate the specific chore
       queryClient.invalidateQueries({
         queryKey: choresKeys.byId(choreId),
       });
-      // Invalidate all chores queries to refresh the lists
       queryClient.invalidateQueries({
         queryKey: choresKeys.all,
       });
-      // Invalidate all room-based queries
       queryClient.invalidateQueries({
-        predicate: (query) => 
-          query.queryKey[0] === "chores" && 
-          (query.queryKey[1] === "by-room" || query.queryKey[1] === "assigned-to-user"),
+        predicate: (query) =>
+          query.queryKey[0] === "chores" &&
+          (query.queryKey[1] === "by-room" ||
+            query.queryKey[1] === "assigned-to-user"),
       });
     },
   });

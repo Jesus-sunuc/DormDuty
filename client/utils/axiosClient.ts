@@ -1,10 +1,11 @@
 import axios from "axios";
 import { camel_to_snake_serializing_date, snakeToCamel } from "./apiMapper";
 import { handleDates } from "./handleDates";
+import { getApiUrl } from "./apiConfig";
 
 const axiosClient = axios.create();
 
-axiosClient.defaults.baseURL = process.env.EXPO_PUBLIC_API_URL;
+axiosClient.defaults.baseURL = getApiUrl();
 
 axiosClient.interceptors.response.use((originalResponse) => {
   originalResponse.data = snakeToCamel(originalResponse.data);

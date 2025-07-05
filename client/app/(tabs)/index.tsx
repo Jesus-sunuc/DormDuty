@@ -101,7 +101,7 @@ const RoomList = ({
 };
 
 const HomeScreen = () => {
-  const { data: rooms } = useRoomsByUserQuery();
+  const { data: rooms, isLoading, error } = useRoomsByUserQuery();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
@@ -121,15 +121,12 @@ const HomeScreen = () => {
   const userId = user?.userId;
   const roomId = roomToDelete?.roomId ?? 0;
 
-  // Only query membership when we actually need to delete a room
   const { data: membershipData } = useMembershipQuery(userId!, roomId, {
     enabled: !!roomToDelete?.roomId && !!userId && showDeleteConfirmation,
   });
 
-  // Cleanup effect to prevent memory leaks
   useEffect(() => {
     return () => {
-      // Cleanup any pending state when component unmounts
       if (showDeleteConfirmation) {
         setShowDeleteConfirmation(false);
       }
@@ -225,100 +222,116 @@ const HomeScreen = () => {
 
   return (
     <LoadingAndErrorHandling>
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mt-4">
-            <View className="flex-1">
-              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-                Your Apartments
-              </ThemedText>
-              <View className="flex-row items-center">
-                <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
-                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                  Manage your living spaces
+      {isLoading ? (
+        <View className="flex-1 bg-gray-50 dark:bg-black items-center justify-center">
+          <ThemedText className="text-gray-500">Loading rooms...</ThemedText>
+        </View>
+      ) : error ? (
+        <View className="flex-1 bg-gray-50 dark:bg-black items-center justify-center px-6">
+          <Ionicons name="alert-circle-outline" size={64} color="#ef4444" />
+          <ThemedText className="text-center text-red-500 mt-4 text-lg font-medium">
+            Failed to load rooms
+          </ThemedText>
+          <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+            Please check your connection and try again
+          </ThemedText>
+        </View>
+      ) : (
+        <View className="flex-1 bg-gray-50 dark:bg-black">
+          <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+            <View className="flex-row items-center justify-between mt-4">
+              <View className="flex-1">
+                <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
+                  Your Apartments
                 </ThemedText>
+                <View className="flex-row items-center">
+                  <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage your living spaces
+                  </ThemedText>
+                </View>
               </View>
-            </View>
 
-            <TouchableOpacity
-              onPress={() => {
-                setRoomToEdit(null);
-                setModalVisible(true);
-              }}
-              activeOpacity={0.8}
-              style={{
-                shadowColor: colors.shadowColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
-                borderRadius: 16,
-              }}
-            >
-              <LinearGradient
-                colors={colors.gradientPrimary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+              <TouchableOpacity
+                onPress={() => {
+                  setRoomToEdit(null);
+                  setModalVisible(true);
+                }}
+                activeOpacity={0.8}
                 style={{
-                  width: 40,
-                  height: 40,
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
                   borderRadius: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1,
-                  borderColor: colors.borderAccent,
                 }}
               >
-                <Ionicons name="add" size={22} color="white" />
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={colors.gradientPrimary}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1,
+                    borderColor: colors.borderAccent,
+                  }}
+                >
+                  <Ionicons name="add" size={22} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
+          <ParallaxScrollViewY>
+            <RoomList rooms={rooms || []} onOptionsPress={setOptionsRoom} />
+          </ParallaxScrollViewY>
+
+          <RoomModal
+            visible={modalVisible}
+            onClose={() => {
+              setModalVisible(false);
+              setRoomToEdit(null);
+            }}
+            onSubmit={roomToEdit ? handleUpdateRoom : handleAddRoom}
+            defaultName={roomToEdit?.name ?? ""}
+            submitLabel={roomToEdit ? "Update" : "Create"}
+            isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
+          />
+
+          <RoomOptionsBottomSheet
+            visible={!!optionsRoom}
+            onClose={() => setOptionsRoom(null)}
+            onEdit={() => {
+              if (!optionsRoom) return;
+              setRoomToEdit(optionsRoom);
+              setModalVisible(true);
+            }}
+            onShareCode={() =>
+              toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
+            }
+            onDelete={handleDeleteRoom}
+          />
+
+          <ConfirmationModal
+            visible={showDeleteConfirmation}
+            onClose={() => {
+              setShowDeleteConfirmation(false);
+              setRoomToDelete(null);
+            }}
+            onConfirm={confirmDeleteRoom}
+            title="Delete Room"
+            message={`Are you sure you want to delete "${roomToDelete?.name}"? This will permanently remove the room and all its chores. This action cannot be undone.`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            destructive={true}
+            icon="home-outline"
+          />
         </View>
-        <ParallaxScrollViewY>
-          <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />
-        </ParallaxScrollViewY>
-
-        <RoomModal
-          visible={modalVisible}
-          onClose={() => {
-            setModalVisible(false);
-            setRoomToEdit(null);
-          }}
-          onSubmit={roomToEdit ? handleUpdateRoom : handleAddRoom}
-          defaultName={roomToEdit?.name ?? ""}
-          submitLabel={roomToEdit ? "Update" : "Create"}
-          isPending={roomToEdit ? updateRoomIsPending : addRoomIsPending}
-        />
-
-        <RoomOptionsBottomSheet
-          visible={!!optionsRoom}
-          onClose={() => setOptionsRoom(null)}
-          onEdit={() => {
-            if (!optionsRoom) return;
-            setRoomToEdit(optionsRoom);
-            setModalVisible(true);
-          }}
-          onShareCode={() =>
-            toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
-          }
-          onDelete={handleDeleteRoom}
-        />
-
-        <ConfirmationModal
-          visible={showDeleteConfirmation}
-          onClose={() => {
-            setShowDeleteConfirmation(false);
-            setRoomToDelete(null);
-          }}
-          onConfirm={confirmDeleteRoom}
-          title="Delete Room"
-          message={`Are you sure you want to delete "${roomToDelete?.name}"? This will permanently remove the room and all its chores. This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
-          destructive={true}
-          icon="home-outline"
-        />
-      </View>
+      )}
     </LoadingAndErrorHandling>
   );
 };
