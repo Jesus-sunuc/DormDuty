@@ -73,7 +73,7 @@ export const useChoreByIdQuery = (choreId: number) => {
       const res = await axiosClient.get(`/api/chores/${choreId}`);
       return res.data;
     },
-    enabled: !!choreId && choreId > 0,
+    enabled: !!choreId && choreId > 0 && !isNaN(choreId),
   });
 };
 

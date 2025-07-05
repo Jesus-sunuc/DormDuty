@@ -49,6 +49,8 @@ export const useRoomsByUserQuery = () => {
       }
     },
     enabled: !!userId,
+    staleTime: !!userId ? 5 * 60 * 1000 : 0,
+    refetchOnMount: true,
   });
 };
 

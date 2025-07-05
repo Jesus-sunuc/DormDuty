@@ -46,18 +46,41 @@ const EditChoreScreen = () => {
 
   const choreIdNumber = Number(choreId);
 
-  const { data: members = [], error: membersError } =
-    useRoomMembersQuery(roomId);
-  const { data: chore, error: choreError } = useChoreByIdQuery(choreIdNumber);
+  if (isNaN(choreIdNumber) || choreIdNumber <= 0) {
+    return (
+      <LoadingAndErrorHandling>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 16,
+          }}
+        >
+          <Text>Invalid chore ID</Text>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  const {
+    data: members = [],
+    error: membersError,
+    isLoading: membersLoading,
+  } = useRoomMembersQuery(roomId);
+  const {
+    data: chore,
+    error: choreError,
+    isLoading: choreLoading,
+  } = useChoreByIdQuery(choreIdNumber);
   const {
     mutate: updateChore,
     isPending,
     error: mutationError,
   } = useUpdateChoreMutation();
 
-  if (membersError) {
-    console.error("Error fetching members:", membersError);
-  }
+  const isLoading = membersLoading || choreLoading;
+  const error = membersError || choreError;
 
   if (choreError) {
     console.error("Error fetching chore:", choreError);
@@ -160,8 +183,16 @@ const EditChoreScreen = () => {
     );
   }
 
+  if (isLoading || !chore) {
+    return (
+      <LoadingAndErrorHandling isLoading={true} error={null}>
+        <></>
+      </LoadingAndErrorHandling>
+    );
+  }
+
   return (
-    <LoadingAndErrorHandling>
+    <LoadingAndErrorHandling isLoading={false} error={error}>
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <AddChoreHeader
           roomId={roomId || ""}

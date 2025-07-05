@@ -31,8 +31,6 @@ const RoomChoresScreen = () => {
   const roomIdNum = roomId ? parseInt(roomId, 10) : 0;
 
   const permissions = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
-  const isAdmin = permissions?.isAdmin || false;
-  const role = permissions?.role || "member";
 
   const [membersExpanded, setMembersExpanded] = useState(false);
 
@@ -180,19 +178,36 @@ const RoomChoresScreen = () => {
 export default RoomChoresScreen;
 
 const ChoreList = ({ roomId }: { roomId: string }) => {
-  const { data: chores = [], error: choresError } =
-    useChoresByRoomQuery(roomId);
-  const { data: members = [], error: membersError } =
-    useRoomMembersQuery(roomId);
+  const {
+    data: chores = [],
+    error: choresError,
+    isLoading: choresLoading,
+  } = useChoresByRoomQuery(roomId);
+  const {
+    data: members = [],
+    error: membersError,
+    isLoading: membersLoading,
+  } = useRoomMembersQuery(roomId);
 
   const router = useRouter();
 
-  if (choresError) {
-    console.error("Error fetching chores:", choresError);
+  const isLoading = choresLoading || membersLoading;
+  const error = choresError || membersError;
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center p-8">
+        <ThemedText className="text-gray-500">Loading chores...</ThemedText>
+      </View>
+    );
   }
 
-  if (membersError) {
-    console.error("Error fetching members:", membersError);
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center p-8">
+        <ThemedText className="text-red-500">Error loading data</ThemedText>
+      </View>
+    );
   }
 
   if (!chores || !chores.length) {

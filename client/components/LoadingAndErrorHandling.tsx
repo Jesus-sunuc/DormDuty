@@ -4,9 +4,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Button, View, Text } from "react-native";
 import { Spinner } from "./ui/Spinner";
 
-export const LoadingAndErrorHandling: FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const LoadingAndErrorHandling: FC<{
+  children: ReactNode;
+  isLoading?: boolean;
+  error?: Error | null;
+}> = ({ children, isLoading = false, error = null }) => {
   const validChildren = React.isValidElement(children) ? (
     children
   ) : typeof children === "string" ? (
@@ -14,6 +16,32 @@ export const LoadingAndErrorHandling: FC<{ children: ReactNode }> = ({
   ) : (
     children || null
   );
+
+  if (isLoading) {
+    return <Spinner text="Loading..." />;
+  }
+
+  if (error) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          padding: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ marginBottom: 8, textAlign: "center" }}>
+          {`Error: ${error?.message || "Something went wrong."}`}
+        </Text>
+        <Button
+          title="Try again"
+          onPress={() => {
+          }}
+        />
+      </View>
+    );
+  }
 
   return (
     <QueryErrorResetBoundary>
