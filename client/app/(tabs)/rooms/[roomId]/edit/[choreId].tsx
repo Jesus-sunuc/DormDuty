@@ -4,7 +4,6 @@ import { View, TouchableOpacity, Text } from "react-native";
 import { useUpdateChoreMutation, useChoreByIdQuery } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { ThemedText } from "@/components/ThemedText";
-import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollView from "@/components/ParallaxScrollViewY";
@@ -14,14 +13,59 @@ import { validateChoreRequest } from "@/utils/choreUtils";
 import { toISODateString, toTimeString } from "@/utils/dateUtils";
 
 const EditChoreScreen = () => {
-  const { roomId, choreId } = useLocalSearchParams<{ roomId: string; choreId: string }>();
-  const router = useRouter();
-  const { user } = useAuth();
-  const { data: members = [] } = useRoomMembersQuery(roomId);
+  const params = useLocalSearchParams();
+  const roomId = Array.isArray(params.roomId)
+    ? params.roomId[0]
+    : typeof params.roomId === "string"
+      ? params.roomId
+      : undefined;
+  const choreId = Array.isArray(params.choreId)
+    ? params.choreId[0]
+    : typeof params.choreId === "string"
+      ? params.choreId
+      : undefined;
 
-  const choreIdNumber = choreId ? Number(choreId) : 0;
-  const { data: chore } = useChoreByIdQuery(choreIdNumber);
-  const { mutate: updateChore, isPending } = useUpdateChoreMutation();
+  const router = useRouter();
+
+  if (!roomId || !choreId) {
+    return (
+      <LoadingAndErrorHandling>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+          }}
+        >
+          <Text>Missing required parameters</Text>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  const choreIdNumber = Number(choreId);
+
+  const { data: members = [], error: membersError } =
+    useRoomMembersQuery(roomId);
+  const { data: chore, error: choreError } = useChoreByIdQuery(choreIdNumber);
+  const {
+    mutate: updateChore,
+    isPending,
+    error: mutationError,
+  } = useUpdateChoreMutation();
+
+  if (membersError) {
+    console.error("Error fetching members:", membersError);
+  }
+
+  if (choreError) {
+    console.error("Error fetching chore:", choreError);
+  }
+
+  if (mutationError) {
+    console.error("Error with mutation:", mutationError);
+  }
 
   const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("");
@@ -82,7 +126,7 @@ const EditChoreScreen = () => {
           toastSuccess("Chore updated successfully!");
           router.back();
         },
-        onError: (error) => {
+        onError: (error: any) => {
           console.error("Error updating chore:", error);
           toastError("Failed to update chore. Please try again.");
         },
@@ -96,11 +140,13 @@ const EditChoreScreen = () => {
         <View className="flex-1 bg-gray-50 dark:bg-black">
           <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
             <View className="flex-row items-center justify-between mb-4">
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => router.back()}
                 className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
               >
-                <Text className="text-gray-600 dark:text-gray-300 text-sm font-medium">✕</Text>
+                <Text className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                  ✕
+                </Text>
               </TouchableOpacity>
               <View className="flex-1 mx-4">
                 <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">

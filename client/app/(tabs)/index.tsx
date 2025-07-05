@@ -103,7 +103,7 @@ const RoomList = ({
 const HomeScreen = () => {
   const { data: rooms } = useRoomsByUserQuery();
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const colors = Colors[colorScheme ?? "light"];
 
   const [modalVisible, setModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
@@ -151,8 +151,10 @@ const HomeScreen = () => {
     addRoomMutate(
       { name, createdBy: userId },
       {
-        onSuccess: () => {
-          toastSuccess(`Room "${name}" created successfully`);
+        onSuccess: (data) => {
+          toastSuccess(
+            `Room "${name}" created successfully! You are now the admin.`
+          );
           setModalVisible(false);
         },
         onError: (error) => {
@@ -271,7 +273,6 @@ const HomeScreen = () => {
               </LinearGradient>
             </TouchableOpacity>
           </View>
-
         </View>
         <ParallaxScrollViewY>
           <RoomList rooms={rooms} onOptionsPress={setOptionsRoom} />

@@ -14,34 +14,66 @@ import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
 import { toastError, toastSuccess } from "@/components/ToastService";
 
 const ChoreDetailsScreen = () => {
-  const { choreId, roomId } = useLocalSearchParams<{
-    choreId: string;
-    roomId?: string;
-  }>();
+  const params = useLocalSearchParams();
+  const choreId = Array.isArray(params.choreId)
+    ? params.choreId[0]
+    : typeof params.choreId === "string"
+      ? params.choreId
+      : undefined;
+  const roomId = Array.isArray(params.roomId)
+    ? params.roomId[0]
+    : typeof params.roomId === "string"
+      ? params.roomId
+      : undefined;
+
   const router = useRouter();
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  const choreIdNumber = choreId ? Number(choreId) : 0;
-  const { data: chore } = useChoreByIdQuery(choreIdNumber);
-  const { mutate: deleteChore, isPending: isDeleting } = useDeleteChoreMutation();
+  if (!choreId) {
+    return (
+      <LoadingAndErrorHandling>
+        <ChoreNotFound onBack={() => router.push("/chores")} />
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  const choreIdNumber = Number(choreId);
+  const { data: chore, error: choreError } = useChoreByIdQuery(choreIdNumber);
+  const {
+    mutate: deleteChore,
+    isPending: isDeleting,
+    error: deletionError,
+  } = useDeleteChoreMutation();
+
+  if (choreError) {
+    console.error("Error fetching chore:", choreError);
+  }
+
+  if (deletionError) {
+    console.error("Error deleting chore:", deletionError);
+  }
 
   const effectiveRoomId =
     roomId || (chore?.roomId ? String(chore.roomId) : undefined);
-  const { data: members = [] } = useRoomMembersQuery(effectiveRoomId || "");
+
+  const { data: members = [], error: membersError } = useRoomMembersQuery(
+    effectiveRoomId || ""
+  );
+
+  if (membersError) {
+    console.error("Error fetching members:", membersError);
+  }
 
   const memberMap = new Map(
-    (members as unknown as [number, string, number][]).map(([userId, name]) => [
-      userId,
-      name,
-    ])
+    members.map((member) => [member.userId, member.name])
   );
 
   const handleBack = () => {
     if (roomId) {
       router.push(`/rooms/${roomId}`);
     } else {
-      router.push('/chores');
+      router.push("/chores");
     }
   };
 
@@ -59,18 +91,18 @@ const ChoreDetailsScreen = () => {
 
   const confirmDelete = () => {
     if (!chore) return;
-    
+
     deleteChore(choreIdNumber, {
       onSuccess: () => {
         setShowDeleteConfirmation(false);
         toastSuccess("Chore deleted successfully!");
         handleBack();
       },
-      onError: (error) => {
+      onError: (error: any) => {
         setShowDeleteConfirmation(false);
         console.error("Error deleting chore:", error);
         toastError("Failed to delete chore. Please try again.");
-      }
+      },
     });
   };
 
@@ -82,7 +114,8 @@ const ChoreDetailsScreen = () => {
     );
   }
 
-  const assignedMemberName = memberMap.get(chore?.assignedTo ?? -1) || "Unassigned";
+  const assignedMemberName =
+    memberMap.get(chore?.assignedTo ?? -1) || "Unassigned";
 
   return (
     <LoadingAndErrorHandling>

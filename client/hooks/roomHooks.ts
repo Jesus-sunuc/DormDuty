@@ -3,6 +3,7 @@ import { axiosClient } from "@/utils/axiosClient";
 import {
   Room,
   RoomCreateRequest,
+  RoomCreateResponse,
   RoomDeleteRequest,
   RoomUpdateRequest,
 } from "@/models/Room";
@@ -14,7 +15,7 @@ const queryClient = getQueryClient();
 
 export const roomKeys = {
   all: ["rooms"] as const,
-  byUser: (userId: number) => ["rooms", "by-user", userId] as const
+  byUser: (userId: number) => ["rooms", "by-user", userId] as const,
 };
 
 export const useRoomsQuery = () => {
@@ -44,13 +45,14 @@ export const useAddRoomMutation = () =>
   useMutation({
     mutationFn: async (
       data: RoomCreateRequest
-    ): Promise<{ room_id: number; room_code: string }> => {
+    ): Promise<RoomCreateResponse> => {
       const body = camel_to_snake_serializing_date(data);
       const res = await axiosClient.post("/api/rooms/admin/add_room", body);
       return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roomKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["membership"] });
     },
   });
 

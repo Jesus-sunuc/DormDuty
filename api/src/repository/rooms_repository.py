@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import uuid
 from src.models.room import Room
 from src.models.room import RoomCreateRequest, RoomDeleteRequest, RoomUpdateRequest
+from src.models.membership import Role
 from src.services.database.helper import run_sql
 
 class RoomRepository:
@@ -39,7 +40,29 @@ class RoomRepository:
         )
 
         result = run_sql(sql, params)
-        return {"room_id": result[0][0], "room_code": room_code}
+        room_id = result[0][0]
+        
+        membership_sql = """
+            INSERT INTO room_membership (user_id, room_id, role, joined_at)
+            VALUES (%s, %s, %s, %s)
+            RETURNING membership_id
+        """
+        membership_params = (
+            room.created_by,
+            room_id,
+            Role.ADMIN.value,
+            datetime.now(timezone.utc),
+        )
+        
+        membership_result = run_sql(membership_sql, membership_params)
+        membership_id = membership_result[0][0]
+        
+        return {
+            "room_id": room_id, 
+            "room_code": room_code,
+            "membership_id": membership_id,
+            "role": Role.ADMIN.value
+        }
     
     def update_room(self, room: RoomUpdateRequest):
         sql = """

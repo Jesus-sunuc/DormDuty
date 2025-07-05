@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { useAddChoreMutation } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
-import { useAuth } from "@/hooks/user/useAuth";
+import { ThemedText } from "@/components/ThemedText";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollView from "@/components/ParallaxScrollViewY";
@@ -12,12 +12,21 @@ import { AddChoreForm } from "@/components/chores/AddChoreForm";
 import { validateChoreRequest } from "@/utils/choreUtils";
 
 const AddChoreScreen = () => {
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const router = useRouter();
-  const { user } = useAuth();
-  const { data: members = [] } = useRoomMembersQuery(roomId);
 
-  const { mutate: addChore, isPending } = useAddChoreMutation();
+  const params = useLocalSearchParams();
+  const roomId = Array.isArray(params.roomId)
+    ? params.roomId[0]
+    : typeof params.roomId === "string"
+      ? params.roomId
+      : undefined;
+
+  const roomMembersQuery = useRoomMembersQuery(roomId || "");
+  const addChoreMutation = useAddChoreMutation();
+
+  const members = roomMembersQuery.data || [];
+  const addChore = addChoreMutation.mutate;
+  const isPending = addChoreMutation.isPending;
 
   const [name, setName] = useState("New Chore");
   const [frequency, setFrequency] = useState("");
@@ -27,13 +36,30 @@ const AddChoreScreen = () => {
   const [startDate, setStartDate] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
 
-  const formattedMembers = (
-    members as unknown as [number, string, number][]
-  ).map(([userId, name, membershipId]) => ({
-    userId,
-    name,
-    membershipId,
-  }));
+  if (!roomId) {
+    return (
+      <LoadingAndErrorHandling>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+          }}
+        >
+          <ThemedText>Room ID not available</ThemedText>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  const formattedMembers = Array.isArray(members)
+    ? members.map((member) => ({
+        userId: member.userId,
+        name: member.name,
+        membershipId: member.membershipId,
+      }))
+    : [];
 
   const handleSubmit = () => {
     if (!name.trim() || !roomId) return;
@@ -50,23 +76,19 @@ const AddChoreScreen = () => {
       isActive: true,
     };
 
-    // Validate the request
     const validationErrors = validateChoreRequest(choreRequest);
     if (validationErrors.length > 0) {
-      toastError(validationErrors[0]); // Show first validation error
+      toastError(validationErrors[0]);
       return;
     }
 
-    addChore(
-      choreRequest,
-      {
-        onSuccess: () => {
-          toastSuccess("Chore added!");
-          router.back();
-        },
-        onError: () => toastError("Failed to add chore"),
-      }
-    );
+    addChore(choreRequest, {
+      onSuccess: () => {
+        toastSuccess("Chore added!");
+        router.back();
+      },
+      onError: () => toastError("Failed to add chore"),
+    });
   };
 
   return (

@@ -11,17 +11,37 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import { usePermissions } from "@/hooks/usePermissions";
+import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { LinearGradient } from "expo-linear-gradient";
 
 const RoomChoresScreen = () => {
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const params = useLocalSearchParams();
+  const roomId = Array.isArray(params.roomId)
+    ? params.roomId[0]
+    : typeof params.roomId === "string"
+      ? params.roomId
+      : undefined;
+
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+  const roomIdNum = roomId ? parseInt(roomId, 10) : 0;
+
+  const permissions = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
+  const isAdmin = permissions?.isAdmin || false;
+  const role = permissions?.role || "member";
 
   const router = useRouter();
+
+  if (!roomId) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ThemedText>Loading room...</ThemedText>
+      </View>
+    );
+  }
 
   return (
     <LoadingAndErrorHandling>
@@ -42,7 +62,7 @@ const RoomChoresScreen = () => {
             </View>
 
             <TouchableOpacity
-              onPress={() => router.push(`/rooms/${roomId}/add`)}
+              onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
               activeOpacity={0.8}
               style={{
                 shadowColor: colors.shadowColor,
@@ -73,20 +93,50 @@ const RoomChoresScreen = () => {
           </View>
 
           <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-              Room #{roomId}
-            </ThemedText>
-            <View className="flex-row items-center">
-              <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                Manage and track chores
-              </ThemedText>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
+                  Room #{roomId || "Loading..."}
+                </ThemedText>
+                <View className="flex-row items-center">
+                  <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage and track chores
+                  </ThemedText>
+                </View>
+              </View>
+
+              {role && (
+                <View
+                  className={
+                    isAdmin
+                      ? "px-3 py-1 rounded-full bg-green-100 dark:bg-green-900"
+                      : "px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900"
+                  }
+                >
+                  <ThemedText
+                    className={
+                      isAdmin
+                        ? "text-xs font-medium capitalize text-green-800 dark:text-green-200"
+                        : "text-xs font-medium capitalize text-blue-800 dark:text-blue-200"
+                    }
+                  >
+                    {role || "member"}
+                  </ThemedText>
+                </View>
+              )}
             </View>
           </View>
         </View>
 
         <ParallaxScrollViewY>
-          <ChoreList roomId={roomId} />
+          {roomId && <ChoreList roomId={roomId} />}
+
+          {roomId && roomId !== "undefined" && roomId !== "" && (
+            <View className="mt-8 px-4">
+              <RoomMembersList roomId={roomId} />
+            </View>
+          )}
         </ParallaxScrollViewY>
       </View>
     </LoadingAndErrorHandling>
@@ -96,12 +146,22 @@ const RoomChoresScreen = () => {
 export default RoomChoresScreen;
 
 const ChoreList = ({ roomId }: { roomId: string }) => {
-  const { data: chores } = useChoresByRoomQuery(roomId);
-  const { data: members = [] } = useRoomMembersQuery(roomId);
+  const { data: chores = [], error: choresError } =
+    useChoresByRoomQuery(roomId);
+  const { data: members = [], error: membersError } =
+    useRoomMembersQuery(roomId);
 
   const router = useRouter();
 
-  if (!chores.length) {
+  if (choresError) {
+    console.error("Error fetching chores:", choresError);
+  }
+
+  if (membersError) {
+    console.error("Error fetching members:", membersError);
+  }
+
+  if (!chores || !chores.length) {
     return (
       <View className="flex-1 items-center justify-center px-6 py-20">
         <Ionicons name="clipboard-outline" size={64} color="#9ca3af" />
@@ -116,9 +176,9 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   }
 
   const memberMap = new Map(
-    (members as unknown as [number, string, number][]).map(([userId, name]) => [
-      userId,
-      name,
+    (members || []).map((member) => [
+      member?.userId || 0,
+      member?.name || "Unknown",
     ])
   );
 
@@ -134,7 +194,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
         >
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-neutral-800">
             <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
-              {chore.name}
+              {chore?.name || "Unnamed Chore"}
             </ThemedText>
 
             <View className="space-y-2">
@@ -148,7 +208,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                   </ThemedText>
                 </View>
                 <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {formatDate(chore.lastCompleted)}
+                  {formatDate(chore?.lastCompleted) || "Never"}
                 </ThemedText>
               </View>
 
@@ -164,7 +224,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                 <View className="flex-row items-center">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
                   <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {memberMap.get(chore.assignedTo ?? -1) || "Unassigned"}
+                    {memberMap.get(chore?.assignedTo ?? -1) || "Unassigned"}
                   </ThemedText>
                 </View>
               </View>

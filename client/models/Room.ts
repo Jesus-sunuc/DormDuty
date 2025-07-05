@@ -11,6 +11,13 @@ export interface RoomCreateRequest {
   createdBy: number;
 }
 
+export interface RoomCreateResponse {
+  roomId: number;
+  roomCode: string;
+  membershipId: number;
+  role: string;
+}
+
 export interface RoomUpdateRequest {
   roomId: number;
   name: string;
