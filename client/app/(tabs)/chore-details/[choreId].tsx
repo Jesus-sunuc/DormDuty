@@ -68,7 +68,11 @@ const ChoreDetailsScreen = () => {
 
   if (choreLoading) {
     return (
-      <LoadingAndErrorHandling isLoading={true} error={null}>
+      <LoadingAndErrorHandling
+        isLoading={true}
+        error={null}
+        loadingText="Loading chore details..."
+      >
         <></>
       </LoadingAndErrorHandling>
     );

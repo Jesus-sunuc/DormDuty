@@ -38,9 +38,9 @@ const RoomChoresScreen = () => {
 
   if (!roomId) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ThemedText>Loading room...</ThemedText>
-      </View>
+      <LoadingAndErrorHandling>
+        <></>
+      </LoadingAndErrorHandling>
     );
   }
 
@@ -196,17 +196,21 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center p-8">
-        <ThemedText className="text-gray-500">Loading chores...</ThemedText>
-      </View>
+      <LoadingAndErrorHandling
+        isLoading={true}
+        error={null}
+        loadingText="Loading room data..."
+      >
+        <></>
+      </LoadingAndErrorHandling>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center p-8">
-        <ThemedText className="text-red-500">Error loading data</ThemedText>
-      </View>
+      <LoadingAndErrorHandling isLoading={false} error={error}>
+        <></>
+      </LoadingAndErrorHandling>
     );
   }
 

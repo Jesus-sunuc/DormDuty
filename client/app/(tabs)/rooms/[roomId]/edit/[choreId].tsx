@@ -173,7 +173,7 @@ const EditChoreScreen = () => {
               </TouchableOpacity>
               <View className="flex-1 mx-4">
                 <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Loading...
+                  Chore not found
                 </ThemedText>
               </View>
             </View>
@@ -185,7 +185,11 @@ const EditChoreScreen = () => {
 
   if (isLoading || !chore) {
     return (
-      <LoadingAndErrorHandling isLoading={true} error={null}>
+      <LoadingAndErrorHandling
+        isLoading={true}
+        error={null}
+        loadingText="Loading chore data..."
+      >
         <></>
       </LoadingAndErrorHandling>
     );

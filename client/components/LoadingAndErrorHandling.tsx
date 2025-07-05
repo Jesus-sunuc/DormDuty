@@ -8,7 +8,13 @@ export const LoadingAndErrorHandling: FC<{
   children: ReactNode;
   isLoading?: boolean;
   error?: Error | null;
-}> = ({ children, isLoading = false, error = null }) => {
+  loadingText?: string;
+}> = ({
+  children,
+  isLoading = false,
+  error = null,
+  loadingText = "Loading...",
+}) => {
   const validChildren = React.isValidElement(children) ? (
     children
   ) : typeof children === "string" ? (
@@ -18,7 +24,7 @@ export const LoadingAndErrorHandling: FC<{
   );
 
   if (isLoading) {
-    return <Spinner text="Loading..." />;
+    return <Spinner text={loadingText} />;
   }
 
   if (error) {
@@ -34,11 +40,7 @@ export const LoadingAndErrorHandling: FC<{
         <Text style={{ marginBottom: 8, textAlign: "center" }}>
           {`Error: ${error?.message || "Something went wrong."}`}
         </Text>
-        <Button
-          title="Try again"
-          onPress={() => {
-          }}
-        />
+        <Button title="Try again" onPress={() => {}} />
       </View>
     );
   }

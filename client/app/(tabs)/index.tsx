@@ -220,7 +220,11 @@ const HomeScreen = () => {
   };
 
   return (
-    <LoadingAndErrorHandling isLoading={shouldShowLoading} error={error}>
+    <LoadingAndErrorHandling
+      isLoading={shouldShowLoading}
+      error={error}
+      loadingText="Loading apartments..."
+    >
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
           <View className="flex-row items-center justify-between mt-4">
