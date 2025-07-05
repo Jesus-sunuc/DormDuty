@@ -63,35 +63,37 @@ const RoomChoresScreen = () => {
                 </ThemedText>
               </View>
 
-              <TouchableOpacity
-                onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
-                activeOpacity={0.8}
-                style={{
-                  shadowColor: colors.shadowColor,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 8,
-                  borderRadius: 16,
-                }}
-              >
-                <LinearGradient
-                  colors={colors.gradientPrimary}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+              {permissions.isAdmin && (
+                <TouchableOpacity
+                  onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
+                  activeOpacity={0.8}
                   style={{
-                    width: 40,
-                    height: 40,
+                    shadowColor: colors.shadowColor,
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 8,
                     borderRadius: 16,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: colors.borderAccent,
                   }}
                 >
-                  <Ionicons name="add" size={22} color="white" />
-                </LinearGradient>
-              </TouchableOpacity>
+                  <LinearGradient
+                    colors={colors.gradientPrimary}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 16,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 1,
+                      borderColor: colors.borderAccent,
+                    }}
+                  >
+                    <Ionicons name="add" size={22} color="white" />
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
             </View>
 
             <View className="mt-2">

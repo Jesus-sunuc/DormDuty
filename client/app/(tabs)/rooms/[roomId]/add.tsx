@@ -10,6 +10,8 @@ import ParallaxScrollView from "@/components/ParallaxScrollViewY";
 import { AddChoreHeader } from "@/components/chores/AddChoreHeader";
 import { AddChoreForm } from "@/components/chores/AddChoreForm";
 import { validateChoreRequest } from "@/utils/choreUtils";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Role } from "@/models/Membership";
 
 const AddChoreScreen = () => {
   const router = useRouter();
@@ -27,6 +29,12 @@ const AddChoreScreen = () => {
   const members = roomMembersQuery.data || [];
   const addChore = addChoreMutation.mutate;
   const isPending = addChoreMutation.isPending;
+
+  // Check if user has admin permissions
+  const roomIdNumber = roomId ? Number(roomId) : 0;
+  const { hasPermission, isLoading: permissionsLoading } =
+    usePermissions(roomIdNumber);
+  const isAdmin = hasPermission(Role.ADMIN);
 
   const [name, setName] = useState("New Chore");
   const [frequency, setFrequency] = useState("");
@@ -53,6 +61,36 @@ const AddChoreScreen = () => {
     );
   }
 
+  // Show loading while checking permissions
+  if (permissionsLoading) {
+    return (
+      <LoadingAndErrorHandling
+        isLoading={true}
+        loadingText="Checking permissions..."
+      >
+        <></>
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  // Check if user has admin permissions
+  if (!isAdmin) {
+    return (
+      <LoadingAndErrorHandling>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+          }}
+        >
+          <ThemedText>Only room admins can create chores</ThemedText>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
+
   const formattedMembers = Array.isArray(members)
     ? members.map((member) => ({
         userId: member.userId,
@@ -62,6 +100,11 @@ const AddChoreScreen = () => {
     : [];
 
   const handleSubmit = () => {
+    if (!isAdmin) {
+      toastError("Only admins can create chores");
+      return;
+    }
+
     if (!name.trim() || !roomId) return;
 
     const choreRequest = {

@@ -11,6 +11,8 @@ import { AddChoreHeader } from "@/components/chores/AddChoreHeader";
 import { AddChoreForm } from "@/components/chores/AddChoreForm";
 import { validateChoreRequest } from "@/utils/choreUtils";
 import { toISODateString, toTimeString } from "@/utils/dateUtils";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Role } from "@/models/Membership";
 
 const getSafeParams = () => {
   const params = useLocalSearchParams();
@@ -89,6 +91,42 @@ const EditChoreScreen = () => {
 
   const isLoading = membersLoading || choreLoading;
   const error = membersError || choreError;
+
+  // Check if user has admin permissions
+  const roomIdNumber = roomId ? Number(roomId) : 0;
+  const { hasPermission, isLoading: permissionsLoading } =
+    usePermissions(roomIdNumber);
+  const isAdmin = hasPermission(Role.ADMIN);
+
+  // Show loading while checking permissions
+  if (permissionsLoading) {
+    return (
+      <LoadingAndErrorHandling
+        isLoading={true}
+        loadingText="Checking permissions..."
+      >
+        <></>
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  // Check if user has admin permissions
+  if (!isAdmin) {
+    return (
+      <LoadingAndErrorHandling>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+          }}
+        >
+          <ThemedText>Only room admins can edit chores</ThemedText>
+        </View>
+      </LoadingAndErrorHandling>
+    );
+  }
 
   const nameState = useState("");
   const name = nameState[0];

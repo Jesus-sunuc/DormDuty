@@ -12,6 +12,8 @@ import { ChoreDescriptionCard } from "@/components/chores/ChoreDescriptionCard";
 import { ChoreOptionsModal } from "@/components/chores/ChoreOptionsModal";
 import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
 import { toastError, toastSuccess } from "@/components/ToastService";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Role } from "@/models/Membership";
 
 const ChoreDetailsScreen = () => {
   const params = useLocalSearchParams();
@@ -49,6 +51,12 @@ const ChoreDetailsScreen = () => {
   const { data: members = [], error: membersError } = useRoomMembersQuery(
     effectiveRoomId || ""
   );
+
+  // Get user permissions for this room
+  const roomIdNumber = effectiveRoomId ? Number(effectiveRoomId) : 0;
+  const { hasPermission, isLoading: permissionsLoading } =
+    usePermissions(roomIdNumber);
+  const isAdmin = hasPermission(Role.ADMIN);
 
   if (!choreId) {
     return (
@@ -107,6 +115,10 @@ const ChoreDetailsScreen = () => {
   };
 
   const handleEdit = () => {
+    if (!isAdmin) {
+      toastError("Only admins can edit chores");
+      return;
+    }
     setShowOptionsModal(false);
     if (chore && effectiveRoomId) {
       router.push(`/rooms/${effectiveRoomId}/edit/${choreIdNumber}`);
@@ -114,6 +126,10 @@ const ChoreDetailsScreen = () => {
   };
 
   const handleDelete = () => {
+    if (!isAdmin) {
+      toastError("Only admins can delete chores");
+      return;
+    }
     setShowOptionsModal(false);
     setShowDeleteConfirmation(true);
   };
@@ -144,6 +160,7 @@ const ChoreDetailsScreen = () => {
         assignedMemberName={assignedMemberName}
         onBack={handleBack}
         onOptions={() => setShowOptionsModal(true)}
+        showOptions={isAdmin}
       />
 
       <ParallaxScrollView>
