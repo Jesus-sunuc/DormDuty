@@ -67,11 +67,14 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
     value: option,
   }));
 
-  const dayItems = daysOfWeek.map((day, index) => ({
-    label: day,
-    value: index,
-    key: index.toString(),
-  }));
+  const dayItems = [
+    { label: "No specific day", value: undefined, key: "no-specific-day" },
+    ...daysOfWeek.map((day, index) => ({
+      label: day,
+      value: index,
+      key: index.toString(),
+    })),
+  ];
 
   return (
     <View className="px-6">
@@ -104,7 +107,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
       />
 
       <PickerField
-        label="Always on?"
+        label="Specific Day (Optional)"
         selectedValue={dayOfWeek}
         onValueChange={setDayOfWeek}
         items={dayItems}

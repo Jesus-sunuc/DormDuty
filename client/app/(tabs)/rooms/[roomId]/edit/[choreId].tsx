@@ -86,7 +86,6 @@ const EditChoreScreen = () => {
   const mutationResult = useUpdateChoreMutation();
   const updateChore = mutationResult.mutate;
   const isPending = mutationResult.isPending;
-  const mutationError = mutationResult.error;
 
   const isLoading = membersLoading || choreLoading;
   const error = membersError || choreError;
@@ -131,18 +130,7 @@ const EditChoreScreen = () => {
     }
   }, [chore]);
 
-  const formattedMembers = (
-    members as unknown as [number, string, number][]
-  ).map((member) => {
-    const userId = member[0];
-    const name = member[1];
-    const membershipId = member[2];
-    return {
-      userId,
-      name,
-      membershipId,
-    };
-  });
+  const formattedMembers = members || [];
 
   const handleSubmit = () => {
     if (!name.trim() || !roomId || !choreId) return;

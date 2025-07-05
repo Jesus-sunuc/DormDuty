@@ -22,7 +22,6 @@ export const frequencyOptions = [
 ];
 
 export const daysOfWeek = [
-  "Select a day",
   "Sunday",
   "Monday",
   "Tuesday",
