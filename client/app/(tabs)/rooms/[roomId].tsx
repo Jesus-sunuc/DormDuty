@@ -75,10 +75,14 @@ const RoomChoresScreen = () => {
                     shadowRadius: 4,
                     elevation: 4,
                   }}
-                  className="bg-emerald-500 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
+                  className="bg-emerald-100 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
                 >
-                  <Ionicons name="add" size={20} color="white" />
-                  <ThemedText className="text-white font-semibold text-sm mr-1">
+                  <Ionicons
+                    name="add"
+                    size={17}
+                    color={colorScheme === "dark" ? "white" : "#047857"}
+                  />
+                  <ThemedText className="text-emerald-700 dark:text-white font-semibold mr-1 text-sm">
                     Create
                   </ThemedText>
                 </TouchableOpacity>

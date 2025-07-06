@@ -257,10 +257,14 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-indigo-500 dark:bg-indigo-900 px-2 py-2 rounded-xl border border-indigo-400 dark:border-indigo-500 flex-row items-center"
+                className="bg-indigo-100 dark:bg-indigo-900 px-2 py-2 rounded-xl border border-indigo-400 dark:border-indigo-500 flex-row items-center"
               >
-                <Ionicons name="enter-outline" size={20} color="white" />
-                <ThemedText className="text-white font-semibold ml-1 mr-1 text-sm">
+                <Ionicons
+                  name="enter-outline"
+                  size={17}
+                  color={colorScheme === "dark" ? "white" : "#4338ca"}
+                />
+                <ThemedText className="text-indigo-700 dark:text-white font-semibold ml-1 mr-1 text-sm">
                   Join
                 </ThemedText>
               </TouchableOpacity>
@@ -278,10 +282,14 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-emerald-500 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
+                className="bg-emerald-100 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
               >
-                <Ionicons name="add" size={20} color="white" />
-                <ThemedText className="text-white font-semibold text-sm mr-1">
+                <Ionicons
+                  name="add"
+                  size={17}
+                  color={colorScheme === "dark" ? "white" : "#047857"}
+                />
+                <ThemedText className="text-emerald-700 dark:text-white font-semibold text-sm mr-1">
                   Create
                 </ThemedText>
               </TouchableOpacity>
