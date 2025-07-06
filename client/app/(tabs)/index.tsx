@@ -17,7 +17,6 @@ import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomShee
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/hooks/user/useAuth";
-import { LinearGradient } from "expo-linear-gradient";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
@@ -247,35 +246,22 @@ const HomeScreen = () => {
               </View>
             </View>
 
-            <View className="flex-row space-x-3">
+            <View className="flex-row space-x-3 gap-2">
               <TouchableOpacity
                 onPress={() => setJoinRoomModalVisible(true)}
-                activeOpacity={0.8}
+                activeOpacity={0.7}
                 style={{
-                  shadowColor: colors.shadowColor,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 8,
-                  borderRadius: 16,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
                 }}
+                className="rounded-xl"
               >
-                <LinearGradient
-                  colors={["#10b981", "#059669"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 16,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: colors.borderAccent,
-                  }}
-                >
-                  <Ionicons name="enter-outline" size={22} color="white" />
-                </LinearGradient>
+                <View className="w-10 h-10 rounded-xl bg-indigo-500 dark:bg-indigo-600 items-center justify-center border border-indigo-400 dark:border-indigo-500">
+                  <Ionicons name="enter-outline" size={24} color="white" />
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -283,32 +269,19 @@ const HomeScreen = () => {
                   setRoomToEdit(null);
                   setModalVisible(true);
                 }}
-                activeOpacity={0.8}
+                activeOpacity={0.7}
                 style={{
-                  shadowColor: colors.shadowColor,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 8,
-                  borderRadius: 16,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
                 }}
+                className="rounded-xl"
               >
-                <LinearGradient
-                  colors={colors.gradientPrimary}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 16,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: colors.borderAccent,
-                  }}
-                >
-                  <Ionicons name="add" size={22} color="white" />
-                </LinearGradient>
+                <View className="w-10 h-10 rounded-xl bg-emerald-500 dark:bg-emerald-600 items-center justify-center border border-emerald-400 dark:border-emerald-500">
+                  <Ionicons name="add" size={24} color="white" />
+                </View>
               </TouchableOpacity>
             </View>
           </View>

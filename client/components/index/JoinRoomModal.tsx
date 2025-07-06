@@ -79,7 +79,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
         <View className="flex-1 bg-black/50 justify-center items-center px-6">
           <View className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-sm">
             <View className="flex-row items-center justify-between mb-6">
-              <ThemedText className="text-xl font-bold">Join Room</ThemedText>
+              <ThemedText className="text-xl font-bold text-gray-700 dark:text-gray-300">Join Room</ThemedText>
               <TouchableOpacity
                 onPress={handleClose}
                 className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-700 items-center justify-center"
@@ -104,7 +104,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               />
             </View>
 
-            <View className="flex-row space-x-3">
+            <View className="flex-row space-x-3 gap-3">
               <TouchableOpacity
                 onPress={handleClose}
                 className="flex-1 py-3 px-4 rounded-lg bg-gray-100 dark:bg-neutral-700"
