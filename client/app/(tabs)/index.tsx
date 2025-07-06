@@ -314,6 +314,7 @@ const HomeScreen = () => {
             toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
           }
           onDelete={handleDeleteRoom}
+          room={optionsRoom}
         />
 
         <ConfirmationModal

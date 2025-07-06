@@ -3,6 +3,9 @@ import { ThemedText } from "../ThemedText";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as Clipboard from 'expo-clipboard';
+import { toastSuccess } from "../ToastService";
+import { Room } from "@/models/Room";
 
 type Props = {
   visible: boolean;
@@ -10,6 +13,7 @@ type Props = {
   onEdit: () => void;
   onShareCode?: () => void;
   onDelete?: () => void;
+  room?: Room | null;
 };
 
 type ActionItemProps = {
@@ -24,7 +28,15 @@ export const RoomOptionsBottomSheet = ({
   onEdit,
   onShareCode: onShareCode,
   onDelete,
+  room,
 }: Props) => {
+  const handleCopyRoomCode = async () => {
+    if (room?.roomCode) {
+      await Clipboard.setStringAsync(room.roomCode);
+      toastSuccess(`Room code "${room.roomCode}" copied to clipboard!`);
+      onClose();
+    }
+  };
   return (
     <Modal
       animationType="fade"
@@ -54,6 +66,14 @@ export const RoomOptionsBottomSheet = ({
                 onClose();
               }}
             />
+
+            {room?.roomCode && (
+              <ActionItem
+                label="Copy Room Code"
+                icon={<Ionicons name="copy-outline" size={18} color="#8b5cf6" />}
+                onPress={handleCopyRoomCode}
+              />
+            )}
 
             {onShareCode && (
               <ActionItem
