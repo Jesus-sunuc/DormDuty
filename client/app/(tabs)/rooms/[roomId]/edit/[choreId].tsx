@@ -92,13 +92,11 @@ const EditChoreScreen = () => {
   const isLoading = membersLoading || choreLoading;
   const error = membersError || choreError;
 
-  // Check if user has admin permissions
   const roomIdNumber = roomId ? Number(roomId) : 0;
   const { hasPermission, isLoading: permissionsLoading } =
     usePermissions(roomIdNumber);
   const isAdmin = hasPermission(Role.ADMIN);
 
-  // Show loading while checking permissions
   if (permissionsLoading) {
     return (
       <LoadingAndErrorHandling
@@ -110,7 +108,6 @@ const EditChoreScreen = () => {
     );
   }
 
-  // Check if user has admin permissions
   if (!isAdmin) {
     return (
       <LoadingAndErrorHandling>

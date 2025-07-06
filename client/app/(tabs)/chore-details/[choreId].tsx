@@ -52,7 +52,6 @@ const ChoreDetailsScreen = () => {
     effectiveRoomId || ""
   );
 
-  // Get user permissions for this room
   const roomIdNumber = effectiveRoomId ? Number(effectiveRoomId) : 0;
   const { hasPermission, isLoading: permissionsLoading } =
     usePermissions(roomIdNumber);

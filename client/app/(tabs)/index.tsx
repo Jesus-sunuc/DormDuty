@@ -257,7 +257,7 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-indigo-500 dark:bg-indigo-700 px-2 py-2 rounded-xl border border-indigo-400 dark:border-indigo-500 flex-row items-center"
+                className="bg-indigo-500 dark:bg-indigo-900 px-2 py-2 rounded-xl border border-indigo-400 dark:border-indigo-500 flex-row items-center"
               >
                 <Ionicons name="enter-outline" size={20} color="white" />
                 <ThemedText className="text-white font-semibold ml-1 mr-1 text-sm">
@@ -278,7 +278,7 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-emerald-500 dark:bg-emerald-700 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
+                className="bg-emerald-500 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
               >
                 <Ionicons name="add" size={20} color="white" />
                 <ThemedText className="text-white font-semibold text-sm mr-1">

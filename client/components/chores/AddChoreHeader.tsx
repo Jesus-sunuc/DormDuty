@@ -54,7 +54,7 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
             elevation: 4,
             opacity: isPending ? 0.6 : 1,
           }}
-          className="bg-emerald-500 dark:bg-emerald-700 border border-emerald-400 dark:border-emerald-500 px-3 py-2 rounded-xl flex-row items-center"
+          className="bg-emerald-500 dark:bg-emerald-900 border border-emerald-400 dark:border-emerald-500 px-3 py-2 rounded-xl flex-row items-center"
         >
           <Ionicons name="checkmark" size={17} color="white" />
           <Text className="text-white text-center ml-1 mr-1">
