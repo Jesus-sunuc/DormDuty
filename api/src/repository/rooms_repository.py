@@ -19,6 +19,11 @@ class RoomRepository:
         """
         return run_sql(sql, (user_id,), output_class=Room)
     
+    def get_room_by_id(self, room_id: int):
+        sql = "SELECT * FROM room WHERE room_id = %s"
+        result = run_sql(sql, (room_id,), output_class=Room)
+        return result[0] if result else None
+    
     
     def generate_room_code(self) -> str:
         return str(uuid.uuid4())[:6].upper()

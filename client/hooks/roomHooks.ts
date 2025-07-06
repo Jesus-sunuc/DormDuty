@@ -16,6 +16,7 @@ const queryClient = getQueryClient();
 export const roomKeys = {
   all: ["rooms"] as const,
   byUser: (userId: number) => ["rooms", "by-user", userId] as const,
+  byId: (roomId: number) => ["rooms", "by-id", roomId] as const,
 };
 
 export const useRoomsQuery = () => {
@@ -51,6 +52,18 @@ export const useRoomsByUserQuery = () => {
     enabled: !!userId,
     staleTime: !!userId ? 5 * 60 * 1000 : 0,
     refetchOnMount: true,
+  });
+};
+
+export const useRoomByIdQuery = (roomId: number) => {
+  return useQuery({
+    queryKey: roomKeys.byId(roomId),
+    queryFn: async (): Promise<Room> => {
+      const res = await axiosClient.get(`/api/rooms/${roomId}`);
+      return res.data;
+    },
+    enabled: !!roomId && roomId > 0,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

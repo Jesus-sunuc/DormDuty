@@ -21,6 +21,11 @@ def get_all_rooms():
 def get_rooms_by_user(user_id: int):
     return repo.get_rooms_by_user_id(user_id)
 
+@router.get("/{room_id}")
+@error_handler("Error fetching room by ID")
+def get_room_by_id(room_id: int):
+    return repo.get_room_by_id(room_id)
+
 @router.post("/admin/add_room")
 @error_handler("Error creating room")
 def add_room_admin(room: RoomCreateRequest):

@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useChoresByRoomQuery } from "@/hooks/choreHooks";
+import { useRoomByIdQuery } from "@/hooks/roomHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import {
   View,
@@ -30,6 +31,7 @@ const RoomChoresScreen = () => {
   const roomIdNum = roomId ? parseInt(roomId, 10) : 0;
 
   const permissions = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
+  const { data: room, isLoading: roomLoading } = useRoomByIdQuery(roomIdNum);
 
   const [membersExpanded, setMembersExpanded] = useState(false);
 
@@ -87,7 +89,9 @@ const RoomChoresScreen = () => {
               <View className="flex-row items-center justify-between">
                 <View className="flex-1">
                   <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-                    Room #{roomId || "Loading..."}
+                    {roomLoading
+                      ? "Loading..."
+                      : room?.name || `Room #${roomId}`}
                   </ThemedText>
                   <View className="flex-row items-center">
                     <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
