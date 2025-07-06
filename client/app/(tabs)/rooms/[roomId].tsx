@@ -67,17 +67,18 @@ const RoomChoresScreen = () => {
                   onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
                   activeOpacity={0.8}
                   style={{
-                    width: 36,
-                    height: 36,
                     shadowColor: colors.shadowColor,
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.1,
                     shadowRadius: 4,
                     elevation: 4,
                   }}
-                  className="bg-emerald-500 dark:bg-emerald-700 rounded-xl items-center justify-center"
+                  className="bg-emerald-500 dark:bg-emerald-700 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
                 >
-                  <Ionicons name="add" size={24} color="white" />
+                  <Ionicons name="add" size={20} color="white" />
+                  <ThemedText className="text-white font-semibold text-sm mr-1">
+                    Create
+                  </ThemedText>
                 </TouchableOpacity>
               )}
             </View>

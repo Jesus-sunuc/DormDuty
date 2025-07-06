@@ -2,6 +2,7 @@ import React from "react";
 import { View, TouchableOpacity, Text, useColorScheme } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface AddChoreHeaderProps {
   roomId: string;
@@ -53,9 +54,10 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
             elevation: 4,
             opacity: isPending ? 0.6 : 1,
           }}
-          className="bg-emerald-500 dark:bg-emerald-700 px-5 py-3 rounded-xl"
+          className="bg-emerald-500 dark:bg-emerald-700 border border-emerald-400 dark:border-emerald-500 px-3 py-2 rounded-xl flex-row items-center"
         >
-          <Text className="text-white font-semibold text-center">
+          <Ionicons name="checkmark" size={17} color="white" />
+          <Text className="text-white text-center ml-1 mr-1">
             {isPending
               ? isEdit
                 ? "Updating..."
