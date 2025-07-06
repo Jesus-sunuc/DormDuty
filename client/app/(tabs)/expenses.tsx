@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, TouchableOpacity, Modal, FlatList } from "react-native";
+import { useState, useEffect } from "react";
+import { View, TouchableOpacity, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/hooks/user/useAuth";
@@ -9,7 +9,6 @@ import {
   useRoomExpensesQuery,
   useExpenseSummaryQuery,
 } from "@/hooks/expenseHooks";
-import { AddExpenseForm } from "@/components/expenses/AddExpenseForm";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
@@ -19,17 +18,20 @@ import { Room } from "@/models/Room";
 import { Expense } from "@/models/Expense";
 
 const ExpensesScreen = () => {
-  const colorScheme = useColorScheme();
   const { user } = useAuth();
-  const router = useRouter();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [showAddExpense, setShowAddExpense] = useState(false);
 
   const {
     data: rooms = [],
     isLoading: roomsLoading,
     error: roomsError,
   } = useRoomsByUserQuery();
+
+  useEffect(() => {
+    if (rooms.length > 0 && !selectedRoom) {
+      setSelectedRoom(rooms[0]);
+    }
+  }, [rooms, selectedRoom]);
 
   if (roomsLoading) {
     return (
@@ -63,7 +65,7 @@ const ExpensesScreen = () => {
     );
   }
 
-  const currentRoom = selectedRoom || (rooms.length === 1 ? rooms[0] : null);
+  const currentRoom = selectedRoom;
 
   return (
     <ParallaxScrollViewY>
@@ -103,20 +105,7 @@ const ExpensesScreen = () => {
         )}
 
         {currentRoom && (
-          <RoomExpenseContent
-            room={currentRoom}
-            userId={user?.userId || 0}
-            onAddExpense={() => setShowAddExpense(true)}
-          />
-        )}
-
-        {currentRoom && (
-          <AddExpenseModal
-            visible={showAddExpense}
-            room={currentRoom}
-            userId={user?.userId || 0}
-            onClose={() => setShowAddExpense(false)}
-          />
+          <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
         )}
       </View>
     </ParallaxScrollViewY>
@@ -126,15 +115,13 @@ const ExpensesScreen = () => {
 interface RoomExpenseContentProps {
   room: Room;
   userId: number;
-  onAddExpense: () => void;
 }
 
 const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
   room,
   userId,
-  onAddExpense,
 }) => {
-  const colorScheme = useColorScheme();
+  const router = useRouter();
   const { data: membership } = useMembershipQuery(userId, room.roomId);
   const { data: expenses = [], isLoading: expensesLoading } =
     useRoomExpensesQuery(room.roomId);
@@ -198,7 +185,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
       )}
 
       <TouchableOpacity
-        onPress={onAddExpense}
+        onPress={() => router.push(`/expenses/add?roomId=${room.roomId}`)}
         className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center shadow-sm"
       >
         <Ionicons name="add" size={24} color="white" />
@@ -249,8 +236,6 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   expense,
   currentUserMembershipId,
 }) => {
-  const colorScheme = useColorScheme();
-
   const userSplit = expense.splits.find(
     (split) => split.membershipId === currentUserMembershipId
   );
@@ -301,46 +286,6 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
         )}
       </View>
     </View>
-  );
-};
-
-interface AddExpenseModalProps {
-  visible: boolean;
-  room: Room;
-  userId: number;
-  onClose: () => void;
-}
-
-const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
-  visible,
-  room,
-  userId,
-  onClose,
-}) => {
-  const { data: membership } = useMembershipQuery(userId, room.roomId);
-
-  if (!membership) return null;
-
-  return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View className="flex-1 justify-center items-center bg-black/50 p-4">
-        <View className="w-full max-w-md">
-          <AddExpenseForm
-            roomId={room.roomId}
-            payerMembershipId={membership.membershipId}
-            onClose={onClose}
-            onSuccess={() => {
-              // Optional: Add any success handling here
-            }}
-          />
-        </View>
-      </View>
-    </Modal>
   );
 };
 
