@@ -19,6 +19,8 @@ def error_handler(error_message: str):
                 traceback.print_exc()
                 raise HTTPException(status_code=500, detail=f"{error_message}")
             except HTTPException as e:
+                if e.status_code == 404:
+                    raise e
                 print(f"\nError in function '{func.__name__}':")
                 print("Arguments (args):")
                 pprint.pprint(args)

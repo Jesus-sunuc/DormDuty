@@ -164,6 +164,79 @@ class MembershipRepository:
                 "message": "Left room successfully."
             }
     
+    def remove_user(self, admin_membership_id: int, target_membership_id: int, room_id: int):
+        """
+        Admin removes a user from a room
+        """
+        admin_check_sql = """
+            SELECT role FROM room_membership 
+            WHERE membership_id = %s AND room_id = %s AND is_active = TRUE
+        """
+        admin_result = run_sql(admin_check_sql, (admin_membership_id, room_id))
+        if not admin_result or admin_result[0][0] != Role.ADMIN.value:
+            return {
+                "success": False,
+                "message": "Only admins can remove users from rooms"
+            }
+        
+        target_check_sql = """
+            SELECT u.name, rm.role FROM room_membership rm
+            JOIN "user" u ON rm.user_id = u.user_id
+            WHERE rm.membership_id = %s AND rm.room_id = %s AND rm.is_active = TRUE
+        """
+        target_result = run_sql(target_check_sql, (target_membership_id, room_id))
+        if not target_result:
+            return {
+                "success": False,
+                "message": "User not found in room"
+            }
+        
+        target_name, target_role = target_result[0]
+        
+        if target_role == Role.ADMIN.value:
+            admin_count_sql = """
+                SELECT COUNT(*) FROM room_membership 
+                WHERE room_id = %s AND role = %s AND is_active = TRUE
+            """
+            admin_count = run_sql(admin_count_sql, (room_id, Role.ADMIN.value))[0][0]
+            if admin_count <= 1:
+                return {
+                    "success": False,
+                    "message": "Cannot remove the last admin from the room"
+                }
+        
+        run_sql("UPDATE chore SET assigned_to = NULL WHERE assigned_to = %s", (target_membership_id,))
+        run_sql("DELETE FROM chore_verification WHERE verified_by = %s", (target_membership_id,))
+        run_sql("DELETE FROM expense_split WHERE membership_id = %s", (target_membership_id,))
+        run_sql("DELETE FROM chore_completion WHERE membership_id = %s", (target_membership_id,))
+        run_sql("DELETE FROM chore_swap_request WHERE from_membership = %s OR to_membership = %s", (target_membership_id, target_membership_id,))
+        run_sql("DELETE FROM chore_assignment_history WHERE membership_id = %s", (target_membership_id,))
+        run_sql("DELETE FROM expense WHERE payer_membership_id = %s", (target_membership_id,))
+        
+        run_sql("DELETE FROM room_membership WHERE membership_id = %s", (target_membership_id,))
+        
+        remaining_members_sql = """
+            SELECT COUNT(*) FROM room_membership 
+            WHERE room_id = %s AND is_active = TRUE
+        """
+        remaining_count = run_sql(remaining_members_sql, (room_id,))[0][0]
+        
+        if remaining_count == 0:
+            self._delete_room_completely(room_id)
+            return {
+                "success": True,
+                "room_deleted": True,
+                "target_name": target_name,
+                "message": f"User {target_name} was removed from the room. Room was deleted as they were the last member."
+            }
+        else:
+            return {
+                "success": True,
+                "room_deleted": False,
+                "target_name": target_name,
+                "message": f"User {target_name} was successfully removed from the room."
+            }
+    
     def _delete_room_completely(self, room_id: int):
         """
         Delete room and all related data completely

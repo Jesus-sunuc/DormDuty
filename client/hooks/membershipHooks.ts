@@ -35,6 +35,13 @@ export const useMembershipQuery = (
       return res.data;
     },
     enabled: (options?.enabled ?? true) && !!userId && !!roomId && roomId > 0,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useUserRoleQuery = (
@@ -55,6 +62,13 @@ export const useUserRoleQuery = (
       return res.data;
     },
     enabled: (options?.enabled ?? true) && !!userId && !!roomId && roomId > 0,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useIsAdminQuery = (
@@ -75,6 +89,13 @@ export const useIsAdminQuery = (
       return res.data;
     },
     enabled: (options?.enabled ?? true) && !!userId && !!roomId && roomId > 0,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useRoomMembersQuery = (roomId: string) => {
@@ -186,6 +207,29 @@ export const useLeaveRoomMutation = () =>
     }> => {
       const res = await axiosClient.post(
         `/api/membership/leave-room?membership_id=${data.membershipId}&room_id=${data.roomId}`
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membershipKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
+
+export const useRemoveUserMutation = () =>
+  useMutation({
+    mutationFn: async (data: {
+      adminMembershipId: number;
+      targetMembershipId: number;
+      roomId: number;
+    }): Promise<{
+      success: boolean;
+      roomDeleted: boolean;
+      targetName: string;
+      message: string;
+    }> => {
+      const res = await axiosClient.post(
+        `/api/membership/remove-user?admin_membership_id=${data.adminMembershipId}&target_membership_id=${data.targetMembershipId}&room_id=${data.roomId}`
       );
       return res.data;
     },

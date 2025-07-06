@@ -34,17 +34,22 @@ export const usePermissions = (roomId: number) => {
     enabled: !!userId && !!roomId && roomId > 0,
   });
 
+  const isNotMember =
+    adminError?.response?.status === 404 ||
+    roleError?.response?.status === 404 ||
+    membershipError?.response?.status === 404;
+
   return {
     isAdmin: adminData?.isAdmin ?? false,
-    isMember: !!membershipData?.membershipId,
+    isMember: !!membershipData?.membershipId && !isNotMember,
     role: (roleData?.role as Role) || Role.MEMBER,
     membershipId: membershipData?.membershipId,
     membership: membershipData,
     isLoading: isAdminLoading || isRoleLoading || isMembershipLoading,
-    error: adminError || roleError || membershipError,
+    error: isNotMember ? null : adminError || roleError || membershipError,
     userId: userId!,
     hasPermission: (requiredRole: Role) => {
-      if (!roleData?.role) return false;
+      if (!roleData?.role || isNotMember) return false;
       if (requiredRole === Role.ADMIN) {
         return roleData.role === Role.ADMIN;
       }

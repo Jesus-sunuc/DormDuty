@@ -66,3 +66,12 @@ def get_members(room_id: int):
 def leave_room(membership_id: int = Query(..., description="Membership ID of the user leaving"),
                room_id: int = Query(..., description="Room ID to leave")):
     return repo.leave_room(membership_id=membership_id, room_id=room_id)
+
+@router.post("/remove-user")
+@error_handler("Error removing user from room")
+def remove_user(admin_membership_id: int = Query(..., description="Membership ID of the admin removing the user"),
+                target_membership_id: int = Query(..., description="Membership ID of the user to remove"),
+                room_id: int = Query(..., description="Room ID")):
+    return repo.remove_user(admin_membership_id=admin_membership_id, 
+                           target_membership_id=target_membership_id, 
+                           room_id=room_id)

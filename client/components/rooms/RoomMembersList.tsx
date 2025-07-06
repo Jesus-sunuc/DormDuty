@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
-import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  Alert,
+} from "react-native";
+import {
+  useRoomMembersQuery,
+  useRemoveUserMutation,
+} from "@/hooks/membershipHooks";
+import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Role } from "@/models/Membership";
 import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { RoleManagement } from "./RoleManagement";
+import { toastSuccess, toastError } from "@/components/ToastService";
+import { useAuth } from "@/hooks/user/useAuth";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface RoomMembersListProps {
@@ -52,8 +65,15 @@ const RoomMembersListContent: React.FC<{
 }> = ({ roomId, onExpandChange, forceExpanded = false }) => {
   const colorScheme = useColorScheme();
   const roomIdNum = parseInt(roomId, 10);
+  const { user } = useAuth();
+  const userId = user?.userId;
   const { isAdmin } = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
   const { data: members = [], isLoading, error } = useRoomMembersQuery(roomId);
+  const { data: currentUserMembership } = useMembershipQuery(
+    userId || 0,
+    roomIdNum
+  );
+  const { mutate: removeUser } = useRemoveUserMutation();
 
   const [selectedMember, setSelectedMember] = useState<{
     userId: number;
@@ -86,6 +106,51 @@ const RoomMembersListContent: React.FC<{
   const closeRoleModal = () => {
     setShowRoleModal(false);
     setSelectedMember(null);
+  };
+
+  const handleRemoveUser = (member: any) => {
+    if (!currentUserMembership?.membershipId || !member?.membershipId) {
+      toastError("Unable to remove user: Missing membership information");
+      return;
+    }
+
+    Alert.alert(
+      "Remove User",
+      `Are you sure you want to remove "${member.name}" from this room? This action cannot be undone.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            removeUser(
+              {
+                adminMembershipId: currentUserMembership.membershipId,
+                targetMembershipId: member.membershipId,
+                roomId: roomIdNum,
+              },
+              {
+                onSuccess: (data) => {
+                  if (data.success) {
+                    toastSuccess(data.message);
+                    if (data.roomDeleted) {
+                    }
+                  } else {
+                    toastError(data.message);
+                  }
+                },
+                onError: () => {
+                  toastError("Failed to remove user");
+                },
+              }
+            );
+          },
+        },
+      ]
+    );
   };
 
   if (isLoading) {
@@ -167,16 +232,27 @@ const RoomMembersListContent: React.FC<{
         </View>
 
         {isAdmin && (
-          <TouchableOpacity
-            onPress={() => handleManageRole(item)}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-700"
-          >
-            <Ionicons
-              name="settings"
-              size={16}
-              color={Colors[colorScheme ?? "light"].text}
-            />
-          </TouchableOpacity>
+          <View className="flex-row items-center space-x-1">
+            {item?.userId !== userId && (
+              <TouchableOpacity
+                onPress={() => handleRemoveUser(item)}
+                className="p-2 rounded-full bg-red-100 dark:bg-red-900 mr-1"
+              >
+                <Ionicons name="person-remove" size={16} color="#ef4444" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => handleManageRole(item)}
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700"
+            >
+              <Ionicons
+                name="settings"
+                size={16}
+                color={Colors[colorScheme ?? "light"].text}
+              />
+            </TouchableOpacity>
+
+          </View>
         )}
       </View>
     </View>
@@ -202,8 +278,6 @@ const RoomMembersListContent: React.FC<{
               Members ({members.length})
             </ThemedText>
           </View>
-
-         
         </View>
 
         <View className="flex-row items-center">
