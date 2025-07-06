@@ -172,3 +172,25 @@ export const useUpdateUserRoleMutation = () =>
       });
     },
   });
+
+export const useLeaveRoomMutation = () =>
+  useMutation({
+    mutationFn: async (data: {
+      membershipId: number;
+      roomId: number;
+    }): Promise<{
+      leftRoom: boolean;
+      roomDeleted: boolean;
+      membershipId: number;
+      message: string;
+    }> => {
+      const res = await axiosClient.post(
+        `/api/membership/leave-room?membership_id=${data.membershipId}&room_id=${data.roomId}`
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membershipKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });

@@ -127,3 +127,63 @@ class MembershipRepository:
             }
             for row in results
         ]
+    
+    def leave_room(self, membership_id: int, room_id: int):
+        """
+        Handle leaving a room and auto-delete room if last member
+        """
+        run_sql("UPDATE chore SET assigned_to = NULL WHERE assigned_to = %s", (membership_id,))
+        run_sql("DELETE FROM chore_verification WHERE verified_by = %s", (membership_id,))
+        run_sql("DELETE FROM expense_split WHERE membership_id = %s", (membership_id,))
+        run_sql("DELETE FROM chore_completion WHERE membership_id = %s", (membership_id,))
+        run_sql("DELETE FROM chore_swap_request WHERE from_membership = %s OR to_membership = %s", (membership_id, membership_id,))
+        run_sql("DELETE FROM chore_assignment_history WHERE membership_id = %s", (membership_id,))
+        run_sql("DELETE FROM expense WHERE payer_membership_id = %s", (membership_id,))
+        
+        run_sql("DELETE FROM room_membership WHERE membership_id = %s", (membership_id,))
+        
+        remaining_members_sql = """
+            SELECT COUNT(*) FROM room_membership 
+            WHERE room_id = %s AND is_active = TRUE
+        """
+        remaining_count = run_sql(remaining_members_sql, (room_id,))[0][0]
+        
+        if remaining_count == 0:
+            self._delete_room_completely(room_id)
+            return {
+                "left_room": True,
+                "room_deleted": True,
+                "membership_id": membership_id,
+                "message": "Left room successfully. Room was deleted as you were the last member."
+            }
+        else:
+            return {
+                "left_room": True,
+                "room_deleted": False,
+                "membership_id": membership_id,
+                "message": "Left room successfully."
+            }
+    
+    def _delete_room_completely(self, room_id: int):
+        """
+        Delete room and all related data completely
+        """
+        delete_queries = [
+            """DELETE FROM chore_verification 
+               WHERE completion_id IN (
+                   SELECT completion_id FROM chore_completion 
+                   WHERE chore_id IN (SELECT chore_id FROM chore WHERE room_id = %s)
+               );""",
+            "DELETE FROM chore_completion WHERE chore_id IN (SELECT chore_id FROM chore WHERE room_id = %s);",
+            "DELETE FROM chore_swap_request WHERE chore_id IN (SELECT chore_id FROM chore WHERE room_id = %s);",
+            "DELETE FROM chore_assignment_history WHERE chore_id IN (SELECT chore_id FROM chore WHERE room_id = %s);",
+            "DELETE FROM expense_split WHERE expense_id IN (SELECT expense_id FROM expense WHERE room_id = %s);",
+            "DELETE FROM expense WHERE room_id = %s;",
+            "DELETE FROM chore WHERE room_id = %s;",
+            "DELETE FROM room_membership WHERE room_id = %s;",
+            "DELETE FROM room WHERE room_id = %s;"
+        ]
+
+        for query in delete_queries:
+            room_id_count = query.count("%s")
+            run_sql(query, tuple([room_id] * room_id_count))

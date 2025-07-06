@@ -3,7 +3,7 @@ import { ThemedText } from "../ThemedText";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import * as Clipboard from 'expo-clipboard';
+import * as Clipboard from "expo-clipboard";
 import { toastSuccess } from "../ToastService";
 import { Room } from "@/models/Room";
 
@@ -47,7 +47,7 @@ export const RoomOptionsBottomSheet = ({
       <Pressable className="flex-1 bg-black/50" onPress={onClose}>
         <View className="absolute bottom-0 w-full bg-white dark:bg-neutral-900 rounded-t-3xl p-6 shadow-2xl">
           <View className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full self-center mb-6" />
-          
+
           <View className="mb-6">
             <ThemedText className="text-lg font-bold text-gray-900 dark:text-white text-center">
               Room Options
@@ -70,7 +70,9 @@ export const RoomOptionsBottomSheet = ({
             {room?.roomCode && (
               <ActionItem
                 label="Copy Room Code"
-                icon={<Ionicons name="copy-outline" size={18} color="#8b5cf6" />}
+                icon={
+                  <Ionicons name="copy-outline" size={18} color="#8b5cf6" />
+                }
                 onPress={handleCopyRoomCode}
               />
             )}
@@ -90,8 +92,10 @@ export const RoomOptionsBottomSheet = ({
 
             {onDelete && (
               <ActionItem
-                label="Delete Room"
-                icon={<Ionicons name="trash-outline" size={20} color="#ef4444" />}
+                label="Leave Room"
+                icon={
+                  <Ionicons name="exit-outline" size={20} color="#ef4444" />
+                }
                 onPress={() => {
                   onDelete();
                   onClose();

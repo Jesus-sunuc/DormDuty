@@ -1,7 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import {
   useAddRoomMutation,
-  useDeleteRoomMutation,
   useRoomsByUserQuery,
   useUpdateRoomMutation,
 } from "@/hooks/roomHooks";
@@ -14,7 +13,10 @@ import { RoomModal } from "@/components/index/RoomModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { Room, RoomUpdateRequest } from "@/models/Room";
 import { RoomOptionsBottomSheet } from "@/components/index/RoomOptionsBottomSheet";
-import { useMembershipQuery } from "@/hooks/membershipHooks";
+import {
+  useMembershipQuery,
+  useLeaveRoomMutation,
+} from "@/hooks/membershipHooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/hooks/user/useAuth";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
@@ -113,29 +115,29 @@ const HomeScreen = () => {
   const [joinRoomModalVisible, setJoinRoomModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
   const [optionsRoom, setOptionsRoom] = useState<Room | null>(null);
-  const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [roomToLeave, setRoomToLeave] = useState<Room | null>(null);
+  const [showLeaveConfirmation, setShowLeaveConfirmation] = useState(false);
 
   const { mutate: addRoomMutate, isPending: addRoomIsPending } =
     useAddRoomMutation();
   const { mutate: updateRoomMutate, isPending: updateRoomIsPending } =
     useUpdateRoomMutation();
-  const { mutate: deleteRoomMutate } = useDeleteRoomMutation();
+  const { mutate: leaveRoomMutate } = useLeaveRoomMutation();
 
   const userId = user?.userId;
-  const roomId = roomToDelete?.roomId ?? 0;
+  const roomId = roomToLeave?.roomId ?? 0;
 
   const { data: membershipData } = useMembershipQuery(userId!, roomId, {
-    enabled: !!roomToDelete?.roomId && !!userId && showDeleteConfirmation,
+    enabled: !!roomToLeave?.roomId && !!userId && showLeaveConfirmation,
   });
 
   useEffect(() => {
     return () => {
-      if (showDeleteConfirmation) {
-        setShowDeleteConfirmation(false);
+      if (showLeaveConfirmation) {
+        setShowLeaveConfirmation(false);
       }
-      if (roomToDelete) {
-        setRoomToDelete(null);
+      if (roomToLeave) {
+        setRoomToLeave(null);
       }
       if (optionsRoom) {
         setOptionsRoom(null);
@@ -179,43 +181,48 @@ const HomeScreen = () => {
     });
   };
 
-  const handleDeleteRoom = () => {
+  const handleLeaveRoom = () => {
     if (optionsRoom) {
-      setRoomToDelete(optionsRoom);
+      setRoomToLeave(optionsRoom);
       setOptionsRoom(null);
-      setShowDeleteConfirmation(true);
+      setShowLeaveConfirmation(true);
     }
   };
 
-  const confirmDeleteRoom = () => {
-    if (!roomToDelete || !membershipData) {
-      console.warn("Delete room failed: missing room or membership data", {
-        roomToDelete: !!roomToDelete,
+  const confirmLeaveRoom = () => {
+    if (!roomToLeave || !membershipData) {
+      console.warn("Leave room failed: missing room or membership data", {
+        roomToLeave: !!roomToLeave,
         membershipData: !!membershipData,
       });
       toastError("Couldn't confirm your membership");
-      setShowDeleteConfirmation(false);
-      setRoomToDelete(null);
+      setShowLeaveConfirmation(false);
+      setRoomToLeave(null);
       return;
     }
 
-    const { membershipId, role } = membershipData;
-    deleteRoomMutate(
+    const { membershipId } = membershipData;
+    leaveRoomMutate(
       {
-        roomId: roomToDelete.roomId,
+        roomId: roomToLeave.roomId,
         membershipId: membershipId,
-        isAdmin: role === "admin",
       },
       {
-        onSuccess: () => {
-          toastSuccess(`Room "${roomToDelete.name}" deleted`);
-          setShowDeleteConfirmation(false);
-          setRoomToDelete(null);
+        onSuccess: (data) => {
+          if (data.roomDeleted) {
+            toastSuccess(
+              `Left room "${roomToLeave.name}" - Room was deleted as you were the last member`
+            );
+          } else {
+            toastSuccess(`Left room "${roomToLeave.name}" successfully`);
+          }
+          setShowLeaveConfirmation(false);
+          setRoomToLeave(null);
         },
-        onError: (error) => {
-          toastError("Failed to delete room");
-          setShowDeleteConfirmation(false);
-          setRoomToDelete(null);
+        onError: (error: any) => {
+          toastError("Failed to leave room");
+          setShowLeaveConfirmation(false);
+          setRoomToLeave(null);
         },
       }
     );
@@ -323,23 +330,23 @@ const HomeScreen = () => {
           onShareCode={() =>
             toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
           }
-          onDelete={handleDeleteRoom}
+          onDelete={handleLeaveRoom}
           room={optionsRoom}
         />
 
         <ConfirmationModal
-          visible={showDeleteConfirmation}
+          visible={showLeaveConfirmation}
           onClose={() => {
-            setShowDeleteConfirmation(false);
-            setRoomToDelete(null);
+            setShowLeaveConfirmation(false);
+            setRoomToLeave(null);
           }}
-          onConfirm={confirmDeleteRoom}
-          title="Delete Room"
-          message={`Are you sure you want to delete "${roomToDelete?.name}"? This will permanently remove the room and all its chores. This action cannot be undone.`}
-          confirmText="Delete"
+          onConfirm={confirmLeaveRoom}
+          title="Leave Room"
+          message={`Are you sure you want to leave "${roomToLeave?.name}"? If you are the last member, the room and all its data will be permanently deleted.`}
+          confirmText="Leave"
           cancelText="Cancel"
           destructive={true}
-          icon="home-outline"
+          icon="exit-outline"
         />
 
         <JoinRoomModal

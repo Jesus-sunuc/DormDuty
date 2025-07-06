@@ -60,3 +60,9 @@ def update_user_role(user_id: int, room_id: int, new_role: Role, admin_user_id: 
 @error_handler("Error fetching room members")
 def get_members(room_id: int):
     return repo.get_members_by_room_id(room_id)
+
+@router.post("/leave-room")
+@error_handler("Error leaving room")
+def leave_room(membership_id: int = Query(..., description="Membership ID of the user leaving"),
+               room_id: int = Query(..., description="Room ID to leave")):
+    return repo.leave_room(membership_id=membership_id, room_id=room_id)

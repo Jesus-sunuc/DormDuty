@@ -1,5 +1,5 @@
 from src.repository.rooms_repository import RoomRepository
-from src.models.room import RoomCreateRequest, RoomDeleteRequest, RoomUpdateRequest
+from src.models.room import RoomCreateRequest, RoomUpdateRequest
 from fastapi import APIRouter
 from src.errors import error_handler
 
@@ -35,9 +35,4 @@ def add_room_admin(room: RoomCreateRequest):
 @error_handler("Error updating room")
 def update_room_admin(room: RoomUpdateRequest):
     return repo.update_room(room)
-
-@router.post("/admin/delete_room_or_leave")
-@error_handler("Error deleting or leaving room")
-def delete_or_leave_room(req: RoomDeleteRequest):
-    return repo.delete_or_leave_room(req)
 
