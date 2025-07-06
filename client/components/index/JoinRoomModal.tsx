@@ -1,0 +1,139 @@
+import React, { useState } from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { useJoinRoomByCodeMutation } from '@/hooks/membershipHooks';
+import { useAuth } from '@/hooks/user/useAuth';
+import { toastError, toastSuccess } from '@/components/ToastService';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+interface JoinRoomModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onSuccess: (roomId: number) => void;
+}
+
+export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
+  visible,
+  onClose,
+  onSuccess,
+}) => {
+  const [roomCode, setRoomCode] = useState('');
+  const { user } = useAuth();
+  const joinRoomMutation = useJoinRoomByCodeMutation();
+
+  const handleJoinRoom = () => {
+    if (!roomCode.trim()) {
+      toastError('Please enter a room code');
+      return;
+    }
+
+    if (!user?.userId) {
+      toastError('User not found');
+      return;
+    }
+
+    joinRoomMutation.mutate(
+      {
+        userId: user.userId,
+        roomCode: roomCode.trim(),
+      },
+      {
+        onSuccess: (data) => {
+          toastSuccess(data.message || 'Successfully joined room!');
+          setRoomCode('');
+          onClose();
+          onSuccess(data.roomId);
+        },
+        onError: (error: any) => {
+          const errorMessage = error?.response?.data?.detail || 'Failed to join room';
+          toastError(errorMessage);
+        },
+      }
+    );
+  };
+
+  const handleClose = () => {
+    setRoomCode('');
+    onClose();
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={handleClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <View className="flex-1 bg-black/50 justify-center items-center px-6">
+          <View className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-sm">
+            <View className="flex-row items-center justify-between mb-6">
+              <ThemedText className="text-xl font-bold">Join Room</ThemedText>
+              <TouchableOpacity
+                onPress={handleClose}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-700 items-center justify-center"
+              >
+                <Ionicons name="close" size={20} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="mb-6">
+              <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Room Code
+              </ThemedText>
+              <TextInput
+                value={roomCode}
+                onChangeText={setRoomCode}
+                placeholder="Enter room code"
+                placeholderTextColor="#9ca3af"
+                className="border border-gray-300 dark:border-neutral-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-100 bg-white dark:bg-neutral-700"
+                autoCapitalize="characters"
+                autoCorrect={false}
+                autoFocus={true}
+              />
+            </View>
+
+            <View className="flex-row space-x-3">
+              <TouchableOpacity
+                onPress={handleClose}
+                className="flex-1 py-3 px-4 rounded-lg bg-gray-100 dark:bg-neutral-700"
+                disabled={joinRoomMutation.isPending}
+              >
+                <Text className="text-center font-semibold text-gray-700 dark:text-gray-300">
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleJoinRoom}
+                className="flex-1 py-3 px-4 rounded-lg bg-blue-500 dark:bg-blue-600"
+                disabled={joinRoomMutation.isPending || !roomCode.trim()}
+              >
+                <Text className="text-center font-semibold text-white">
+                  {joinRoomMutation.isPending ? 'Joining...' : 'Join Room'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className="mt-4">
+              <ThemedText className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Ask a room member to share the room code with you
+              </ThemedText>
+            </View>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+};

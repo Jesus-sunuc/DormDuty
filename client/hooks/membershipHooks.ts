@@ -107,6 +107,28 @@ export const useCreateMembershipMutation = () =>
     },
   });
 
+export const useJoinRoomByCodeMutation = () =>
+  useMutation({
+    mutationFn: async (data: {
+      userId: number;
+      roomCode: string;
+    }): Promise<{
+      membershipId: number;
+      role: string;
+      roomId: number;
+      message: string;
+    }> => {
+      const res = await axiosClient.post(
+        `/api/membership/join-by-code?user_id=${data.userId}&room_code=${data.roomCode}`
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membershipKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+    },
+  });
+
 export const useUpdateUserRoleMutation = () =>
   useMutation({
     mutationFn: async (data: {

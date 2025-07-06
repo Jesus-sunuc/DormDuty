@@ -232,7 +232,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
 
   const memberMap = new Map(
     (members || []).map((member) => [
-      member?.userId || 0,
+      member?.membershipId || 0,
       member?.name || "Unknown",
     ])
   );

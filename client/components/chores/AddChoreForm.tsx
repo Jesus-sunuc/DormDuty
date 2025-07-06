@@ -57,8 +57,8 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
     { label: "Unassigned", value: undefined, key: "unassigned" },
     ...safeMembers.map((member) => ({
       label: member?.name || "Unknown",
-      value: member?.userId,
-      key: member?.userId?.toString() || `member-${Math.random()}`,
+      value: member?.membershipId,
+      key: member?.membershipId?.toString() || `member-${Math.random()}`,
     })),
   ];
 

@@ -103,7 +103,7 @@ const ChoreDetailsScreen = () => {
   }
 
   const memberMap = new Map(
-    members.map((member) => [member.userId, member.name])
+    members.map((member) => [member.membershipId, member.name])
   );
 
   const handleBack = () => {

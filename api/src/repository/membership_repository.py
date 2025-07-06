@@ -10,6 +10,9 @@ class MembershipRepository:
         """
         result = run_sql(sql, (user_id, room_id))
 
+        if not result:
+            return None
+        
         membership_id, role = result[0]
         return {"membership_id": membership_id, "role": role}
     
@@ -54,6 +57,48 @@ class MembershipRepository:
         
         result = run_sql(sql, params)
         return {"membership_id": result[0][0], "role": membership.role.value}
+    
+    def join_room_by_code(self, user_id: int, room_code: str):
+        room_sql = """
+            SELECT room_id
+            FROM room
+            WHERE room_code = %s
+        """
+        room_result = run_sql(room_sql, (room_code,))
+        if not room_result:
+            return {"error": "Room not found with the provided code"}
+        room_id = room_result[0][0]
+        
+        existing_sql = """
+            SELECT membership_id, role
+            FROM room_membership
+            WHERE user_id = %s AND room_id = %s AND is_active = TRUE
+        """
+        existing_result = run_sql(existing_sql, (user_id, room_id))
+        
+        if existing_result:
+            membership_id, role = existing_result[0]
+            return {
+                "membership_id": membership_id, 
+                "role": role,
+                "room_id": room_id,
+                "message": "Already a member of this room"
+            }
+        
+        membership_sql = """
+            INSERT INTO room_membership (user_id, room_id, role, joined_at)
+            VALUES (%s, %s, %s, NOW())
+            RETURNING membership_id
+        """
+        membership_params = (user_id, room_id, Role.MEMBER.value)
+        membership_result = run_sql(membership_sql, membership_params)
+        
+        return {
+            "membership_id": membership_result[0][0], 
+            "role": Role.MEMBER.value,
+            "room_id": room_id,
+            "message": "Successfully joined room"
+        }
     
     def update_user_role(self, user_id: int, room_id: int, new_role: Role):
         sql = """

@@ -20,7 +20,7 @@ class ChoreRepository:
             SELECT c.*
             FROM chore c
             JOIN room_membership rm ON c.assigned_to = rm.membership_id
-            WHERE rm.user_id = %s AND rm.is_active = TRUE
+            WHERE rm.user_id = %s AND rm.is_active = TRUE AND c.is_active = TRUE
         """
         return run_sql(sql, (user_id,), output_class=Chore)
     

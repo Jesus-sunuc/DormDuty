@@ -22,6 +22,7 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { JoinRoomModal } from "@/components/index/JoinRoomModal";
 
 const RoomList = ({
   rooms,
@@ -102,6 +103,7 @@ const RoomList = ({
 
 const HomeScreen = () => {
   const { user } = useAuth();
+  const router = useRouter();
   const { data: rooms, isLoading, error } = useRoomsByUserQuery();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
@@ -109,6 +111,7 @@ const HomeScreen = () => {
   const shouldShowLoading = !user || isLoading;
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [joinRoomModalVisible, setJoinRoomModalVisible] = useState(false);
   const [roomToEdit, setRoomToEdit] = useState<Room | null>(null);
   const [optionsRoom, setOptionsRoom] = useState<Room | null>(null);
   const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
@@ -219,6 +222,10 @@ const HomeScreen = () => {
     );
   };
 
+  const handleJoinRoomSuccess = (roomId: number) => {
+    router.push(`/(tabs)/rooms/${roomId}`);
+  };
+
   return (
     <LoadingAndErrorHandling
       isLoading={shouldShowLoading}
@@ -240,38 +247,70 @@ const HomeScreen = () => {
               </View>
             </View>
 
-            <TouchableOpacity
-              onPress={() => {
-                setRoomToEdit(null);
-                setModalVisible(true);
-              }}
-              activeOpacity={0.8}
-              style={{
-                shadowColor: colors.shadowColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
-                borderRadius: 16,
-              }}
-            >
-              <LinearGradient
-                colors={colors.gradientPrimary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+            <View className="flex-row space-x-3">
+              <TouchableOpacity
+                onPress={() => setJoinRoomModalVisible(true)}
+                activeOpacity={0.8}
                 style={{
-                  width: 40,
-                  height: 40,
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
                   borderRadius: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 1,
-                  borderColor: colors.borderAccent,
                 }}
               >
-                <Ionicons name="add" size={22} color="white" />
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={["#10b981", "#059669"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1,
+                    borderColor: colors.borderAccent,
+                  }}
+                >
+                  <Ionicons name="enter-outline" size={22} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setRoomToEdit(null);
+                  setModalVisible(true);
+                }}
+                activeOpacity={0.8}
+                style={{
+                  shadowColor: colors.shadowColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
+                  borderRadius: 16,
+                }}
+              >
+                <LinearGradient
+                  colors={colors.gradientPrimary}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderWidth: 1,
+                    borderColor: colors.borderAccent,
+                  }}
+                >
+                  <Ionicons name="add" size={22} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <ParallaxScrollViewY>
@@ -317,6 +356,12 @@ const HomeScreen = () => {
           cancelText="Cancel"
           destructive={true}
           icon="home-outline"
+        />
+
+        <JoinRoomModal
+          visible={joinRoomModalVisible}
+          onClose={() => setJoinRoomModalVisible(false)}
+          onSuccess={handleJoinRoomSuccess}
         />
       </View>
     </LoadingAndErrorHandling>
