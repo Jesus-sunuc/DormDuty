@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { useJoinRoomByCodeMutation } from '@/hooks/membershipHooks';
-import { useAuth } from '@/hooks/user/useAuth';
-import { toastError, toastSuccess } from '@/components/ToastService';
-import Ionicons from '@expo/vector-icons/Ionicons';
+} from "react-native";
+import { ThemedText } from "@/components/ThemedText";
+import { useJoinRoomByCodeMutation } from "@/hooks/membershipHooks";
+import { useAuth } from "@/hooks/user/useAuth";
+import { toastError, toastSuccess } from "@/components/ToastService";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface JoinRoomModalProps {
   visible: boolean;
@@ -25,18 +25,23 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [roomCode, setRoomCode] = useState('');
+  const [roomCode, setRoomCode] = useState("");
   const { user } = useAuth();
   const joinRoomMutation = useJoinRoomByCodeMutation();
 
   const handleJoinRoom = () => {
     if (!roomCode.trim()) {
-      toastError('Please enter a room code');
+      toastError("Please enter a room code");
+      return;
+    }
+
+    if (roomCode.trim().length !== 6) {
+      toastError("Room code must be exactly 6 characters");
       return;
     }
 
     if (!user?.userId) {
-      toastError('User not found');
+      toastError("User not found");
       return;
     }
 
@@ -47,13 +52,14 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       },
       {
         onSuccess: (data) => {
-          toastSuccess(data.message || 'Successfully joined room!');
-          setRoomCode('');
+          toastSuccess(data.message || "Successfully joined room!");
+          setRoomCode("");
           onClose();
           onSuccess(data.roomId);
         },
         onError: (error: any) => {
-          const errorMessage = error?.response?.data?.detail || 'Failed to join room';
+          const errorMessage =
+            error?.response?.data?.detail || "Failed to join room";
           toastError(errorMessage);
         },
       }
@@ -61,7 +67,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
   };
 
   const handleClose = () => {
-    setRoomCode('');
+    setRoomCode("");
     onClose();
   };
 
@@ -73,13 +79,15 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
         <View className="flex-1 bg-black/50 justify-center items-center px-6">
           <View className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-sm">
             <View className="flex-row items-center justify-between mb-6">
-              <ThemedText className="text-xl font-bold text-gray-700 dark:text-gray-300">Join Room</ThemedText>
+              <ThemedText className="text-xl font-bold text-gray-700 dark:text-gray-300">
+                Join Room
+              </ThemedText>
               <TouchableOpacity
                 onPress={handleClose}
                 className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-700 items-center justify-center"
@@ -95,13 +103,17 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
               <TextInput
                 value={roomCode}
                 onChangeText={setRoomCode}
-                placeholder="Enter room code"
+                placeholder="Enter 6-character room code"
                 placeholderTextColor="#9ca3af"
                 className="border border-gray-300 dark:border-neutral-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-100 bg-white dark:bg-neutral-700"
                 autoCapitalize="characters"
                 autoCorrect={false}
                 autoFocus={true}
+                maxLength={6}
               />
+              <ThemedText className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {roomCode.length}/6 characters
+              </ThemedText>
             </View>
 
             <View className="flex-row space-x-3 gap-3">
@@ -117,11 +129,17 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 
               <TouchableOpacity
                 onPress={handleJoinRoom}
-                className="flex-1 py-3 px-4 rounded-lg bg-blue-500 dark:bg-blue-600"
-                disabled={joinRoomMutation.isPending || !roomCode.trim()}
+                className={`flex-1 py-3 px-4 rounded-lg ${
+                  joinRoomMutation.isPending || roomCode.trim().length !== 6
+                    ? "bg-gray-400 dark:bg-gray-600"
+                    : "bg-blue-500 dark:bg-blue-600"
+                }`}
+                disabled={
+                  joinRoomMutation.isPending || roomCode.trim().length !== 6
+                }
               >
                 <Text className="text-center font-semibold text-white">
-                  {joinRoomMutation.isPending ? 'Joining...' : 'Join Room'}
+                  {joinRoomMutation.isPending ? "Joining..." : "Join Room"}
                 </Text>
               </TouchableOpacity>
             </View>
