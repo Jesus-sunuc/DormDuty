@@ -30,7 +30,6 @@ const AddChoreScreen = () => {
   const addChore = addChoreMutation.mutate;
   const isPending = addChoreMutation.isPending;
 
-  // Check if user has admin permissions
   const roomIdNumber = roomId ? Number(roomId) : 0;
   const { hasPermission, isLoading: permissionsLoading } =
     usePermissions(roomIdNumber);
@@ -61,7 +60,6 @@ const AddChoreScreen = () => {
     );
   }
 
-  // Show loading while checking permissions
   if (permissionsLoading) {
     return (
       <LoadingAndErrorHandling
@@ -73,7 +71,6 @@ const AddChoreScreen = () => {
     );
   }
 
-  // Check if user has admin permissions
   if (!isAdmin) {
     return (
       <LoadingAndErrorHandling>

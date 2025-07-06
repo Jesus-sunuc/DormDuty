@@ -15,7 +15,6 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
-import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 
 const RoomChoresScreen = () => {
@@ -49,7 +48,7 @@ const RoomChoresScreen = () => {
       <LoadingAndErrorHandling>
         <View className="flex-1 bg-gray-50 dark:bg-black">
           <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-            <View className="flex-row items-center justify-between mb-4 mt-5">
+            <View className="flex-row items-center justify-between mb-4 mt-6">
               <TouchableOpacity
                 onPress={() => router.push("/")}
                 className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
@@ -68,30 +67,17 @@ const RoomChoresScreen = () => {
                   onPress={() => router.push(`/(tabs)/rooms/${roomId}/add`)}
                   activeOpacity={0.8}
                   style={{
+                    width: 36,
+                    height: 36,
                     shadowColor: colors.shadowColor,
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 8,
-                    elevation: 8,
-                    borderRadius: 16,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 4,
                   }}
+                  className="bg-emerald-500 dark:bg-emerald-700 rounded-xl items-center justify-center"
                 >
-                  <LinearGradient
-                    colors={colors.gradientPrimary}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 16,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderWidth: 1,
-                      borderColor: colors.borderAccent,
-                    }}
-                  >
-                    <Ionicons name="add" size={22} color="white" />
-                  </LinearGradient>
+                  <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
               )}
             </View>

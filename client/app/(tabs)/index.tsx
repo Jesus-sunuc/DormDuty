@@ -259,7 +259,7 @@ const HomeScreen = () => {
                 }}
                 className="rounded-xl"
               >
-                <View className="w-10 h-10 rounded-xl bg-indigo-500 dark:bg-indigo-600 items-center justify-center border border-indigo-400 dark:border-indigo-500">
+                <View className="w-10 h-10 rounded-xl bg-indigo-500 dark:bg-indigo-700 items-center justify-center border border-indigo-400 dark:border-indigo-500">
                   <Ionicons name="enter-outline" size={24} color="white" />
                 </View>
               </TouchableOpacity>
@@ -279,7 +279,7 @@ const HomeScreen = () => {
                 }}
                 className="rounded-xl"
               >
-                <View className="w-10 h-10 rounded-xl bg-emerald-500 dark:bg-emerald-600 items-center justify-center border border-emerald-400 dark:border-emerald-500">
+                <View className="w-10 h-10 rounded-xl bg-emerald-500 dark:bg-emerald-700 items-center justify-center border border-emerald-400 dark:border-emerald-500">
                   <Ionicons name="add" size={24} color="white" />
                 </View>
               </TouchableOpacity>
