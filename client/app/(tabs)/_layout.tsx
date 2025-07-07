@@ -137,7 +137,7 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="expenses/add"
+          name="expenses-details/add"
           options={{
             href: null,
           }}

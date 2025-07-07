@@ -185,7 +185,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
       )}
 
       <TouchableOpacity
-        onPress={() => router.push(`/expenses/add?roomId=${room.roomId}`)}
+        onPress={() => router.push(`/expenses-details/add?roomId=${room.roomId}`)}
         className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center shadow-sm"
       >
         <Ionicons name="add" size={24} color="white" />

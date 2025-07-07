@@ -66,10 +66,6 @@ export default function RootLayout() {
             <LoadingAndErrorHandling>
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="expenses"
-                  options={{ headerShown: false }}
-                />
               </Stack>
               <Toast config={toastConfig} />
               <StatusBar style="auto" />
