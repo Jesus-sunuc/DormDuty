@@ -116,91 +116,150 @@ const AddExpensePage = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      <View className="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 pt-12 pb-4 px-6">
+    <View className="flex-1 bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-800">
+      <View className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md pt-16 pb-6 px-6 border-b border-neutral-100 dark:border-neutral-700">
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.replace("/(tabs)/expenses")}
-            className="p-2 rounded-full bg-gray-100 dark:bg-neutral-800"
+            className="w-10 h-10 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
           >
             <Ionicons
               name="arrow-back"
-              size={24}
+              size={20}
               color={Colors[colorScheme ?? "light"].text}
             />
           </TouchableOpacity>
-          <ThemedText className="text-xl font-bold text-gray-900 dark:text-white">
-            Add Expense
-          </ThemedText>
+          <View className="flex-1 items-center">
+            <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-white">
+              New Expense
+            </ThemedText>
+            <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+              Split costs with your roommates
+            </ThemedText>
+          </View>
           <View className="w-10" />
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-6 py-6">
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-neutral-800">
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Amount *
-            </Text>
-            <TextInput
-              value={formData.amount}
-              onChangeText={(text) =>
-                setFormData((prev) => ({ ...prev, amount: text }))
-              }
-              placeholder="0.00"
-              keyboardType="decimal-pad"
-              className="border border-gray-300 dark:border-neutral-600 rounded-lg p-3 text-gray-900 dark:text-white bg-white dark:bg-neutral-800"
-              placeholderTextColor={Colors[colorScheme ?? "light"].text + "80"}
-            />
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description *
-            </Text>
-            <TextInput
-              value={formData.description}
-              onChangeText={(text) =>
-                setFormData((prev) => ({ ...prev, description: text }))
-              }
-              placeholder="What was this expense for?"
-              multiline
-              numberOfLines={2}
-              className="border border-gray-300 dark:border-neutral-600 rounded-lg p-3 text-gray-900 dark:text-white bg-white dark:bg-neutral-800"
-              placeholderTextColor={Colors[colorScheme ?? "light"].text + "80"}
-            />
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Category
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowCategoryPicker(!showCategoryPicker)}
-              className="border border-gray-300 dark:border-neutral-600 rounded-lg p-3 flex-row items-center justify-between bg-white dark:bg-neutral-800"
-            >
-              <Text className="text-gray-900 dark:text-white">
-                {formData.category || "Select category"}
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="px-6 py-8">
+          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+            <View className="items-center mb-6">
+              <View className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full items-center justify-center mb-4">
+                <Ionicons name="cash" size={32} color="#22c55e" />
+              </View>
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
+                How much did you spend?
               </Text>
-              <Ionicons
-                name="chevron-down"
-                size={20}
-                color={Colors[colorScheme ?? "light"].text}
+            </View>
+
+            <View className="relative">
+              <Text className="text-4xl font-light text-neutral-400 dark:text-neutral-500 absolute left-4 top-4">
+                $
+              </Text>
+              <TextInput
+                value={formData.amount}
+                onChangeText={(text) =>
+                  setFormData((prev) => ({ ...prev, amount: text }))
+                }
+                placeholder="0.00"
+                keyboardType="decimal-pad"
+                className="text-4xl font-light text-neutral-900 dark:text-white text-center py-4 bg-neutral-50 dark:bg-neutral-700 rounded-2xl"
+                placeholderTextColor={
+                  Colors[colorScheme ?? "light"].text + "40"
+                }
               />
-            </TouchableOpacity>
+            </View>
+          </View>
+
+          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+            <View className="flex-row items-center mb-6">
+              <View className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full items-center justify-center mr-4">
+                <Ionicons name="document-text" size={24} color="#3b82f6" />
+              </View>
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
+                Expense Details
+              </Text>
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+                Description *
+              </Text>
+              <TextInput
+                value={formData.description}
+                onChangeText={(text) =>
+                  setFormData((prev) => ({ ...prev, description: text }))
+                }
+                placeholder="What was this expense for?"
+                multiline
+                numberOfLines={3}
+                className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 text-neutral-900 dark:text-white min-h-[100px] text-base"
+                placeholderTextColor={
+                  Colors[colorScheme ?? "light"].text + "60"
+                }
+              />
+            </View>
+
+            <View className="flex-row space-x-4 mb-4 gap-3">
+              <View className="flex-1">
+                <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+                  Category
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowCategoryPicker(!showCategoryPicker)}
+                  className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 flex-row items-center justify-between"
+                >
+                  <Text className="text-neutral-900 dark:text-white flex-1">
+                    {formData.category || "Select"}
+                  </Text>
+                  <Ionicons
+                    name="chevron-down"
+                    size={20}
+                    color={Colors[colorScheme ?? "light"].text}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+                  Date
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 flex-row items-center justify-between"
+                >
+                  <Text className="text-neutral-900 dark:text-white flex-1">
+                    {formData.expenseDate.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </Text>
+                  <Ionicons
+                    name="calendar"
+                    size={20}
+                    color={Colors[colorScheme ?? "light"].text}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
 
             {showCategoryPicker && (
-              <View className="border border-gray-300 dark:border-neutral-600 rounded-lg mt-1 bg-white dark:bg-neutral-800">
-                {EXPENSE_CATEGORIES.map((category) => (
+              <View className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl mt-2 overflow-hidden">
+                {EXPENSE_CATEGORIES.map((category, index) => (
                   <TouchableOpacity
                     key={category}
                     onPress={() => {
                       setFormData((prev) => ({ ...prev, category }));
                       setShowCategoryPicker(false);
                     }}
-                    className="p-3 border-b border-gray-100 dark:border-neutral-700 last:border-b-0"
+                    className={`p-4 ${
+                      index < EXPENSE_CATEGORIES.length - 1
+                        ? "border-b border-neutral-200 dark:border-neutral-600"
+                        : ""
+                    }`}
                   >
-                    <Text className="text-gray-900 dark:text-white">
+                    <Text className="text-neutral-900 dark:text-white">
                       {category}
                     </Text>
                   </TouchableOpacity>
@@ -209,31 +268,23 @@ const AddExpensePage = () => {
             )}
           </View>
 
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Date
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
-              className="border border-gray-300 dark:border-neutral-600 rounded-lg p-3 flex-row items-center justify-between bg-white dark:bg-neutral-800"
-            >
-              <Text className="text-gray-900 dark:text-white">
-                {formData.expenseDate.toLocaleDateString()}
-              </Text>
-              <Ionicons
-                name="calendar"
-                size={20}
-                color={Colors[colorScheme ?? "light"].text}
-              />
-            </TouchableOpacity>
-          </View>
+          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
+            <View className="flex-row items-center mb-6">
+              <View className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full items-center justify-center mr-4">
+                <Ionicons name="people" size={24} color="#8b5cf6" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  Split With
+                </Text>
+                <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                  Select who to split this expense with
+                </Text>
+              </View>
+            </View>
 
-          <View className="mb-6">
-            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Split with *
-            </Text>
-            <View className="border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-800">
-              {members.map((member, index) => {
+            <View>
+              {members.map((member) => {
                 const isSelected = formData.splitWith.includes(
                   member.membershipId
                 );
@@ -241,50 +292,82 @@ const AddExpensePage = () => {
                   <TouchableOpacity
                     key={member.membershipId}
                     onPress={() => toggleMemberSelection(member.membershipId)}
-                    className={`p-3 flex-row items-center justify-between ${
-                      index > 0
-                        ? "border-t border-gray-100 dark:border-neutral-700"
-                        : ""
+                    className={`p-4 mb-2 rounded-2xl border-2 transition-all ${
+                      isSelected
+                        ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
+                        : "bg-neutral-50 dark:bg-neutral-700 border-neutral-200 dark:border-neutral-600"
                     }`}
                   >
-                    <Text className="text-gray-900 dark:text-white flex-1">
-                      {member.name}{" "}
-                      {member.membershipId === membership.membershipId
-                        ? "(You)"
-                        : ""}
-                    </Text>
-                    <View
-                      className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                        isSelected
-                          ? "bg-blue-500 border-blue-500"
-                          : "border-gray-300 dark:border-neutral-600"
-                      }`}
-                    >
-                      {isSelected && (
-                        <Ionicons name="checkmark" size={14} color="white" />
-                      )}
+                    <View className="flex-row items-center">
+                      <View className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full items-center justify-center mr-4">
+                        <Text className="text-white font-bold text-sm">
+                          {member.name.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <View className="flex-1">
+                        <Text
+                          className={`font-medium ${
+                            isSelected
+                              ? "text-blue-900 dark:text-blue-200"
+                              : "text-neutral-900 dark:text-white"
+                          }`}
+                        >
+                          {member.name}
+                          {member.membershipId === membership.membershipId && (
+                            <Text className="text-sm text-neutral-500">
+                              {" "}
+                              (You)
+                            </Text>
+                          )}
+                        </Text>
+                      </View>
+                      <View
+                        className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                          isSelected
+                            ? "bg-blue-500 border-blue-500"
+                            : "border-neutral-300 dark:border-neutral-500"
+                        }`}
+                      >
+                        {isSelected && (
+                          <Ionicons name="checkmark" size={14} color="white" />
+                        )}
+                      </View>
                     </View>
                   </TouchableOpacity>
                 );
               })}
             </View>
           </View>
-
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={isPending}
-            className={`py-4 rounded-2xl items-center ${
-              isPending
-                ? "bg-gray-300 dark:bg-neutral-700"
-                : "bg-blue-500 dark:bg-blue-600"
-            }`}
-          >
-            <Text className="text-white font-semibold text-lg">
-              {isPending ? "Creating..." : "Create Expense"}
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <View className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md p-6 border-t border-neutral-100 dark:border-neutral-700">
+        <TouchableOpacity
+          onPress={handleSubmit}
+          disabled={isPending || !formData.amount || !formData.description}
+          className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
+            isPending || !formData.amount || !formData.description
+              ? "bg-neutral-300 dark:bg-neutral-700"
+              : "bg-gradient-to-r from-blue-500 to-purple-600"
+          }`}
+        >
+          {isPending ? (
+            <>
+              <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+              <Text className="text-white font-semibold text-lg">
+                Creating...
+              </Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="add-circle" size={24} color="white" />
+              <Text className="text-white font-semibold text-lg ml-2">
+                Create Expense
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
 
       {showDatePicker && (
         <DateTimePicker
