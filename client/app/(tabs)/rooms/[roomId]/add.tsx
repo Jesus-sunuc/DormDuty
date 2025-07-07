@@ -35,7 +35,7 @@ const AddChoreScreen = () => {
     usePermissions(roomIdNumber);
   const isAdmin = hasPermission(Role.ADMIN);
 
-  const [name, setName] = useState("New Chore");
+  const [name, setName] = useState("");
   const [frequency, setFrequency] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");

@@ -67,11 +67,11 @@ const ExpensesScreen = () => {
   const currentRoom = selectedRoom;
 
   return (
-    <ParallaxScrollViewY>
-      <View className="px-6 pt-20">
+    <>
+      <View className="bg-white dark:bg-neutral-900 px-6 pt-16 shadow-lg">
         {rooms.length > 1 && (
           <View className="mb-6">
-            <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+            <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
               Select Room
             </ThemedText>
             <FlatList
@@ -84,7 +84,7 @@ const ExpensesScreen = () => {
                   onPress={() => setSelectedRoom(room)}
                   className={`mr-3 px-4 py-2 rounded-2xl border ${
                     currentRoom?.roomId === room.roomId
-                      ? "bg-blue-500 border-blue-500"
+                      ? "bg-blue-500 border-blue-400"
                       : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
                   }`}
                 >
@@ -102,12 +102,15 @@ const ExpensesScreen = () => {
             />
           </View>
         )}
-
-        {currentRoom && (
-          <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
-        )}
       </View>
-    </ParallaxScrollViewY>
+      <ParallaxScrollViewY>
+        <View className="px-6 pt-6">
+          {currentRoom && (
+            <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
+          )}
+        </View>
+      </ParallaxScrollViewY>
+    </>
   );
 };
 

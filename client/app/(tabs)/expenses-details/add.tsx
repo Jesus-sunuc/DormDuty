@@ -36,7 +36,6 @@ const AddExpensePage = () => {
   const { data: membership } = useMembershipQuery(userId, roomIdNum);
   const { mutate: createExpense, isPending } = useCreateExpenseMutation();
 
-  // Animation for spinner
   const spinValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -134,8 +133,8 @@ const AddExpensePage = () => {
   }
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-neutral-900">
-      <View className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md pt-16 pb-6 px-6 border-b border-neutral-100 dark:border-neutral-700">
+    <View className="flex-1 bg-neutral-50 dark:bg-black">
+      <View className="bg-white/80 dark:bg-neutral-900 pt-16 pb-6 px-6 ">
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.replace("/(tabs)/expenses")}
@@ -148,7 +147,7 @@ const AddExpensePage = () => {
             />
           </TouchableOpacity>
           <View className="flex-1 items-center">
-            <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-white">
+            <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
               New Expense
             </ThemedText>
             <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
@@ -161,12 +160,12 @@ const AddExpensePage = () => {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
-          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="items-center mb-6">
               <View className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full items-center justify-center mb-4">
                 <Ionicons name="cash" size={32} color="#22c55e" />
               </View>
-              <Text className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-gray-300 mb-2">
                 How much did you spend?
               </Text>
             </View>
@@ -182,7 +181,7 @@ const AddExpensePage = () => {
                 }
                 placeholder="0.00"
                 keyboardType="decimal-pad"
-                className="text-4xl font-light text-neutral-900 dark:text-white text-center py-4 bg-neutral-50 dark:bg-neutral-700 rounded-2xl"
+                className="text-4xl font-light text-neutral-900 dark:text-white text-center py-4 bg-neutral-50 dark:bg-black rounded-2xl"
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "40"
                 }
@@ -190,7 +189,7 @@ const AddExpensePage = () => {
             </View>
           </View>
 
-          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="document-text" size={24} color="#3b82f6" />
@@ -212,7 +211,7 @@ const AddExpensePage = () => {
                 placeholder="What was this expense for?"
                 multiline
                 numberOfLines={3}
-                className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 text-neutral-900 dark:text-white min-h-[100px] text-base"
+                className="bg-neutral-50 dark:bg-black rounded-2xl p-4 text-neutral-900 dark:text-white min-h-[100px] text-base"
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "60"
                 }
@@ -226,7 +225,7 @@ const AddExpensePage = () => {
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowCategoryPicker(!showCategoryPicker)}
-                  className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 flex-row items-center justify-between"
+                  className="bg-neutral-50 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
                 >
                   <Text className="text-neutral-900 dark:text-white flex-1">
                     {formData.category || "Select"}
@@ -245,7 +244,7 @@ const AddExpensePage = () => {
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowDatePicker(true)}
-                  className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl p-4 flex-row items-center justify-between"
+                  className="bg-neutral-50 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
                 >
                   <Text className="text-neutral-900 dark:text-white flex-1">
                     {formData.expenseDate.toLocaleDateString("en-US", {
@@ -286,7 +285,7 @@ const AddExpensePage = () => {
             )}
           </View>
 
-          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="people" size={24} color="#8b5cf6" />
@@ -313,7 +312,7 @@ const AddExpensePage = () => {
                     className={`p-4 mb-2 rounded-2xl border-2 transition-all ${
                       isSelected
                         ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
-                        : "bg-neutral-50 dark:bg-neutral-700 border-neutral-200 dark:border-neutral-600"
+                        : "bg-neutral-50 dark:bg-black border-neutral-200 dark:border-neutral-600"
                     }`}
                   >
                     <View className="flex-row items-center">

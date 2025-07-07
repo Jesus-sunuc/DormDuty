@@ -13,8 +13,6 @@ interface AddChoreHeaderProps {
 }
 
 export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
-  roomId,
-  isPending,
   onBack,
   isEdit = false,
   choreName,
@@ -23,7 +21,7 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
   const colors = Colors[colorScheme ?? "light"];
 
   return (
-    <View className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md pt-16 pb-6 px-6 border-b border-neutral-100 dark:border-neutral-700">
+    <View className="bg-white/80 dark:bg-neutral-900/80 pt-16 pb-6 px-6 ">
       <View className="flex-row items-center justify-between">
         <TouchableOpacity
           onPress={onBack}
@@ -36,7 +34,7 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
           />
         </TouchableOpacity>
         <View className="flex-1 items-center">
-          <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-white">
+          <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
             {isEdit ? "Edit Chore" : "New Chore"}
           </ThemedText>
           <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">

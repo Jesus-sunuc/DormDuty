@@ -84,10 +84,10 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   ];
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-neutral-900">
+    <View className="flex-1 bg-neutral-50 dark:bg-black">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
-          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
@@ -114,7 +114,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
             </View>
           </View>
 
-          <View className="bg-white dark:bg-neutral-800 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="calendar" size={24} color="#8b5cf6" />
