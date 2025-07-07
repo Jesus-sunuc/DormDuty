@@ -10,9 +10,8 @@ import {
   useExpenseSummaryQuery,
 } from "@/hooks/expenseHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import { Spinner } from "@/components/ui/Spinner";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
 import { Expense } from "@/models/Expense";
@@ -35,7 +34,7 @@ const ExpensesScreen = () => {
 
   if (roomsLoading) {
     return (
-      <LoadingAndErrorHandling isLoading={true}>
+      <LoadingAndErrorHandling isLoading={true} loadingText="">
         <View />
       </LoadingAndErrorHandling>
     );
@@ -122,20 +121,19 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
   userId,
 }) => {
   const router = useRouter();
-  const { data: membership } = useMembershipQuery(userId, room.roomId);
+  const { data: membership, isLoading: membershipLoading } = useMembershipQuery(
+    userId,
+    room.roomId
+  );
   const { data: expenses = [], isLoading: expensesLoading } =
     useRoomExpensesQuery(room.roomId);
-  const { data: summary } = useExpenseSummaryQuery(
+  const { data: summary, isLoading: summaryLoading } = useExpenseSummaryQuery(
     membership?.membershipId || 0,
     room.roomId
   );
 
-  if (expensesLoading) {
-    return (
-      <LoadingAndErrorHandling isLoading={true}>
-        <View />
-      </LoadingAndErrorHandling>
-    );
+  if (expensesLoading || membershipLoading || summaryLoading) {
+    return <Spinner text="" />;
   }
 
   return (
@@ -185,7 +183,9 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
       )}
 
       <TouchableOpacity
-        onPress={() => router.push(`/expenses-details/add?roomId=${room.roomId}`)}
+        onPress={() =>
+          router.push(`/expenses-details/add?roomId=${room.roomId}`)
+        }
         className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center shadow-sm"
       >
         <Ionicons name="add" size={24} color="white" />
