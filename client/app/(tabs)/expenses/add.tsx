@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -34,6 +35,23 @@ const AddExpensePage = () => {
   const { data: members = [] } = useRoomMembersQuery(roomId || "");
   const { data: membership } = useMembershipQuery(userId, roomIdNum);
   const { mutate: createExpense, isPending } = useCreateExpenseMutation();
+
+  // Animation for spinner
+  const spinValue = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (isPending) {
+      const spinAnimation = Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      );
+      spinAnimation.start();
+      return () => spinAnimation.stop();
+    }
+  }, [isPending, spinValue]);
 
   const [formData, setFormData] = useState({
     amount: "",
@@ -116,7 +134,7 @@ const AddExpensePage = () => {
   }
 
   return (
-    <View className="flex-1 bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-800">
+    <View className="flex-1 bg-neutral-50 dark:bg-neutral-900">
       <View className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md pt-16 pb-6 px-6 border-b border-neutral-100 dark:border-neutral-700">
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
@@ -299,7 +317,7 @@ const AddExpensePage = () => {
                     }`}
                   >
                     <View className="flex-row items-center">
-                      <View className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full items-center justify-center mr-4">
+                      <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-4">
                         <Text className="text-white font-bold text-sm">
                           {member.name.charAt(0).toUpperCase()}
                         </Text>
@@ -341,19 +359,31 @@ const AddExpensePage = () => {
         </View>
       </ScrollView>
 
-      <View className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md p-6 border-t border-neutral-100 dark:border-neutral-700">
+      <View className="p-6">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending || !formData.amount || !formData.description}
           className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
             isPending || !formData.amount || !formData.description
               ? "bg-neutral-300 dark:bg-neutral-700"
-              : "bg-gradient-to-r from-blue-500 to-purple-600"
+              : "bg-blue-600"
           }`}
         >
           {isPending ? (
             <>
-              <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+              <Animated.View
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mr-3"
+                style={{
+                  transform: [
+                    {
+                      rotate: spinValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0deg", "360deg"],
+                      }),
+                    },
+                  ],
+                }}
+              />
               <Text className="text-white font-semibold text-lg">
                 Creating...
               </Text>

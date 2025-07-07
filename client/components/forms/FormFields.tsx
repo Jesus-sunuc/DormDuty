@@ -1,8 +1,14 @@
-import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, Platform } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React from "react";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  Platform,
+} from "react-native";
+import { ThemedText } from "@/components/ThemedText";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface FormFieldProps {
   label: string;
@@ -11,7 +17,7 @@ interface FormFieldProps {
 
 export const FormField: React.FC<FormFieldProps> = ({ label, children }) => (
   <View className="mb-6">
-    <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <ThemedText className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
       {label}
     </ThemedText>
     {children}
@@ -46,7 +52,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical={multiline ? "top" : "center"}
-      className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 text-lg text-black dark:text-white shadow-sm"
+      className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 text-lg text-neutral-900 dark:text-white shadow-sm"
       style={style}
     />
   </FormField>
@@ -66,7 +72,7 @@ export const PickerField: React.FC<PickerFieldProps> = ({
   items,
 }) => (
   <FormField label={label}>
-    <View className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl overflow-hidden shadow-sm">
+    <View className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden shadow-sm">
       <Picker
         selectedValue={selectedValue}
         onValueChange={onValueChange}
@@ -111,13 +117,13 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   const getDateValue = (): Date => {
     if (value) {
       try {
-        const dateValue = typeof value === 'string' ? value : String(value);
+        const dateValue = typeof value === "string" ? value : String(value);
         const date = new Date(dateValue);
         if (!isNaN(date.getTime())) {
           return date;
         }
       } catch (error) {
-        console.warn('Error parsing date value:', error);
+        console.warn("Error parsing date value:", error);
       }
     }
     return new Date();
@@ -127,10 +133,10 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     <FormField label={label}>
       <TouchableOpacity
         onPress={() => setShowPicker(true)}
-        className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
+        className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 shadow-sm"
       >
-        <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {(value ? String(value) : placeholder)}
+        <Text className="text-neutral-700 dark:text-neutral-300 text-lg">
+          {value ? String(value) : placeholder}
         </Text>
       </TouchableOpacity>
 
@@ -170,9 +176,16 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = ({
 
   // Create a safe time value - convert HH:MM to a Date object for today
   const getTimeValue = (): Date => {
-    if (value && value.includes(':')) {
-      const [hours, minutes] = value.split(':').map(num => parseInt(num, 10));
-      if (!isNaN(hours) && !isNaN(minutes) && hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+    if (value && value.includes(":")) {
+      const [hours, minutes] = value.split(":").map((num) => parseInt(num, 10));
+      if (
+        !isNaN(hours) &&
+        !isNaN(minutes) &&
+        hours >= 0 &&
+        hours < 24 &&
+        minutes >= 0 &&
+        minutes < 60
+      ) {
         const date = new Date();
         date.setHours(hours, minutes, 0, 0);
         return date;
@@ -185,10 +198,10 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = ({
     <FormField label={label}>
       <TouchableOpacity
         onPress={() => setShowPicker(true)}
-        className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 shadow-sm"
+        className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 shadow-sm"
       >
-        <Text className="text-gray-700 dark:text-gray-400 text-lg">
-          {(value ? String(value) : placeholder)}
+        <Text className="text-neutral-700 dark:text-neutral-300 text-lg">
+          {value ? String(value) : placeholder}
         </Text>
       </TouchableOpacity>
 

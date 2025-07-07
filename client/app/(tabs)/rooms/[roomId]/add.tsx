@@ -133,35 +133,32 @@ const AddChoreScreen = () => {
 
   return (
     <LoadingAndErrorHandling>
-      <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="flex-1 bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-800">
         <AddChoreHeader
           roomId={roomId || ""}
           isPending={isPending}
           onBack={() => router.back()}
-          onSave={handleSubmit}
         />
 
-        <ParallaxScrollView>
-          <View className="px-6 pt-6">
-            <AddChoreForm
-              name={name}
-              setName={setName}
-              assignedTo={assignedTo}
-              setAssignedTo={setAssignedTo}
-              frequency={frequency}
-              setFrequency={setFrequency}
-              startDate={startDate}
-              setStartDate={(date: string) => setStartDate(date)}
-              dayOfWeek={dayOfWeek}
-              setDayOfWeek={setDayOfWeek}
-              timingInput={timingInput}
-              setTimingInput={setTimingInput}
-              description={description}
-              setDescription={setDescription}
-              members={formattedMembers}
-            />
-          </View>
-        </ParallaxScrollView>
+        <AddChoreForm
+          name={name}
+          setName={setName}
+          assignedTo={assignedTo}
+          setAssignedTo={setAssignedTo}
+          frequency={frequency}
+          setFrequency={setFrequency}
+          startDate={startDate}
+          setStartDate={(date: string) => setStartDate(date)}
+          dayOfWeek={dayOfWeek}
+          setDayOfWeek={setDayOfWeek}
+          timingInput={timingInput}
+          setTimingInput={setTimingInput}
+          description={description}
+          setDescription={setDescription}
+          members={formattedMembers}
+          onSave={handleSubmit}
+          isPending={isPending}
+        />
       </View>
     </LoadingAndErrorHandling>
   );
