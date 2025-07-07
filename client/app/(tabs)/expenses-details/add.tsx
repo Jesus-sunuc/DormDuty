@@ -11,12 +11,20 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import { useCreateExpenseMutation } from "@/hooks/expenseHooks";
+import {
+  useCreateExpenseMutation,
+  useUpdateExpenseMutation,
+  useExpenseByIdQuery,
+} from "@/hooks/expenseHooks";
 import {
   useRoomMembersQuery,
   useMembershipQuery,
 } from "@/hooks/membershipHooks";
-import { ExpenseCreateRequest, EXPENSE_CATEGORIES } from "@/models/Expense";
+import {
+  ExpenseCreateRequest,
+  ExpenseUpdateRequest,
+  EXPENSE_CATEGORIES,
+} from "@/models/Expense";
 import { toastSuccess, toastError } from "@/components/ToastService";
 import { useAuth } from "@/hooks/user/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
@@ -25,16 +33,31 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 const AddExpensePage = () => {
   const router = useRouter();
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const { roomId, edit, expenseId } = useLocalSearchParams<{
+    roomId: string;
+    edit?: string;
+    expenseId?: string;
+  }>();
   const colorScheme = useColorScheme();
   const { user } = useAuth();
 
+  const isEditMode = edit === "true" && expenseId;
+  const expenseIdNum = parseInt(expenseId || "0", 10);
   const roomIdNum = parseInt(roomId || "0", 10);
   const userId = user?.userId || 0;
 
+  // Fetch existing expense data if in edit mode
+  const { data: existingExpense, isLoading: expenseLoading } =
+    useExpenseByIdQuery(isEditMode ? expenseIdNum : 0);
+
   const { data: members = [] } = useRoomMembersQuery(roomId || "");
   const { data: membership } = useMembershipQuery(userId, roomIdNum);
-  const { mutate: createExpense, isPending } = useCreateExpenseMutation();
+  const { mutate: createExpense, isPending: createPending } =
+    useCreateExpenseMutation();
+  const { mutate: updateExpense, isPending: updatePending } =
+    useUpdateExpenseMutation();
+
+  const isPending = createPending || updatePending;
 
   const spinValue = React.useRef(new Animated.Value(0)).current;
 
@@ -61,6 +84,26 @@ const AddExpensePage = () => {
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+
+  // Populate form data when editing an existing expense
+  React.useEffect(() => {
+    if (isEditMode && existingExpense) {
+      // Check if the current user is the expense creator
+      if (existingExpense.payerMembershipId !== membership?.membershipId) {
+        toastError("You can only edit expenses you created");
+        router.replace("/(tabs)/expenses");
+        return;
+      }
+
+      setFormData({
+        amount: existingExpense.amount.toString(),
+        description: existingExpense.description,
+        category: existingExpense.category || "",
+        expenseDate: new Date(existingExpense.expenseDate),
+        splitWith: existingExpense.splits.map((split) => split.membershipId),
+      });
+    }
+  }, [isEditMode, existingExpense, membership?.membershipId, router]);
 
   React.useEffect(() => {
     if (
@@ -96,27 +139,50 @@ const AddExpensePage = () => {
       return;
     }
 
-    const expense: ExpenseCreateRequest = {
-      roomId: roomIdNum,
-      payerMembershipId: membership.membershipId,
-      amount,
-      description: formData.description.trim(),
-      category: formData.category || undefined,
-      expenseDate: formData.expenseDate.toISOString().split("T")[0],
-      splitWith: formData.splitWith,
-    };
+    if (isEditMode && existingExpense) {
+      // Update existing expense
+      const updateData: ExpenseUpdateRequest = {
+        expenseId: existingExpense.expenseId,
+        amount,
+        description: formData.description.trim(),
+        category: formData.category || undefined,
+        expenseDate: formData.expenseDate.toISOString().split("T")[0],
+        splitWith: formData.splitWith,
+      };
 
-    createExpense(expense, {
-      onSuccess: (data) => {
-        toastSuccess(
-          `Expense created! Split amount: $${data.amountPerPerson.toFixed(2)} per person`
-        );
-        router.replace("/(tabs)/expenses");
-      },
-      onError: () => {
-        toastError("Failed to create expense");
-      },
-    });
+      updateExpense(updateData, {
+        onSuccess: () => {
+          toastSuccess("Expense updated successfully!");
+          router.replace("/(tabs)/expenses");
+        },
+        onError: () => {
+          toastError("Failed to update expense");
+        },
+      });
+    } else {
+      // Create new expense
+      const expense: ExpenseCreateRequest = {
+        roomId: roomIdNum,
+        payerMembershipId: membership.membershipId,
+        amount,
+        description: formData.description.trim(),
+        category: formData.category || undefined,
+        expenseDate: formData.expenseDate.toISOString().split("T")[0],
+        splitWith: formData.splitWith,
+      };
+
+      createExpense(expense, {
+        onSuccess: (data) => {
+          toastSuccess(
+            `Expense created! Split amount: $${data.amountPerPerson.toFixed(2)} per person`
+          );
+          router.replace("/(tabs)/expenses");
+        },
+        onError: () => {
+          toastError("Failed to create expense");
+        },
+      });
+    }
   };
 
   const toggleMemberSelection = (membershipId: number) => {
@@ -128,8 +194,14 @@ const AddExpensePage = () => {
     }));
   };
 
-  if (!roomId || !membership) {
-    return <Spinner text="Loading expense form..." />;
+  if (!roomId || !membership || (isEditMode && expenseLoading)) {
+    return (
+      <Spinner
+        text={
+          isEditMode ? "Loading expense data..." : "Loading expense form..."
+        }
+      />
+    );
   }
 
   return (
@@ -148,10 +220,12 @@ const AddExpensePage = () => {
           </TouchableOpacity>
           <View className="flex-1 items-center">
             <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
-              New Expense
+              {isEditMode ? "Edit Expense" : "New Expense"}
             </ThemedText>
             <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-              Split costs with your roommates
+              {isEditMode
+                ? "Update expense details"
+                : "Split costs with your roommates"}
             </ThemedText>
           </View>
           <View className="w-10" />
@@ -384,14 +458,18 @@ const AddExpensePage = () => {
                 }}
               />
               <Text className="text-white font-semibold text-lg">
-                Creating...
+                {isEditMode ? "Updating..." : "Creating..."}
               </Text>
             </>
           ) : (
             <>
-              <Ionicons name="add-circle" size={24} color="white" />
+              <Ionicons
+                name={isEditMode ? "checkmark-circle" : "add-circle"}
+                size={24}
+                color="white"
+              />
               <Text className="text-white font-semibold text-lg ml-2">
-                Create Expense
+                {isEditMode ? "Update Expense" : "Create Expense"}
               </Text>
             </>
           )}

@@ -4,7 +4,10 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { useExpenseByIdQuery } from "@/hooks/expenseHooks";
-import { useMarkExpensePaidMutation } from "@/hooks/expenseHooks";
+import {
+  useMarkExpensePaidMutation,
+  useDeleteExpenseMutation,
+} from "@/hooks/expenseHooks";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import { Spinner } from "@/components/ui/Spinner";
@@ -16,6 +19,7 @@ const ExpenseDetailPage = () => {
   const { expenseId } = useLocalSearchParams<{ expenseId: string }>();
   const { user } = useAuth();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const expenseIdNum = parseInt(expenseId || "0", 10);
   const userId = user?.userId || 0;
@@ -25,6 +29,8 @@ const ExpenseDetailPage = () => {
   const { data: membership } = useMembershipQuery(userId, expense?.roomId || 0);
   const { mutate: markAsPaid, isPending: paymentPending } =
     useMarkExpensePaidMutation();
+  const { mutate: deleteExpense, isPending: deletePending } =
+    useDeleteExpenseMutation();
 
   if (expenseLoading) {
     return <Spinner text="" />;
@@ -81,19 +87,68 @@ const ExpenseDetailPage = () => {
     );
   };
 
+  const handleEditExpense = () => {
+    router.push(
+      `/expenses-details/add?edit=true&expenseId=${expenseIdNum}&roomId=${expense.roomId}`
+    );
+  };
+
+  const handleDeleteExpense = () => {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    setShowDeleteModal(false);
+    deleteExpense(expenseIdNum, {
+      onSuccess: () => {
+        toastSuccess("Expense deleted successfully!");
+        router.push("/expenses");
+      },
+      onError: (error) => {
+        toastError("Failed to delete expense");
+        console.error("Delete error:", error);
+      },
+    });
+  };
+
   return (
     <ScrollView className="flex-1 bg-gray-50 dark:bg-neutral-950">
       <View className="bg-white dark:bg-neutral-900 px-6 pt-16 pb-6 shadow-sm">
-        <View className="flex-row items-center mb-4">
-          <TouchableOpacity
-            onPress={() => router.push("/expenses")}
-            className="mr-4 p-2 rounded-full bg-gray-100 dark:bg-neutral-800"
-          >
-            <Ionicons name="arrow-back" size={24} color="#6b7280" />
-          </TouchableOpacity>
-          <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white">
-            Expense Details
-          </ThemedText>
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={() => router.push("/expenses")}
+              className="mr-4 p-2 rounded-full bg-gray-100 dark:bg-neutral-800"
+            >
+              <Ionicons name="arrow-back" size={24} color="#6b7280" />
+            </TouchableOpacity>
+            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white">
+              Expense Details
+            </ThemedText>
+          </View>
+
+          {/* Show edit and delete buttons only for expense creator */}
+          {membership?.membershipId === expense.payerMembershipId && (
+            <View className="flex-row items-center">
+              <TouchableOpacity
+                onPress={handleEditExpense}
+                className="mr-3 p-2 rounded-full bg-blue-100 dark:bg-blue-900"
+              >
+                <Ionicons name="pencil" size={20} color="#3b82f6" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteExpense}
+                disabled={deletePending}
+                className="p-2 rounded-full bg-red-100 dark:bg-red-900"
+              >
+                {deletePending ? (
+                  <Spinner text="" />
+                ) : (
+                  <Ionicons name="trash" size={20} color="#ef4444" />
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
 
@@ -307,6 +362,18 @@ const ExpenseDetailPage = () => {
         confirmText="Mark as Paid"
         cancelText="Cancel"
         icon="card"
+      />
+
+      <ConfirmationModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        title="Delete Expense"
+        message={`Are you sure you want to delete this expense? This action cannot be undone and will affect all room members.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        icon="trash"
+        destructive={true}
       />
     </ScrollView>
   );

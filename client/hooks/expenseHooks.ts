@@ -7,6 +7,7 @@ import {
   ExpenseCreateRequest,
   ExpensePaymentRequest,
   ExpenseSummary,
+  ExpenseUpdateRequest,
 } from "@/models/Expense";
 
 const queryClient = getQueryClient();
@@ -89,6 +90,38 @@ export const useMarkExpensePaidMutation = () =>
     }> => {
       const body = camel_to_snake_serializing_date(data);
       const res = await axiosClient.post("/api/expenses/pay", body);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: expenseKeys.all });
+    },
+  });
+
+export const useUpdateExpenseMutation = () =>
+  useMutation({
+    mutationFn: async (data: ExpenseUpdateRequest): Promise<Expense> => {
+      const body = camel_to_snake_serializing_date(data);
+      const res = await axiosClient.put(
+        `/api/expenses/${data.expenseId}`,
+        body
+      );
+      return res.data;
+    },
+    onSuccess: (updatedExpense) => {
+      queryClient.invalidateQueries({
+        queryKey: expenseKeys.byRoom(updatedExpense.roomId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: expenseKeys.byId(updatedExpense.expenseId),
+      });
+      queryClient.invalidateQueries({ queryKey: expenseKeys.all });
+    },
+  });
+
+export const useDeleteExpenseMutation = () =>
+  useMutation({
+    mutationFn: async (expenseId: number): Promise<{ success: boolean }> => {
+      const res = await axiosClient.delete(`/api/expenses/${expenseId}`);
       return res.data;
     },
     onSuccess: () => {
