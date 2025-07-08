@@ -15,6 +15,14 @@ import {
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import { LogBox } from "react-native";
+
+if (__DEV__) {
+  require("react-native-reanimated").configureReanimatedLogger({
+    strict: false, // Turn off strict mode to reduce warnings
+    level: "warn", // Only show warnings and errors
+  });
+}
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getQueryClient } from "@/services/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";

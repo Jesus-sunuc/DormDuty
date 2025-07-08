@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Animated,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -46,7 +45,6 @@ const AddExpensePage = () => {
   const roomIdNum = parseInt(roomId || "0", 10);
   const userId = user?.userId || 0;
 
-  // Fetch existing expense data if in edit mode
   const { data: existingExpense, isLoading: expenseLoading } =
     useExpenseByIdQuery(isEditMode ? expenseIdNum : 0);
 
@@ -59,22 +57,6 @@ const AddExpensePage = () => {
 
   const isPending = createPending || updatePending;
 
-  const spinValue = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    if (isPending) {
-      const spinAnimation = Animated.loop(
-        Animated.timing(spinValue, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        })
-      );
-      spinAnimation.start();
-      return () => spinAnimation.stop();
-    }
-  }, [isPending, spinValue]);
-
   const [formData, setFormData] = useState({
     amount: "",
     description: "",
@@ -85,10 +67,8 @@ const AddExpensePage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
-  // Populate form data when editing an existing expense
   React.useEffect(() => {
     if (isEditMode && existingExpense) {
-      // Check if the current user is the expense creator
       if (existingExpense.payerMembershipId !== membership?.membershipId) {
         toastError("You can only edit expenses you created");
         router.replace("/(tabs)/expenses");
@@ -140,7 +120,6 @@ const AddExpensePage = () => {
     }
 
     if (isEditMode && existingExpense) {
-      // Update existing expense
       const updateData: ExpenseUpdateRequest = {
         expenseId: existingExpense.expenseId,
         amount,
@@ -160,7 +139,6 @@ const AddExpensePage = () => {
         },
       });
     } else {
-      // Create new expense
       const expense: ExpenseCreateRequest = {
         roomId: roomIdNum,
         payerMembershipId: membership.membershipId,
@@ -444,20 +422,8 @@ const AddExpensePage = () => {
         >
           {isPending ? (
             <>
-              <Animated.View
-                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mr-3"
-                style={{
-                  transform: [
-                    {
-                      rotate: spinValue.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["0deg", "360deg"],
-                      }),
-                    },
-                  ],
-                }}
-              />
-              <Text className="text-white font-semibold text-lg">
+              <Spinner text="" />
+              <Text className="text-white font-semibold text-lg ml-2">
                 {isEditMode ? "Updating..." : "Creating..."}
               </Text>
             </>
