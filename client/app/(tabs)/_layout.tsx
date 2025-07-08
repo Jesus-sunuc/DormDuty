@@ -99,12 +99,12 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="rewards"
+          name="notification"
           options={{
-            title: "Rewards",
+            title: "Notifications",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "gift" : "gift-outline"}
+                name={focused ? "notifications" : "notifications-outline"}
                 size={24}
                 color={color}
               />

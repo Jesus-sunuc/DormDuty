@@ -1,14 +1,15 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
 import { View, Text } from "react-native";
 
-const RewardsScreen = () => {
+const NotificationScreen = () => {
   return (
     <ParallaxScrollView>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <Text>Rewards!</Text>
+        <ThemedText>Notifications</ThemedText>
       </View>
     </ParallaxScrollView>
   );
 }
 
-export default RewardsScreen;
+export default NotificationScreen;
