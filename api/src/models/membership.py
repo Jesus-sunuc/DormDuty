@@ -11,10 +11,6 @@ class Membership(BaseModel):
     user_id: int
     room_id: int
     role: Role
-    points: int = 0
-    streak_count: int = 0
-    total_completed: int = 0
-    trust_score: float = 5.00
     joined_at: datetime
     is_active: bool = True
 

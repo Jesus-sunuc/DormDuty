@@ -8,10 +8,6 @@ export interface Membership {
   userId: number;
   roomId: number;
   role: Role;
-  points: number;
-  streakCount: number;
-  totalCompleted: number;
-  trustScore: number;
   joinedAt: string;
   isActive: boolean;
 }
@@ -25,10 +21,6 @@ export interface MembershipCreateRequest {
 export interface MembershipUpdateRequest {
   membershipId: number;
   role?: Role;
-  points?: number;
-  streakCount?: number;
-  totalCompleted?: number;
-  trustScore?: number;
 }
 
 export interface RoomMember {
@@ -36,9 +28,5 @@ export interface RoomMember {
   name: string;
   membershipId: number;
   role: Role;
-  points: number;
-  streakCount: number;
-  totalCompleted: number;
-  trustScore: number;
   joinedAt: string;
 }

@@ -10,7 +10,6 @@ import {
   useExpenseSummaryQuery,
 } from "@/hooks/expenseHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import { Spinner } from "@/components/ui/Spinner";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
@@ -27,14 +26,38 @@ const ExpensesScreen = () => {
   } = useRoomsByUserQuery();
 
   useEffect(() => {
-    if (rooms.length > 0 && !selectedRoom) {
-      setSelectedRoom(rooms[0]);
+    if (user?.userId && selectedRoom) {
+      const roomAvailable = rooms.some(
+        (room) => room.roomId === selectedRoom.roomId
+      );
+      if (!roomAvailable && rooms.length > 0) {
+        setSelectedRoom(rooms[0]);
+      }
+    }
+  }, [user?.userId, rooms, selectedRoom]);
+
+  useEffect(() => {
+    if (rooms.length > 0) {
+      if (!selectedRoom) {
+        setSelectedRoom(rooms[0]);
+      } else {
+        const roomStillAvailable = rooms.some(
+          (room) => room.roomId === selectedRoom.roomId
+        );
+        if (!roomStillAvailable) {
+          setSelectedRoom(rooms[0]);
+        }
+      }
+    } else if (rooms.length === 0 && selectedRoom) {
+      setSelectedRoom(null);
     }
   }, [rooms, selectedRoom]);
 
+  const currentRoom = selectedRoom;
+
   if (roomsLoading) {
     return (
-      <LoadingAndErrorHandling isLoading={true} loadingText="">
+      <LoadingAndErrorHandling isLoading={true}>
         <View />
       </LoadingAndErrorHandling>
     );
@@ -64,15 +87,13 @@ const ExpensesScreen = () => {
     );
   }
 
-  const currentRoom = selectedRoom;
-
   return (
-    <>
-      <View className="bg-white dark:bg-neutral-900 px-6 pt-16 shadow-lg">
-        {rooms.length > 1 && (
+    <ParallaxScrollViewY>
+      <View className="px-6 pt-20">
+        {rooms.length > 0 && (
           <View className="mb-6">
-            <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
-              Select Room
+            <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+              {rooms.length > 1 ? "Select Room" : "Room"}
             </ThemedText>
             <FlatList
               data={rooms}
@@ -84,7 +105,7 @@ const ExpensesScreen = () => {
                   onPress={() => setSelectedRoom(room)}
                   className={`mr-3 px-4 py-2 rounded-2xl border ${
                     currentRoom?.roomId === room.roomId
-                      ? "bg-blue-500 border-blue-400"
+                      ? "bg-blue-500 border-blue-500"
                       : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
                   }`}
                 >
@@ -102,15 +123,12 @@ const ExpensesScreen = () => {
             />
           </View>
         )}
+
+        {currentRoom && (
+          <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
+        )}
       </View>
-      <ParallaxScrollViewY>
-        <View className="px-6 pt-6">
-          {currentRoom && (
-            <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
-          )}
-        </View>
-      </ParallaxScrollViewY>
-    </>
+    </ParallaxScrollViewY>
   );
 };
 
@@ -124,19 +142,41 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
   userId,
 }) => {
   const router = useRouter();
-  const { data: membership, isLoading: membershipLoading } = useMembershipQuery(
-    userId,
-    room.roomId
-  );
+
+  const {
+    data: membership,
+    isLoading: membershipLoading,
+    error: membershipError,
+  } = useMembershipQuery(userId, room.roomId);
   const { data: expenses = [], isLoading: expensesLoading } =
     useRoomExpensesQuery(room.roomId);
-  const { data: summary, isLoading: summaryLoading } = useExpenseSummaryQuery(
+  const { data: summary } = useExpenseSummaryQuery(
     membership?.membershipId || 0,
     room.roomId
   );
 
-  if (expensesLoading || membershipLoading || summaryLoading) {
-    return <Spinner text="" />;
+  if (expensesLoading || membershipLoading) {
+    return (
+      <LoadingAndErrorHandling isLoading={true}>
+        <View />
+      </LoadingAndErrorHandling>
+    );
+  }
+
+  if (membershipError || (!membership && !membershipLoading)) {
+    return (
+      <View className="flex-1 items-center justify-center px-6 py-8">
+        <Ionicons name="warning-outline" size={64} color="#ef4444" />
+        <ThemedText className="text-center text-red-500 mt-4 text-lg font-medium">
+          Access Denied
+        </ThemedText>
+        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+          You don't have permission to view expenses for "{room.name}".
+          {"\n"}Please select a different room or contact an admin to be added
+          to this room.
+        </ThemedText>
+      </View>
+    );
   }
 
   return (
@@ -186,9 +226,12 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
       )}
 
       <TouchableOpacity
-        onPress={() =>
-          router.push(`/expenses-details/add?roomId=${room.roomId}`)
-        }
+        onPress={() => {
+          if (!room?.roomId || !membership?.membershipId) {
+            return;
+          }
+          router.push(`/expenses-details/add?roomId=${room.roomId}`);
+        }}
         className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center shadow-sm"
       >
         <Ionicons name="add" size={24} color="white" />
@@ -239,16 +282,12 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   expense,
   currentUserMembershipId,
 }) => {
-  const router = useRouter();
   const userSplit = expense.splits.find(
     (split) => split.membershipId === currentUserMembershipId
   );
 
   return (
-    <TouchableOpacity
-      onPress={() => router.push(`/expenses-details/${expense.expenseId}`)}
-      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-neutral-800"
-    >
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-neutral-800">
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">
           <ThemedText className="font-semibold text-gray-900 dark:text-white">
@@ -292,7 +331,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

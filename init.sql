@@ -27,16 +27,64 @@ CREATE TABLE
     "user_id" INTEGER NOT NULL,
     "room_id" INTEGER NOT NULL,
     "role" VARCHAR(50) DEFAULT 'member',
-    "points" INTEGER DEFAULT 0,
-    "streak_count" INTEGER DEFAULT 0,
-    "total_completed" INTEGER DEFAULT 0,
-    "trust_score" DECIMAL(3, 2) DEFAULT 5.00,
     "joined_at" TIMESTAMPTZ DEFAULT now (),
     "is_active" BOOLEAN DEFAULT TRUE, -- Can leave/rejoin rooms
     CONSTRAINT "FK_room_membership_user_id" FOREIGN KEY ("user_id") REFERENCES "user" ("user_id"),
     CONSTRAINT "FK_room_membership_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id"),
     CONSTRAINT "UQ_room_membership" UNIQUE ("user_id", "room_id")
   );
+
+CREATE TABLE "announcement" (
+  "announcement_id" SERIAL PRIMARY KEY,
+  "room_id" INTEGER NOT NULL,
+  "created_by" INTEGER NOT NULL,
+  "message" TEXT NOT NULL,
+  "created_at" TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT "FK_announcement_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE,
+  CONSTRAINT "FK_announcement_created_by" FOREIGN KEY ("created_by") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+);
+
+CREATE TABLE "announcement_reaction" (
+  "reaction_id" SERIAL PRIMARY KEY,
+  "announcement_id" INTEGER NOT NULL,
+  "membership_id" INTEGER NOT NULL,
+  "emoji" VARCHAR(10) NOT NULL,
+  "reacted_at" TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT "FK_reaction_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+  CONSTRAINT "FK_reaction_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+  CONSTRAINT "UQ_reaction_unique" UNIQUE ("announcement_id", "membership_id", "emoji")
+);
+
+CREATE TABLE "announcement_read" (
+  "announcement_id" INTEGER NOT NULL,
+  "membership_id" INTEGER NOT NULL,
+  "read_at" TIMESTAMPTZ DEFAULT now(),
+  PRIMARY KEY ("announcement_id", "membership_id"),
+  CONSTRAINT "FK_read_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+  CONSTRAINT "FK_read_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+);
+
+CREATE TABLE "cleaning_checklist" (
+  "checklist_item_id" SERIAL PRIMARY KEY,
+  "room_id" INTEGER NOT NULL,
+  "title" VARCHAR(255) NOT NULL,
+  "description" TEXT,
+  "is_default" BOOLEAN DEFAULT FALSE,
+  CONSTRAINT "FK_checklist_room" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE
+);
+
+CREATE TABLE "cleaning_check_status" (
+  "status_id" SERIAL PRIMARY KEY,
+  "checklist_item_id" INTEGER NOT NULL,
+  "membership_id" INTEGER NOT NULL,
+  "marked_date" DATE NOT NULL,
+  "is_completed" BOOLEAN DEFAULT FALSE,
+  "updated_at" TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT "FK_status_checklist_item" FOREIGN KEY ("checklist_item_id") REFERENCES "cleaning_checklist" ("checklist_item_id") ON DELETE CASCADE,
+  CONSTRAINT "FK_status_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+  CONSTRAINT "UQ_status_per_day" UNIQUE ("checklist_item_id", "membership_id", "marked_date")
+);
+
 
 CREATE TABLE
   "room_invitation" (
@@ -196,6 +244,20 @@ CREATE INDEX "idx_room_invitation_email" ON "room_invitation" ("invited_email");
 
 CREATE INDEX "idx_room_invitation_status" ON "room_invitation" ("status", "expires_at");
 
+CREATE INDEX idx_announcement_room_id ON "announcement" ("room_id");
+CREATE INDEX idx_announcement_created_by ON "announcement" ("created_by");
+
+CREATE INDEX idx_announcement_reaction_announcement_id ON "announcement_reaction" ("announcement_id");
+CREATE INDEX idx_announcement_reaction_membership_id ON "announcement_reaction" ("membership_id");
+
+CREATE INDEX idx_announcement_read_announcement_id ON "announcement_read" ("announcement_id");
+
+CREATE INDEX idx_cleaning_checklist_room_id ON "cleaning_checklist" ("room_id");
+
+CREATE INDEX idx_cleaning_check_status_checklist_item_id ON "cleaning_check_status" ("checklist_item_id");
+CREATE INDEX idx_cleaning_check_status_membership_id ON "cleaning_check_status" ("membership_id");
+
+
 CREATE VIEW
   "user_rooms" AS
 SELECT
@@ -207,10 +269,6 @@ SELECT
   r.name as room_name,
   r.room_code,
   rm.role,
-  rm.points,
-  rm.streak_count,
-  rm.total_completed,
-  rm.trust_score,
   rm.joined_at,
   rm.is_active
 FROM
@@ -231,10 +289,6 @@ SELECT
   u.avatar_url,
   rm.membership_id,
   rm.role,
-  rm.points,
-  rm.streak_count,
-  rm.total_completed,
-  rm.trust_score,
   rm.joined_at
 FROM
   "room" r

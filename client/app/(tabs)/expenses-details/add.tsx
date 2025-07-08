@@ -1,29 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import {
-  useCreateExpenseMutation,
-  useUpdateExpenseMutation,
-  useExpenseByIdQuery,
-} from "@/hooks/expenseHooks";
+import { useCreateExpenseMutation } from "@/hooks/expenseHooks";
 import {
   useRoomMembersQuery,
   useMembershipQuery,
 } from "@/hooks/membershipHooks";
-import {
-  ExpenseCreateRequest,
-  ExpenseUpdateRequest,
-  EXPENSE_CATEGORIES,
-} from "@/models/Expense";
+import { ExpenseCreateRequest, EXPENSE_CATEGORIES } from "@/models/Expense";
 import { toastSuccess, toastError } from "@/components/ToastService";
 import { useAuth } from "@/hooks/user/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
@@ -32,30 +25,36 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 const AddExpensePage = () => {
   const router = useRouter();
-  const { roomId, edit, expenseId } = useLocalSearchParams<{
-    roomId: string;
-    edit?: string;
-    expenseId?: string;
-  }>();
+  const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const colorScheme = useColorScheme();
   const { user } = useAuth();
 
-  const isEditMode = edit === "true" && expenseId;
-  const expenseIdNum = parseInt(expenseId || "0", 10);
   const roomIdNum = parseInt(roomId || "0", 10);
   const userId = user?.userId || 0;
 
-  const { data: existingExpense, isLoading: expenseLoading } =
-    useExpenseByIdQuery(isEditMode ? expenseIdNum : 0);
-
   const { data: members = [] } = useRoomMembersQuery(roomId || "");
-  const { data: membership } = useMembershipQuery(userId, roomIdNum);
-  const { mutate: createExpense, isPending: createPending } =
-    useCreateExpenseMutation();
-  const { mutate: updateExpense, isPending: updatePending } =
-    useUpdateExpenseMutation();
+  const {
+    data: membership,
+    isLoading: membershipLoading,
+    error: membershipError,
+  } = useMembershipQuery(userId, roomIdNum);
+  const { mutate: createExpense, isPending } = useCreateExpenseMutation();
 
-  const isPending = createPending || updatePending;
+  const spinValue = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (isPending) {
+      const spinAnimation = Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      );
+      spinAnimation.start();
+      return () => spinAnimation.stop();
+    }
+  }, [isPending, spinValue]);
 
   const [formData, setFormData] = useState({
     amount: "",
@@ -66,24 +65,6 @@ const AddExpensePage = () => {
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
-
-  React.useEffect(() => {
-    if (isEditMode && existingExpense) {
-      if (existingExpense.payerMembershipId !== membership?.membershipId) {
-        toastError("You can only edit expenses you created");
-        router.replace("/(tabs)/expenses");
-        return;
-      }
-
-      setFormData({
-        amount: existingExpense.amount.toString(),
-        description: existingExpense.description,
-        category: existingExpense.category || "",
-        expenseDate: new Date(existingExpense.expenseDate),
-        splitWith: existingExpense.splits.map((split) => split.membershipId),
-      });
-    }
-  }, [isEditMode, existingExpense, membership?.membershipId, router]);
 
   React.useEffect(() => {
     if (
@@ -119,48 +100,27 @@ const AddExpensePage = () => {
       return;
     }
 
-    if (isEditMode && existingExpense) {
-      const updateData: ExpenseUpdateRequest = {
-        expenseId: existingExpense.expenseId,
-        amount,
-        description: formData.description.trim(),
-        category: formData.category || undefined,
-        expenseDate: formData.expenseDate.toISOString().split("T")[0],
-        splitWith: formData.splitWith,
-      };
+    const expense: ExpenseCreateRequest = {
+      roomId: roomIdNum,
+      payerMembershipId: membership.membershipId,
+      amount,
+      description: formData.description.trim(),
+      category: formData.category || undefined,
+      expenseDate: formData.expenseDate.toISOString().split("T")[0],
+      splitWith: formData.splitWith,
+    };
 
-      updateExpense(updateData, {
-        onSuccess: () => {
-          toastSuccess("Expense updated successfully!");
-          router.replace("/(tabs)/expenses");
-        },
-        onError: () => {
-          toastError("Failed to update expense");
-        },
-      });
-    } else {
-      const expense: ExpenseCreateRequest = {
-        roomId: roomIdNum,
-        payerMembershipId: membership.membershipId,
-        amount,
-        description: formData.description.trim(),
-        category: formData.category || undefined,
-        expenseDate: formData.expenseDate.toISOString().split("T")[0],
-        splitWith: formData.splitWith,
-      };
-
-      createExpense(expense, {
-        onSuccess: (data) => {
-          toastSuccess(
-            `Expense created! Split amount: $${data.amountPerPerson.toFixed(2)} per person`
-          );
-          router.replace("/(tabs)/expenses");
-        },
-        onError: () => {
-          toastError("Failed to create expense");
-        },
-      });
-    }
+    createExpense(expense, {
+      onSuccess: (data) => {
+        toastSuccess(
+          `Expense created! Split amount: $${data.amountPerPerson.toFixed(2)} per person`
+        );
+        router.replace("/(tabs)/expenses");
+      },
+      onError: () => {
+        toastError("Failed to create expense");
+      },
+    });
   };
 
   const toggleMemberSelection = (membershipId: number) => {
@@ -172,13 +132,30 @@ const AddExpensePage = () => {
     }));
   };
 
-  if (!roomId || !membership || (isEditMode && expenseLoading)) {
+  if (!roomId || membershipLoading || (!membership && !membershipError)) {
+    return <Spinner text="Loading expense form..." />;
+  }
+
+  if (membershipError || (!membership && !membershipLoading)) {
     return (
-      <Spinner
-        text={
-          isEditMode ? "Loading expense data..." : "Loading expense form..."
-        }
-      />
+      <View className="flex-1 bg-neutral-50 dark:bg-black items-center justify-center p-6">
+        <Ionicons name="warning-outline" size={64} color="#ef4444" />
+        <ThemedText className="text-red-500 text-center mb-4 text-lg font-semibold">
+          Access Denied
+        </ThemedText>
+        <ThemedText className="text-gray-500 text-center text-sm mb-4">
+          You are not a member of this room or there was an error loading your
+          membership.
+        </ThemedText>
+        <TouchableOpacity
+          onPress={() => router.replace("/(tabs)/expenses")}
+          className="bg-blue-500 px-6 py-3 rounded-lg"
+        >
+          <ThemedText className="text-white font-semibold">
+            Back to Expenses
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
     );
   }
 
@@ -198,12 +175,10 @@ const AddExpensePage = () => {
           </TouchableOpacity>
           <View className="flex-1 items-center">
             <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
-              {isEditMode ? "Edit Expense" : "New Expense"}
+              New Expense
             </ThemedText>
             <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-              {isEditMode
-                ? "Update expense details"
-                : "Split costs with your roommates"}
+              Split costs with your roommates
             </ThemedText>
           </View>
           <View className="w-10" />
@@ -382,7 +357,7 @@ const AddExpensePage = () => {
                           }`}
                         >
                           {member.name}
-                          {member.membershipId === membership.membershipId && (
+                          {member.membershipId === membership?.membershipId && (
                             <Text className="text-sm text-neutral-500">
                               {" "}
                               (You)
@@ -422,20 +397,28 @@ const AddExpensePage = () => {
         >
           {isPending ? (
             <>
-              <Spinner text="" />
-              <Text className="text-white font-semibold text-lg ml-2">
-                {isEditMode ? "Updating..." : "Creating..."}
+              <Animated.View
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mr-3"
+                style={{
+                  transform: [
+                    {
+                      rotate: spinValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ["0deg", "360deg"],
+                      }),
+                    },
+                  ],
+                }}
+              />
+              <Text className="text-white font-semibold text-lg">
+                Creating...
               </Text>
             </>
           ) : (
             <>
-              <Ionicons
-                name={isEditMode ? "checkmark-circle" : "add-circle"}
-                size={24}
-                color="white"
-              />
+              <Ionicons name="add-circle" size={24} color="white" />
               <Text className="text-white font-semibold text-lg ml-2">
-                {isEditMode ? "Update Expense" : "Create Expense"}
+                Create Expense
               </Text>
             </>
           )}

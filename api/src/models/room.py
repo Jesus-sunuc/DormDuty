@@ -6,6 +6,8 @@ class Room(BaseModel):
     room_code: str
     created_by: int
     name: str
+    created_at: datetime
+    updated_at: datetime
 class RoomCreateRequest(BaseModel):
     name: str
     created_by: int
