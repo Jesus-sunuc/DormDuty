@@ -5,6 +5,7 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import clsx from "clsx";
 
 const TabLayout = () => {
@@ -99,15 +100,11 @@ const TabLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="notification"
+          name="updates"
           options={{
-            title: "Notifications",
+            title: "Updates",
             tabBarIcon: ({ color, focused }) => (
-              <Ionicons
-                name={focused ? "notifications" : "notifications-outline"}
-                size={24}
-                color={color}
-              />
+              <AntDesign name="notification" size={24} color={color} />
             ),
           }}
         />
