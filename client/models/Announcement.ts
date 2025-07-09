@@ -5,9 +5,11 @@ export interface Announcement {
   message: string;
   createdAt: string;
   memberName: string;
+  canReply: boolean;
 }
 
 export interface AnnouncementCreateRequest {
   roomId: number;
   message: string;
+  canReply: boolean;
 }

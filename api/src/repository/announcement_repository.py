@@ -12,6 +12,7 @@ class AnnouncementRepository:
                 a.created_by,
                 a.message,
                 a.created_at,
+                a.can_reply,
                 u.name as member_name
             FROM announcement a
             JOIN room_membership rm ON a.created_by = rm.membership_id
@@ -25,9 +26,9 @@ class AnnouncementRepository:
     def create_announcement(self, announcement: AnnouncementCreate, membership_id: int) -> AnnouncementResponse:
         sql = """
             WITH new_announcement AS (
-                INSERT INTO announcement (room_id, created_by, message)
-                VALUES (%s, %s, %s)
-                RETURNING announcement_id, room_id, created_by, message, created_at
+                INSERT INTO announcement (room_id, created_by, message, can_reply)
+                VALUES (%s, %s, %s, %s)
+                RETURNING announcement_id, room_id, created_by, message, created_at, can_reply
             )
             SELECT 
                 na.announcement_id,
@@ -35,12 +36,13 @@ class AnnouncementRepository:
                 na.created_by,
                 na.message,
                 na.created_at,
+                na.can_reply,
                 u.name as member_name
             FROM new_announcement na
             JOIN room_membership rm ON na.created_by = rm.membership_id
             JOIN "user" u ON rm.user_id = u.user_id
         """
-        result = run_sql(sql, [announcement.room_id, membership_id, announcement.message], output_class=AnnouncementResponse)
+        result = run_sql(sql, [announcement.room_id, membership_id, announcement.message, announcement.can_reply], output_class=AnnouncementResponse)
         return result[0] if result else None
 
     def get_announcement_by_id(self, announcement_id: int) -> Optional[AnnouncementResponse]:
@@ -51,6 +53,7 @@ class AnnouncementRepository:
                 a.created_by,
                 a.message,
                 a.created_at,
+                a.can_reply,
                 u.name as member_name
             FROM announcement a
             JOIN room_membership rm ON a.created_by = rm.membership_id

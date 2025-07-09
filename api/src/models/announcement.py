@@ -4,6 +4,7 @@ from datetime import datetime
 
 class AnnouncementBase(BaseModel):
     message: str
+    can_reply: bool = False
 
 
 class AnnouncementCreate(AnnouncementBase):
@@ -16,7 +17,8 @@ class AnnouncementResponse(AnnouncementBase):
     created_by: int
     created_at: datetime
     member_name: str  # Joined from user table
-    
+    can_reply: bool
+
     class Config:
         from_attributes = True
 

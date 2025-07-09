@@ -15,18 +15,33 @@ import {
   useCreateAnnouncementMutation,
   useDeleteAnnouncementMutation,
 } from "@/hooks/announcementHooks";
+import {
+  useAnnouncementRepliesQuery,
+  useCreateAnnouncementReplyMutation,
+  useDeleteAnnouncementReplyMutation,
+} from "@/hooks/announcementReplyHooks";
+import {
+  useAnnouncementReactionsQuery,
+  useCreateAnnouncementReactionMutation,
+  useDeleteAnnouncementReactionMutation,
+} from "@/hooks/announcementReactionHooks";
 import { Announcement } from "@/models/Announcement";
+import { AnnouncementReply } from "@/models/AnnouncementReply";
+import { AnnouncementReaction } from "@/models/AnnouncementReaction";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
 import { toastSuccess, toastError } from "@/components/ToastService";
 
+const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🎉"];
+
 const Updates = () => {
   const { user } = useAuth();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [newUpdate, setNewUpdate] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [canReply, setCanReply] = useState(false);
 
   const {
     data: rooms = [],
@@ -66,6 +81,7 @@ const Updates = () => {
       await createAnnouncementMutation.mutateAsync({
         roomId: selectedRoom.roomId,
         message: newUpdate.trim(),
+        canReply,
       });
 
       setNewUpdate("");
@@ -216,6 +232,24 @@ const Updates = () => {
               placeholderTextColor="#9ca3af"
             />
 
+            {/* New: Toggle for canReply */}
+            <View className="flex-row items-center mb-4">
+              <ThemedText className="mr-2">Allow replies?</ThemedText>
+              <TouchableOpacity
+                onPress={() => setCanReply((prev) => !prev)}
+                className={`w-10 h-6 rounded-full p-1 ${
+                  canReply ? "bg-blue-500" : "bg-gray-300"
+                }`}
+              >
+                <View
+                  className={`w-4 h-4 rounded-full ${
+                    canReply ? "bg-white ml-4" : "bg-white"
+                  }`}
+                  style={{ marginLeft: canReply ? 16 : 0 }}
+                />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
               onPress={handleCreateUpdate}
               disabled={isCreating || !newUpdate.trim()}
@@ -329,6 +363,16 @@ const Updates = () => {
                       <ThemedText className="text-gray-700 dark:text-gray-300 leading-5">
                         {announcement.message}
                       </ThemedText>
+
+                      {/* Replies and Reactions UI */}
+                      {announcement.canReply && (
+                        <AnnouncementRepliesSection
+                          announcementId={announcement.announcementId}
+                        />
+                      )}
+                      <AnnouncementReactionsSection
+                        announcementId={announcement.announcementId}
+                      />
                     </View>
                   );
                 }}
@@ -340,5 +384,133 @@ const Updates = () => {
     </ParallaxScrollViewY>
   );
 };
+
+function AnnouncementRepliesSection({
+  announcementId,
+}: {
+  announcementId: number;
+}) {
+  const { user } = useAuth();
+  const { data: replies = [], isLoading } =
+    useAnnouncementRepliesQuery(announcementId);
+  const createReplyMutation = useCreateAnnouncementReplyMutation();
+  const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
+  const [replyText, setReplyText] = useState("");
+
+  const handleSendReply = async () => {
+    if (!replyText.trim()) return;
+    await createReplyMutation.mutateAsync({
+      announcementId,
+      message: replyText.trim(),
+    });
+    setReplyText("");
+  };
+
+  return (
+    <View className="mt-2">
+      <FlatList
+        data={replies}
+        keyExtractor={(reply: AnnouncementReply) => reply.replyId.toString()}
+        renderItem={({ item: reply }) => (
+          <View className="flex-row items-start mb-2">
+            <ThemedText className="font-semibold mr-2 text-xs text-gray-700 dark:text-gray-300">
+              {reply.memberName}
+              {user?.userId === reply.membershipId && " (You)"}
+            </ThemedText>
+            <ThemedText className="text-xs text-gray-600 dark:text-gray-400 flex-1">
+              {reply.message}
+            </ThemedText>
+            {user?.userId === reply.membershipId && (
+              <TouchableOpacity
+                onPress={() =>
+                  deleteReplyMutation.mutate({
+                    replyId: reply.replyId,
+                    announcementId,
+                  })
+                }
+                className="ml-2"
+              >
+                <Ionicons name="trash-outline" size={14} color="#ef4444" />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+        ListEmptyComponent={
+          isLoading ? null : (
+            <ThemedText className="text-xs text-gray-400">
+              No replies yet
+            </ThemedText>
+          )
+        }
+      />
+      <View className="flex-row items-center mt-2">
+        <TextInput
+          value={replyText}
+          onChangeText={setReplyText}
+          placeholder="Write a reply..."
+          className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-lg px-3 py-2 text-xs text-gray-900 dark:text-white"
+        />
+        <TouchableOpacity
+          onPress={handleSendReply}
+          disabled={!replyText.trim()}
+          className="ml-2 px-3 py-2 bg-blue-500 rounded-lg"
+        >
+          <Ionicons name="send" size={16} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function AnnouncementReactionsSection({
+  announcementId,
+}: {
+  announcementId: number;
+}) {
+  const { user } = useAuth();
+  const { data: reactions = [] } =
+    useAnnouncementReactionsQuery(announcementId);
+  const createReactionMutation = useCreateAnnouncementReactionMutation();
+  const deleteReactionMutation = useDeleteAnnouncementReactionMutation();
+
+  // Group reactions by emoji
+  const grouped = REACTION_EMOJIS.map((emoji) => {
+    const users = reactions.filter((r) => r.emoji === emoji);
+    return {
+      emoji,
+      count: users.length,
+      reacted: users.some((r) => r.membershipId === user?.userId),
+      reactionId: users.find((r) => r.membershipId === user?.userId)
+        ?.reactionId,
+    };
+  });
+
+  return (
+    <View className="flex-row items-center mt-2">
+      {grouped.map(({ emoji, count, reacted, reactionId }) => (
+        <TouchableOpacity
+          key={emoji}
+          onPress={() =>
+            reacted && reactionId
+              ? deleteReactionMutation.mutate({ reactionId, announcementId })
+              : createReactionMutation.mutate({ announcementId, emoji })
+          }
+          className={`flex-row items-center px-2 py-1 rounded-full mr-2 ${reacted ? "bg-blue-100 dark:bg-blue-900" : "bg-gray-100 dark:bg-neutral-800"}`}
+        >
+          <ThemedText
+            className={`text-lg ${reacted ? "text-blue-500" : "text-gray-700 dark:text-gray-300"}`}
+          >
+            {emoji}
+          </ThemedText>
+          {count > 0 && (
+            <ThemedText className="ml-1 text-xs text-gray-600 dark:text-gray-400">
+              {count}
+            </ThemedText>
+          )}
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
 
 export default Updates;
