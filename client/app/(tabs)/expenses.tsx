@@ -92,7 +92,7 @@ const ExpensesScreen = () => {
       <View className="px-6 pt-20">
         {rooms.length > 0 && (
           <View className="mb-6">
-            <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+            <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
               {rooms.length > 1 ? "Select Room" : "Room"}
             </ThemedText>
             <FlatList
