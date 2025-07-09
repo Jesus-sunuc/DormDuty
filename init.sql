@@ -1,3 +1,21 @@
+delete table if exists "user";
+delete table if exists "room";
+delete table if exists "room_membership";
+delete table if exists "announcement";
+delete table if exists "announcement_reaction";
+delete table if exists "announcement_reply";
+delete table if exists "announcement_read";
+delete table if exists "cleaning_checklist";
+delete table if exists "cleaning_check_status";
+delete table if exists "room_invitation";
+delete table if exists "chore";
+delete table if exists "chore_completion";
+delete table if exists "chore_verification";
+delete table if exists "chore_assignment_history";
+delete table if exists "chore_swap_request";
+delete table if exists "expense";
+delete table if exists "expense_split"; 
+
 -- psql -U $POSTGRES_USER $POSTGRES_DB
 CREATE TABLE
   "user" (
