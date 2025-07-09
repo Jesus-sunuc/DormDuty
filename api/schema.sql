@@ -39,6 +39,7 @@ CREATE TABLE "announcement" (
   "room_id" INTEGER NOT NULL,
   "created_by" INTEGER NOT NULL,
   "message" TEXT NOT NULL,
+  "can_reply" BOOLEAN DEFAULT FALSE,
   "created_at" TIMESTAMPTZ DEFAULT now(),
   CONSTRAINT "FK_announcement_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE,
   CONSTRAINT "FK_announcement_created_by" FOREIGN KEY ("created_by") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
@@ -54,6 +55,17 @@ CREATE TABLE "announcement_reaction" (
   CONSTRAINT "FK_reaction_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
   CONSTRAINT "UQ_reaction_unique" UNIQUE ("announcement_id", "membership_id", "emoji")
 );
+
+CREATE TABLE "announcement_reply" (
+  "reply_id" SERIAL PRIMARY KEY,
+  "announcement_id" INTEGER NOT NULL,
+  "membership_id" INTEGER NOT NULL,
+  "message" TEXT NOT NULL,
+  "replied_at" TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT "FK_reply_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+  CONSTRAINT "FK_reply_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+);
+
 
 CREATE TABLE "announcement_read" (
   "announcement_id" INTEGER NOT NULL,
@@ -256,6 +268,9 @@ CREATE INDEX idx_cleaning_checklist_room_id ON "cleaning_checklist" ("room_id");
 
 CREATE INDEX idx_cleaning_check_status_checklist_item_id ON "cleaning_check_status" ("checklist_item_id");
 CREATE INDEX idx_cleaning_check_status_membership_id ON "cleaning_check_status" ("membership_id");
+
+CREATE INDEX idx_announcement_reply_announcement_id ON "announcement_reply" ("announcement_id");
+CREATE INDEX idx_announcement_reply_membership_id ON "announcement_reply" ("membership_id");
 
 
 CREATE VIEW

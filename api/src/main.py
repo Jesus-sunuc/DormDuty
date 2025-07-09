@@ -5,6 +5,7 @@ from src.router import rooms_router
 from src.router import membership_router
 from src.router import chores_router
 from src.router import expense_router
+from src.router import announcement_router
 
 
 load_dotenv()
@@ -28,6 +29,7 @@ router.include_router(membership_router.router)
 router.include_router(rooms_router.router)
 router.include_router(users_router.router)
 router.include_router(expense_router.router)
+router.include_router(announcement_router.router)
 
 app.include_router(router)
 
