@@ -6,14 +6,14 @@ class AnnouncementReplyReactionCreateRequest(BaseModel):
     emoji: str
 
 class AnnouncementReplyReaction(BaseModel):
-    reply_reaction_id: int
+    reaction_id: int
     reply_id: int
     membership_id: int
     emoji: str
     reacted_at: datetime
 
 class AnnouncementReplyReactionResponse(BaseModel):
-    reply_reaction_id: int
+    reaction_id: int
     reply_id: int
     membership_id: int
     emoji: str

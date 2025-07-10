@@ -69,7 +69,7 @@ class AnnouncementReplyReactionRepository:
                 WHERE reaction_id = %s
                 RETURNING reaction_id, reply_id, membership_id, emoji, reacted_at
             """
-            result = run_sql(sql, [reaction.emoji, existing_reaction.reactionId])
+            result = run_sql(sql, [reaction.emoji, existing_reaction.reaction_id])
             
             if result:
                 return self.get_user_reaction(reaction.reply_id, membership_id)

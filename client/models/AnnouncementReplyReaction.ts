@@ -1,7 +1,7 @@
 export interface AnnouncementReplyReaction {
-  replyReactionId: number;
+  reactionId: number;
   replyId: number;
   membershipId: number;
   emoji: string;
-  createdAt: string;
+  reactedAt: string;
 }
