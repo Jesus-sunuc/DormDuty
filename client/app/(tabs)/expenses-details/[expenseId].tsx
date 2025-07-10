@@ -3,8 +3,7 @@ import { View, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { useExpenseByIdQuery } from "@/hooks/expenseHooks";
-import {
+import { useExpenseByIdQuery ,
   useMarkExpensePaidMutation,
   useDeleteExpenseMutation,
 } from "@/hooks/expenseHooks";

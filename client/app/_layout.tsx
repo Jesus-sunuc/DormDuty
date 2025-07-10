@@ -15,7 +15,16 @@ import {
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { LogBox } from "react-native";
+import { LogBox , View } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { getQueryClient } from "@/services/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
+import "@/global.css";
+import { useEffect } from "react";
+import Toast from "react-native-toast-message";
+import { AuthProvider } from "@/hooks/user/useAuth";
+import { toastConfig } from "@/components/ToastService";
 
 if (__DEV__) {
   require("react-native-reanimated").configureReanimatedLogger({
@@ -23,16 +32,6 @@ if (__DEV__) {
     level: "warn", // Only show warnings and errors
   });
 }
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getQueryClient } from "@/services/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import "@/global.css";
-import { View } from "react-native";
-import { useEffect } from "react";
-import Toast from "react-native-toast-message";
-import { AuthProvider } from "@/hooks/user/useAuth";
-import { toastConfig } from "@/components/ToastService";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

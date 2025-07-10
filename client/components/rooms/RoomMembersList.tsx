@@ -10,8 +10,7 @@ import {
 import {
   useRoomMembersQuery,
   useRemoveUserMutation,
-} from "@/hooks/membershipHooks";
-import { useMembershipQuery } from "@/hooks/membershipHooks";
+ useMembershipQuery } from "@/hooks/membershipHooks";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Role } from "@/models/Membership";
 import { ThemedText } from "@/components/ThemedText";

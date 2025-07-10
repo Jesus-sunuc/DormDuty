@@ -1,91 +1,20 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  TouchableOpacity,
-  FlatList,
-  TextInput,
-  Modal,
-} from "react-native";
+import { View, TouchableOpacity, FlatList, TextInput } from "react-native";
+import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomsByUserQuery } from "@/hooks/roomHooks";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import {
   useRoomAnnouncementsQuery,
   useAddAnnouncementMutation,
-  useDeleteAnnouncementMutation,
 } from "@/hooks/announcementHooks";
-import {
-  useAnnouncementRepliesQuery,
-  useAddAnnouncementReplyMutation,
-  useDeleteAnnouncementReplyMutation,
-} from "@/hooks/announcementReplyHooks";
-import {
-  useAnnouncementReactionsQuery,
-  useAddAnnouncementReactionMutation,
-  useRemoveAnnouncementReactionMutation,
-} from "@/hooks/announcementReactionHooks";
-import {
-  useAnnouncementReplyReactionsQuery,
-  useAddAnnouncementReplyReactionMutation,
-  useRemoveAnnouncementReplyReactionMutation,
-} from "@/hooks/announcementReplyReactionHooks";
-import { AnnouncementReply } from "@/models/AnnouncementReply";
+import { useAnnouncementReactionsQuery } from "@/hooks/announcementReactionHooks";
+import { useUnreadAnnouncementsQuery } from "@/hooks/announcementReadHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
-import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
 import { toastError } from "@/components/ToastService";
-
-const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢"];
-
-const EmojiPicker = ({
-  visible,
-  onClose,
-  onEmojiSelect,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  onEmojiSelect: (emoji: string) => void;
-}) => {
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}
-        onPress={onClose}
-        activeOpacity={1}
-      >
-        <View className="flex-1 justify-center items-center">
-          <View className="bg-white dark:bg-neutral-800 rounded-2xl p-4 mx-8 shadow-lg">
-            <ThemedText className="text-center text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              React with an emoji
-            </ThemedText>
-            <View className="flex-row justify-around">
-              {REACTION_EMOJIS.map((emoji) => (
-                <TouchableOpacity
-                  key={emoji}
-                  onPress={() => {
-                    onEmojiSelect(emoji);
-                    onClose();
-                  }}
-                  className="w-12 h-12 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-700"
-                >
-                  <ThemedText className="text-2xl">{emoji}</ThemedText>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Modal>
-  );
-};
 
 const Updates = () => {
   const { user } = useAuth();
@@ -93,14 +22,6 @@ const Updates = () => {
   const [newUpdate, setNewUpdate] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [canReply, setCanReply] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<
-    number | null
-  >(null);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [announcementToDelete, setAnnouncementToDelete] = useState<
-    number | null
-  >(null);
 
   const {
     data: rooms = [],
@@ -119,10 +40,12 @@ const Updates = () => {
     error: announcementsError,
   } = useRoomAnnouncementsQuery(selectedRoom?.roomId || 0);
 
+  const { data: unreadData } = useUnreadAnnouncementsQuery(
+    selectedRoom?.roomId || 0
+  );
+  const unreadAnnouncementIds = unreadData?.unread_announcement_ids || [];
+
   const createAnnouncementMutation = useAddAnnouncementMutation();
-  const deleteAnnouncementMutation = useDeleteAnnouncementMutation();
-  const createReactionMutation = useAddAnnouncementReactionMutation();
-  const createReplyReactionMutation = useAddAnnouncementReplyReactionMutation();
 
   useEffect(() => {
     if (rooms.length > 0 && !selectedRoom) {
@@ -130,33 +53,10 @@ const Updates = () => {
     }
   }, [rooms, selectedRoom]);
 
-  const handleEmojiSelect = async (emoji: string) => {
-    if (!selectedAnnouncementId) return;
-
-    try {
-      await createReactionMutation.mutateAsync({
-        announcementId: selectedAnnouncementId,
-        emoji,
-      });
-    } catch (error) {
-      toastError("Failed to add reaction");
-    }
-    setSelectedAnnouncementId(null);
-  };
-
-  const handleLongPress = (announcementId: number) => {
-    setSelectedAnnouncementId(announcementId);
-    setShowEmojiPicker(true);
-  };
-
   const handleCreateUpdate = async () => {
-    if (!newUpdate.trim() || !selectedRoom || !membership) {
-      toastError("Please enter a message and select a room");
-      return;
-    }
+    if (!newUpdate.trim() || !selectedRoom) return;
 
     setIsCreating(true);
-
     try {
       await createAnnouncementMutation.mutateAsync({
         roomId: selectedRoom.roomId,
@@ -166,36 +66,11 @@ const Updates = () => {
 
       setNewUpdate("");
     } catch (error) {
+      console.error("Failed to post update:", error);
       toastError("Failed to post update");
     } finally {
       setIsCreating(false);
     }
-  };
-
-  const handleDeleteUpdate = (announcementId: number) => {
-    setAnnouncementToDelete(announcementId);
-    setShowDeleteConfirmation(true);
-  };
-
-  const confirmDeleteUpdate = async () => {
-    if (!announcementToDelete) return;
-
-    try {
-      await deleteAnnouncementMutation.mutateAsync(announcementToDelete);
-    } catch (error) {
-      toastError("Failed to delete update");
-    }
-
-    setShowDeleteConfirmation(false);
-    setAnnouncementToDelete(null);
-  };
-
-  const getPriorityColor = (isCurrentUser: boolean) => {
-    return isCurrentUser ? "#3b82f6" : "#6b7280";
-  };
-
-  const getPriorityIcon = (isCurrentUser: boolean) => {
-    return isCurrentUser ? "person" : "chatbubble";
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -212,7 +87,12 @@ const Updates = () => {
     return date.toLocaleDateString();
   };
 
-  if (roomsLoading || membershipLoading || announcementsLoading) {
+  const getPreviewText = (message: string, maxLength = 100) => {
+    if (message.length <= maxLength) return message;
+    return message.substring(0, maxLength) + "...";
+  };
+
+  if (roomsLoading || announcementsLoading || membershipLoading) {
     return (
       <LoadingAndErrorHandling isLoading={true}>
         <View />
@@ -230,543 +110,343 @@ const Updates = () => {
 
   if (rooms.length === 0) {
     return (
-      <ParallaxScrollViewY>
-        <View className="flex-1 items-center justify-center px-6 py-20">
-          <Ionicons name="chatbubbles-outline" size={64} color="#9ca3af" />
-          <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
-            No rooms yet
-          </ThemedText>
-          <ThemedText className="text-center text-gray-500 mt-2 text-sm">
-            Join or create a room to start receiving updates
-          </ThemedText>
-        </View>
-      </ParallaxScrollViewY>
+      <View className="flex-1 items-center justify-center px-6 py-20">
+        <Ionicons name="chatbubbles-outline" size={64} color="#9ca3af" />
+        <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+          No rooms yet
+        </ThemedText>
+        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+          Join or create a room to start receiving updates
+        </ThemedText>
+      </View>
     );
   }
 
   return (
-    <>
-      <ParallaxScrollViewY>
-        <View className="px-6 pt-20">
+    <View className="flex-1">
+      {selectedRoom ? (
+        <FlatList
+          data={announcements}
+          keyExtractor={(announcement) =>
+            announcement.announcementId.toString()
+          }
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 80,
+            paddingBottom: 20,
+          }}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <>
+              {/* Room Selection */}
+              {rooms.length > 0 && (
+                <View className="mb-6">
+                  <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+                    {rooms.length > 1 ? "Select Room" : "Room"}
+                  </ThemedText>
+                  <FlatList
+                    data={rooms}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(room) => room.roomId.toString()}
+                    renderItem={({ item: room }) => (
+                      <TouchableOpacity
+                        onPress={() => setSelectedRoom(room)}
+                        className={`mr-3 px-4 py-2 rounded-2xl border ${
+                          selectedRoom?.roomId === room.roomId
+                            ? "bg-blue-500 border-blue-500"
+                            : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+                        }`}
+                      >
+                        <ThemedText
+                          className={`font-medium ${
+                            selectedRoom?.roomId === room.roomId
+                              ? "text-white"
+                              : "text-gray-900 dark:text-white"
+                          }`}
+                        >
+                          {room.name}
+                        </ThemedText>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
+              )}
+
+              {/* Post Update Form */}
+              {membership && (
+                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+                  <View className="flex-row items-center mb-4">
+                    <Ionicons name="add-circle" size={24} color="#3b82f6" />
+                    <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
+                      Post Update
+                    </ThemedText>
+                  </View>
+
+                  <TextInput
+                    value={newUpdate}
+                    onChangeText={setNewUpdate}
+                    placeholder="Share an update with your roommates..."
+                    multiline
+                    numberOfLines={4}
+                    className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white mb-4 min-h-[100px] text-base"
+                    placeholderTextColor="#9ca3af"
+                  />
+
+                  <View className="flex-row items-center mb-4">
+                    <ThemedText className="mr-2 text-gray-700 dark:text-gray-300">
+                      Allow replies?
+                    </ThemedText>
+                    <TouchableOpacity
+                      onPress={() => setCanReply((prev) => !prev)}
+                      className={`w-12 h-6 rounded-full border-2 ${
+                        canReply
+                          ? "bg-blue-500 border-blue-500"
+                          : "bg-gray-200 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
+                      }`}
+                    >
+                      <View
+                        className={`w-4 h-4 rounded-full bg-white transform transition-transform ${
+                          canReply ? "translate-x-6" : "translate-x-0"
+                        }`}
+                        style={{ marginLeft: canReply ? 16 : 0 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={handleCreateUpdate}
+                    disabled={isCreating || !newUpdate.trim()}
+                    className={`py-3 px-6 rounded-xl flex-row items-center justify-center ${
+                      isCreating || !newUpdate.trim()
+                        ? "bg-gray-300 dark:bg-gray-700"
+                        : "bg-blue-500"
+                    }`}
+                  >
+                    {isCreating ? (
+                      <>
+                        <Ionicons name="sync" size={20} color="white" />
+                        <ThemedText className="text-white font-medium ml-2">
+                          Posting...
+                        </ThemedText>
+                      </>
+                    ) : (
+                      <>
+                        <Ionicons name="send" size={20} color="white" />
+                        <ThemedText className="text-white font-medium ml-2">
+                          Post Update
+                        </ThemedText>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Section Header with unread badge */}
+              <View className="flex-row items-center justify-between mb-4">
+                <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Recent Updates ({announcements.length})
+                </ThemedText>
+                {unreadAnnouncementIds.length > 0 && (
+                  <View className="bg-red-500 rounded-full px-3 py-1 min-w-[28px] items-center">
+                    <ThemedText className="text-white text-sm font-bold">
+                      {unreadAnnouncementIds.length}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </>
+          }
+          renderItem={({ item: announcement }) => {
+            const isCurrentUser =
+              membership?.membershipId === announcement.createdBy;
+            return (
+              <AnnouncementNotificationCard
+                announcement={announcement}
+                isCurrentUser={isCurrentUser}
+                onPress={() =>
+                  router.push(
+                    `/(tabs)/announcement-details/${announcement.announcementId}`
+                  )
+                }
+                formatTimeAgo={formatTimeAgo}
+                getPreviewText={getPreviewText}
+                unreadAnnouncementIds={unreadAnnouncementIds}
+              />
+            );
+          }}
+          ListEmptyComponent={
+            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
+              <Ionicons name="chatbubbles-outline" size={48} color="#9ca3af" />
+              <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
+                No updates yet
+              </ThemedText>
+              <ThemedText className="text-center text-gray-500 mt-1 text-sm">
+                Be the first to share an update with your roommates
+              </ThemedText>
+            </View>
+          }
+        />
+      ) : (
+        <View className="flex-1 px-6 pt-20">
+          {/* Room Selection when no room selected */}
           {rooms.length > 0 && (
             <View className="mb-6">
               <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
-                {rooms.length > 1 ? "Select Room" : "Room"}
+                Select a Room
               </ThemedText>
-              <FlatList
-                data={rooms}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(room) => room.roomId.toString()}
-                renderItem={({ item: room }) => (
-                  <TouchableOpacity
-                    onPress={() => setSelectedRoom(room)}
-                    className={`mr-3 px-4 py-2 rounded-2xl border ${
-                      selectedRoom?.roomId === room.roomId
-                        ? "bg-blue-500 border-blue-500"
-                        : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
-                    }`}
-                  >
-                    <ThemedText
-                      className={`font-medium ${
-                        selectedRoom?.roomId === room.roomId
-                          ? "text-white"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      {room.name}
-                    </ThemedText>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          )}
-
-          {selectedRoom && membership && (
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
-              <View className="flex-row items-center mb-4">
-                <Ionicons name="add-circle" size={24} color="#3b82f6" />
-                <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
-                  Post Update
-                </ThemedText>
-              </View>
-
-              <TextInput
-                value={newUpdate}
-                onChangeText={setNewUpdate}
-                placeholder="Share an update with your roommates..."
-                multiline
-                numberOfLines={4}
-                className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white mb-4 min-h-[100px] text-base"
-                placeholderTextColor="#9ca3af"
-              />
-
-              <View className="flex-row items-center mb-4">
-                <ThemedText className="mr-2">Allow replies?</ThemedText>
+              {rooms.map((room) => (
                 <TouchableOpacity
-                  onPress={() => setCanReply((prev) => !prev)}
-                  className={`w-10 h-6 rounded-full p-1 ${
-                    canReply ? "bg-blue-500" : "bg-gray-300"
-                  }`}
+                  key={room.roomId}
+                  onPress={() => setSelectedRoom(room)}
+                  className="mb-3 p-4 rounded-2xl border bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
                 >
-                  <View
-                    className={`w-4 h-4 rounded-full ${
-                      canReply ? "bg-white ml-4" : "bg-white"
-                    }`}
-                    style={{ marginLeft: canReply ? 16 : 0 }}
-                  />
+                  <ThemedText className="font-medium text-gray-900 dark:text-white text-lg">
+                    {room.name}
+                  </ThemedText>
+                  <ThemedText className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                    Tap to view updates
+                  </ThemedText>
                 </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                onPress={handleCreateUpdate}
-                disabled={isCreating || !newUpdate.trim()}
-                className={`py-3 px-6 rounded-xl flex-row items-center justify-center ${
-                  isCreating || !newUpdate.trim()
-                    ? "bg-gray-300 dark:bg-gray-700"
-                    : "bg-blue-500"
-                }`}
-              >
-                {isCreating ? (
-                  <>
-                    <Ionicons name="sync" size={20} color="white" />
-                    <ThemedText className="text-white font-medium ml-2">
-                      Posting...
-                    </ThemedText>
-                  </>
-                ) : (
-                  <>
-                    <Ionicons name="send" size={20} color="white" />
-                    <ThemedText className="text-white font-medium ml-2">
-                      Post Update
-                    </ThemedText>
-                  </>
-                )}
-              </TouchableOpacity>
+              ))}
             </View>
           )}
-
-          {selectedRoom && (
-            <View>
-              <ThemedText className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                Recent Updates ({announcements.length})
-              </ThemedText>
-
-              {announcements.length === 0 ? (
-                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
-                  <Ionicons
-                    name="chatbubbles-outline"
-                    size={48}
-                    color="#9ca3af"
-                  />
-                  <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
-                    No updates yet
-                  </ThemedText>
-                  <ThemedText className="text-center text-gray-500 mt-1 text-sm">
-                    Be the first to share an update with your roommates
-                  </ThemedText>
-                </View>
-              ) : (
-                <FlatList
-                  data={announcements}
-                  keyExtractor={(announcement) =>
-                    announcement.announcementId.toString()
-                  }
-                  scrollEnabled={false}
-                  renderItem={({ item: announcement }) => {
-                    const isCurrentUser =
-                      membership?.membershipId === announcement.createdBy;
-                    return (
-                      <TouchableOpacity
-                        onLongPress={() =>
-                          handleLongPress(announcement.announcementId)
-                        }
-                        delayLongPress={500}
-                        activeOpacity={0.7}
-                      >
-                        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
-                          <View className="flex-row items-start mb-3">
-                            <View
-                              className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                              style={{
-                                backgroundColor:
-                                  getPriorityColor(isCurrentUser) + "20",
-                              }}
-                            >
-                              <Ionicons
-                                name={getPriorityIcon(isCurrentUser) as any}
-                                size={20}
-                                color={getPriorityColor(isCurrentUser)}
-                              />
-                            </View>
-                            <View className="flex-1">
-                              <View className="flex-row items-center justify-between mb-1">
-                                <ThemedText className="font-semibold text-gray-900 dark:text-white">
-                                  {announcement.memberName}
-                                  {isCurrentUser && (
-                                    <ThemedText className="text-sm text-gray-500">
-                                      {" "}
-                                      (You)
-                                    </ThemedText>
-                                  )}
-                                </ThemedText>
-                                <View className="flex-row items-center">
-                                  <ThemedText className="text-xs text-gray-500 dark:text-gray-400 mr-2">
-                                    {formatTimeAgo(announcement.createdAt)}
-                                  </ThemedText>
-                                  {isCurrentUser && (
-                                    <TouchableOpacity
-                                      onPress={() =>
-                                        handleDeleteUpdate(
-                                          announcement.announcementId
-                                        )
-                                      }
-                                      className="p-1"
-                                    >
-                                      <Ionicons
-                                        name="trash-outline"
-                                        size={16}
-                                        color="#ef4444"
-                                      />
-                                    </TouchableOpacity>
-                                  )}
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <ThemedText className="text-gray-700 dark:text-gray-300 leading-5">
-                            {announcement.message}
-                          </ThemedText>
-
-                          {announcement.canReply && (
-                            <AnnouncementRepliesSection
-                              announcementId={announcement.announcementId}
-                              membership={membership}
-                            />
-                          )}
-                          <AnnouncementReactionsSection
-                            announcementId={announcement.announcementId}
-                            membership={membership}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  }}
-                />
-              )}
-            </View>
-          )}
-
-          <EmojiPicker
-            visible={showEmojiPicker}
-            onClose={() => setShowEmojiPicker(false)}
-            onEmojiSelect={handleEmojiSelect}
-          />
         </View>
-      </ParallaxScrollViewY>
-
-      <ConfirmationModal
-        visible={showDeleteConfirmation}
-        onClose={() => {
-          setShowDeleteConfirmation(false);
-          setAnnouncementToDelete(null);
-        }}
-        onConfirm={confirmDeleteUpdate}
-        title="Delete Update"
-        message="Are you sure you want to delete this update? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        destructive={true}
-        icon="trash-outline"
-      />
-    </>
+      )}
+    </View>
   );
 };
 
-function AnnouncementRepliesSection({
-  announcementId,
-  membership,
+// Notification Card Component with enhanced visual indicators
+function AnnouncementNotificationCard({
+  announcement,
+  isCurrentUser,
+  onPress,
+  formatTimeAgo,
+  getPreviewText,
+  unreadAnnouncementIds,
 }: {
-  announcementId: number;
-  membership?: { membershipId: number; role: string };
+  announcement: any;
+  isCurrentUser: boolean;
+  onPress: () => void;
+  formatTimeAgo: (date: string) => string;
+  getPreviewText: (text: string, maxLength?: number) => string;
+  unreadAnnouncementIds: number[];
 }) {
-  const { user } = useAuth();
-  const { data: replies = [], isLoading } =
-    useAnnouncementRepliesQuery(announcementId);
-  const createReplyMutation = useAddAnnouncementReplyMutation();
-  const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
-  const [replyText, setReplyText] = useState("");
-
-  const handleSendReply = async () => {
-    if (!replyText.trim()) return;
-    await createReplyMutation.mutateAsync({
-      announcementId,
-      message: replyText.trim(),
-    });
-    setReplyText("");
-  };
-
-  return (
-    <View className="mt-2">
-      <FlatList
-        data={replies}
-        keyExtractor={(reply: AnnouncementReply) => reply.replyId.toString()}
-        renderItem={({ item: reply }) => (
-          <ReplyItem
-            reply={reply}
-            membership={membership}
-            onDeleteConfirm={() => deleteReplyMutation.mutate(reply.replyId)}
-          />
-        )}
-        ListEmptyComponent={
-          isLoading ? null : (
-            <ThemedText className="text-xs text-gray-400">
-              No replies yet
-            </ThemedText>
-          )
-        }
-      />
-      <View className="flex-row items-center mt-2">
-        <TextInput
-          value={replyText}
-          onChangeText={setReplyText}
-          placeholder="Write a reply..."
-          className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-lg px-3 py-2 text-xs text-gray-900 dark:text-white"
-        />
-        <TouchableOpacity
-          onPress={handleSendReply}
-          disabled={!replyText.trim()}
-          className="ml-2 px-3 py-2 bg-blue-500 rounded-lg"
-        >
-          <Ionicons name="send" size={16} color="white" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-
-function ReplyItem({
-  reply,
-  membership,
-  onDeleteConfirm,
-}: {
-  reply: AnnouncementReply;
-  membership?: { membershipId: number; role: string };
-  onDeleteConfirm: () => void;
-}) {
-  const { user } = useAuth();
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const createReplyReactionMutation = useAddAnnouncementReplyReactionMutation();
-
-  const handleLongPress = () => {
-    setSelectedReplyId(reply.replyId);
-    setShowEmojiPicker(true);
-  };
-
-  const handleEmojiSelect = async (emoji: string) => {
-    if (!selectedReplyId) return;
-
-    try {
-      await createReplyReactionMutation.mutateAsync({
-        replyId: selectedReplyId,
-        emoji,
-      });
-    } catch (error) {
-      toastError("Failed to add reaction");
-    }
-    setSelectedReplyId(null);
-    setShowEmojiPicker(false);
-  };
-
-  return (
-    <>
-      <TouchableOpacity
-        onLongPress={handleLongPress}
-        delayLongPress={500}
-        activeOpacity={0.7}
-        className="mb-2"
-      >
-        <View className="flex-row items-start">
-          <ThemedText className="font-semibold mr-2 text-xs text-gray-700 dark:text-gray-300">
-            {reply.memberName}
-            {membership?.membershipId === reply.membershipId && " (You)"}
-          </ThemedText>
-          <ThemedText className="text-xs text-gray-600 dark:text-gray-400 flex-1">
-            {reply.message}
-          </ThemedText>
-          {membership?.membershipId === reply.membershipId && (
-            <TouchableOpacity
-              onPress={() => setShowDeleteConfirmation(true)}
-              className="ml-2"
-            >
-              <Ionicons name="trash-outline" size={14} color="#ef4444" />
-            </TouchableOpacity>
-          )}
-        </View>
-        <ReplyReactionsSection
-          replyId={reply.replyId}
-          membership={membership}
-        />
-      </TouchableOpacity>
-      <EmojiPicker
-        visible={showEmojiPicker}
-        onClose={() => setShowEmojiPicker(false)}
-        onEmojiSelect={handleEmojiSelect}
-      />
-      <ConfirmationModal
-        visible={showDeleteConfirmation}
-        onClose={() => setShowDeleteConfirmation(false)}
-        onConfirm={() => {
-          onDeleteConfirm();
-          setShowDeleteConfirmation(false);
-        }}
-        title="Delete Reply"
-        message="Are you sure you want to delete this reply? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        destructive={true}
-        icon="trash-outline"
-      />
-    </>
-  );
-}
-
-function ReplyReactionsSection({
-  replyId,
-  membership,
-}: {
-  replyId: number;
-  membership?: { membershipId: number; role: string };
-}) {
-  const { data: reactions = [] } = useAnnouncementReplyReactionsQuery(replyId);
-  const createReactionMutation = useAddAnnouncementReplyReactionMutation();
-  const removeReactionMutation = useRemoveAnnouncementReplyReactionMutation();
-
-  const userReaction = reactions.find(
-    (r) => r.membershipId === membership?.membershipId
+  const { data: reactions = [] } = useAnnouncementReactionsQuery(
+    announcement.announcementId
   );
 
-  const grouped = REACTION_EMOJIS.map((emoji) => {
-    const users = reactions.filter((r) => r.emoji === emoji);
-    return {
-      emoji,
-      count: users.length,
-      reacted: userReaction?.emoji === emoji,
-    };
-  }).filter(({ count }) => count > 0);
+  // Count total reactions
+  const totalReactions = reactions.length;
 
-  const handleReactionPress = async (
-    emoji: string,
-    isCurrentReaction: boolean
-  ) => {
-    try {
-      if (isCurrentReaction) {
-        await removeReactionMutation.mutateAsync(replyId);
-      } else {
-        await createReactionMutation.mutateAsync({ replyId, emoji });
-      }
-    } catch (error) {
-      toastError("Failed to update reaction");
-    }
-  };
-
-  if (grouped.length === 0) return null;
+  // Check if this announcement is unread
+  const isUnread = unreadAnnouncementIds.includes(announcement.announcementId);
 
   return (
-    <View className="flex-row items-center mt-1 ml-4">
-      {grouped.map(({ emoji, count, reacted }) => (
-        <TouchableOpacity
-          key={emoji}
-          onPress={() => handleReactionPress(emoji, reacted)}
-          className={`flex-row items-center px-1.5 py-0.5 rounded-full mr-1 ${
-            reacted
-              ? "bg-blue-100 dark:bg-blue-900"
-              : "bg-gray-100 dark:bg-neutral-800"
-          }`}
-        >
-          <ThemedText
-            className={`text-sm ${
-              reacted ? "text-blue-500" : "text-gray-700 dark:text-gray-300"
+    <TouchableOpacity
+      onPress={onPress}
+      className={`rounded-2xl p-4 mb-3 shadow-sm border ${
+        isUnread
+          ? "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800"
+          : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800"
+      }`}
+      activeOpacity={0.7}
+    >
+      <View className="flex-row items-start">
+        {/* Avatar with status indicator */}
+        <View className="relative mr-3">
+          <View
+            className={`w-10 h-10 rounded-full items-center justify-center ${
+              isCurrentUser
+                ? "bg-blue-100 dark:bg-blue-900/30"
+                : "bg-gray-100 dark:bg-neutral-700"
             }`}
           >
-            {emoji}
-          </ThemedText>
-          {count > 0 && (
-            <ThemedText className="ml-0.5 text-xs text-gray-600 dark:text-gray-400">
-              {count}
-            </ThemedText>
+            <Ionicons
+              name={isCurrentUser ? "person" : "chatbubble"}
+              size={18}
+              color={isCurrentUser ? "#3b82f6" : "#6b7280"}
+            />
+          </View>
+          {/* Unread indicator badge */}
+          {isUnread && (
+            <View className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full items-center justify-center">
+              <View className="w-2 h-2 bg-white rounded-full" />
+            </View>
           )}
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-}
+        </View>
 
-function AnnouncementReactionsSection({
-  announcementId,
-  membership,
-}: {
-  announcementId: number;
-  membership?: { membershipId: number; role: string };
-}) {
-  const { user } = useAuth();
-  const { data: reactions = [] } =
-    useAnnouncementReactionsQuery(announcementId);
-  const createReactionMutation = useAddAnnouncementReactionMutation();
-  const removeReactionMutation = useRemoveAnnouncementReactionMutation();
+        {/* Content */}
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between mb-1">
+            <View className="flex-row items-center flex-1">
+              <ThemedText
+                className={`font-semibold ${
+                  isUnread
+                    ? "text-blue-900 dark:text-blue-100"
+                    : "text-gray-900 dark:text-white"
+                }`}
+              >
+                {announcement.memberName}
+                {isCurrentUser && (
+                  <ThemedText className="text-sm text-gray-500">
+                    {" "}
+                    (You)
+                  </ThemedText>
+                )}
+              </ThemedText>
+              {isUnread && (
+                <View className="ml-2 px-2 py-0.5 bg-blue-500 rounded-full">
+                  <ThemedText className="text-white text-xs font-bold">
+                    NEW
+                  </ThemedText>
+                </View>
+              )}
+            </View>
+            <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
+              {formatTimeAgo(announcement.createdAt)}
+            </ThemedText>
+          </View>
 
-  const userReaction = reactions.find(
-    (r) => r.membershipId === membership?.membershipId
-  );
-
-  const grouped = REACTION_EMOJIS.map((emoji) => {
-    const users = reactions.filter((r) => r.emoji === emoji);
-    return {
-      emoji,
-      count: users.length,
-      reacted: userReaction?.emoji === emoji,
-      reactionId: userReaction?.reactionId,
-    };
-  }).filter(({ count }) => count > 0); // Only show emojis that have at least one reaction
-
-  const handleReactionPress = async (
-    emoji: string,
-    isCurrentReaction: boolean
-  ) => {
-    try {
-      if (isCurrentReaction) {
-        await removeReactionMutation.mutateAsync(announcementId);
-      } else {
-        await createReactionMutation.mutateAsync({ announcementId, emoji });
-      }
-    } catch (error) {
-      toastError("Failed to update reaction");
-    }
-  };
-
-  return (
-    <View className="flex-row items-center mt-2">
-      {grouped.map(({ emoji, count, reacted }) => (
-        <TouchableOpacity
-          key={emoji}
-          onPress={() => handleReactionPress(emoji, reacted)}
-          className={`flex-row items-center px-2 py-1 rounded-full mr-2 ${reacted ? "bg-blue-100 dark:bg-blue-900" : "bg-gray-100 dark:bg-neutral-800"}`}
-        >
+          {/* Preview Text */}
           <ThemedText
-            className={`text-lg ${reacted ? "text-blue-500" : "text-gray-700 dark:text-gray-300"}`}
+            className={`leading-5 mb-2 text-sm ${
+              isUnread
+                ? "text-blue-800 dark:text-blue-200"
+                : "text-gray-600 dark:text-gray-400"
+            }`}
           >
-            {emoji}
+            {getPreviewText(announcement.message)}
           </ThemedText>
-          {count > 0 && (
-            <ThemedText className="ml-1 text-xs text-gray-600 dark:text-gray-400">
-              {count}
-            </ThemedText>
-          )}
-        </TouchableOpacity>
-      ))}
-    </View>
+
+          {/* Metadata */}
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center space-x-4">
+              {totalReactions > 0 && (
+                <View className="flex-row items-center">
+                  <Ionicons name="heart" size={14} color="#f59e0b" />
+                  <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                    {totalReactions}
+                  </ThemedText>
+                </View>
+              )}
+
+              {announcement.canReply && (
+                <View className="flex-row items-center">
+                  <Ionicons name="chatbubble" size={14} color="#6b7280" />
+                  <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                    Replies enabled
+                  </ThemedText>
+                </View>
+              )}
+            </View>
+
+            <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

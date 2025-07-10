@@ -62,7 +62,7 @@ interface PickerFieldProps {
   label: string;
   selectedValue: any;
   onValueChange: (value: any) => void;
-  items: Array<{ label: string; value: any; key?: string }>;
+  items: { label: string; value: any; key?: string }[];
 }
 
 export const PickerField: React.FC<PickerFieldProps> = ({

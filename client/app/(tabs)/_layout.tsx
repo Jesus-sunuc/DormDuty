@@ -145,6 +145,12 @@ const TabLayout = () => {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="announcement-details/[announcementId]"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </View>
   );
