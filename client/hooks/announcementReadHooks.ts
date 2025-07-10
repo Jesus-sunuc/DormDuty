@@ -113,7 +113,7 @@ export const useUnreadAnnouncementsQuery = (roomId: number) => {
 
   return useQuery({
     queryKey: announcementReadKeys.unreadByRoom(roomId, user?.userId || 0),
-    queryFn: async (): Promise<{ unread_announcement_ids: number[] }> => {
+    queryFn: async (): Promise<{ unreadAnnouncementIds: number[] }> => {
       const res = await axiosClient.get(
         `/api/rooms/${roomId}/unread-announcements`,
         {
@@ -123,7 +123,9 @@ export const useUnreadAnnouncementsQuery = (roomId: number) => {
       return res.data;
     },
     enabled: !!roomId && roomId > 0 && !!user?.userId,
-    staleTime: 30 * 1000, // 30 seconds for more frequent updates
-    refetchInterval: 60 * 1000, // Auto-refetch every minute
+    staleTime: 0, // Always consider data stale for real-time updates
+    refetchInterval: 30 * 1000, // Auto-refetch every 30 seconds
+    refetchOnWindowFocus: true, // Refetch when app comes into focus
+    refetchOnMount: true, // Always refetch on mount
   });
 };

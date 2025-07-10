@@ -25,7 +25,7 @@ def mark_announcement_as_read(
         # Get membership_id
         from src.repository.membership_repository import MembershipRepository
         membership_repo = MembershipRepository()
-        membership = membership_repo.get_membership_by_user_and_room(user_id, announcement.roomId)
+        membership = membership_repo.get_membership_by_user_and_room(user_id, announcement.room_id)
         
         if not membership:
             raise HTTPException(status_code=403, detail="User not a member of this room")
@@ -65,7 +65,7 @@ def check_read_status(
             raise HTTPException(status_code=404, detail="Announcement not found")
         
         membership_repo = MembershipRepository()
-        membership = membership_repo.get_membership_by_user_and_room(user_id, announcement.roomId)
+        membership = membership_repo.get_membership_by_user_and_room(user_id, announcement.room_id)
         
         if not membership:
             raise HTTPException(status_code=403, detail="User not a member of this room")

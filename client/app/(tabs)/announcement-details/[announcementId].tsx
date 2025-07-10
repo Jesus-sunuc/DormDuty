@@ -41,7 +41,6 @@ import { toastError } from "@/components/ToastService";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢"];
 
-// Emoji Picker Modal Component
 const EmojiPicker = ({
   visible,
   onClose,
@@ -76,7 +75,7 @@ const EmojiPicker = ({
                     onEmojiSelect(emoji);
                     onClose();
                   }}
-                  className="w-12 h-12 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-700"
+                  className="w-12 h-12 mr-1 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-700"
                 >
                   <ThemedText className="text-2xl">{emoji}</ThemedText>
                 </TouchableOpacity>
@@ -89,7 +88,6 @@ const EmojiPicker = ({
   );
 };
 
-// Actions Modal for edit/delete
 const ActionsModal = ({
   visible,
   onClose,
@@ -170,13 +168,11 @@ export default function AnnouncementDetails() {
   const deleteAnnouncementMutation = useDeleteAnnouncementMutation();
   const markAsReadMutation = useMarkAnnouncementAsReadMutation();
 
-  // Mark as read when the component mounts and announcement is loaded
   useEffect(() => {
     if (announcement?.announcementId && user?.userId) {
-      // Delay marking as read to ensure the user actually viewed the content
       const timer = setTimeout(() => {
         markAsReadMutation.mutate(announcement.announcementId);
-      }, 1000); // 1 second delay
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
@@ -192,7 +188,6 @@ export default function AnnouncementDetails() {
         emoji,
       });
     } catch (error) {
-      console.error("Failed to add reaction:", error);
       toastError("Failed to add reaction");
     }
   };
@@ -204,7 +199,6 @@ export default function AnnouncementDetails() {
       await deleteAnnouncementMutation.mutateAsync(announcement.announcementId);
       router.navigate("/(tabs)/updates");
     } catch (error) {
-      console.error("Failed to delete announcement:", error);
       toastError("Failed to delete announcement");
     }
 
@@ -249,7 +243,6 @@ export default function AnnouncementDetails() {
     <>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-20">
-          {/* Header */}
           <View className="flex-row items-center mb-6">
             <TouchableOpacity
               onPress={() => router.navigate("/(tabs)/updates")}
@@ -265,7 +258,6 @@ export default function AnnouncementDetails() {
             </TouchableOpacity>
           </View>
 
-          {/* Announcement Content */}
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
             <View className="flex-row items-start mb-4">
               <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
@@ -291,18 +283,15 @@ export default function AnnouncementDetails() {
               {announcement.message}
             </ThemedText>
 
-            {/* Reactions */}
             <AnnouncementReactionsSection
               announcementId={announcement.announcementId}
               membership={membership}
               onAddReaction={() => setShowEmojiPicker(true)}
             />
 
-            {/* Readers Section */}
             <ReadersSection announcementId={announcement.announcementId} />
           </View>
 
-          {/* Replies Section */}
           {announcement.canReply && (
             <AnnouncementRepliesSection
               announcementId={announcement.announcementId}
@@ -312,7 +301,6 @@ export default function AnnouncementDetails() {
         </View>
       </ScrollView>
 
-      {/* Modals */}
       <EmojiPicker
         visible={showEmojiPicker}
         onClose={() => setShowEmojiPicker(false)}
@@ -341,7 +329,6 @@ export default function AnnouncementDetails() {
   );
 }
 
-// Components for the detail view
 function AnnouncementReactionsSection({
   announcementId,
   membership,
@@ -380,21 +367,19 @@ function AnnouncementReactionsSection({
         await createReactionMutation.mutateAsync({ announcementId, emoji });
       }
     } catch (error) {
-      console.error("Failed to update reaction:", error);
       toastError("Failed to update reaction");
     }
   };
 
   return (
     <View>
-      {/* Existing Reactions */}
       {grouped.length > 0 && (
         <View className="flex-row items-center mb-3 flex-wrap">
           {grouped.map(({ emoji, count, reacted }) => (
             <TouchableOpacity
               key={emoji}
               onPress={() => handleReactionPress(emoji, reacted)}
-              className={`flex-row items-center px-3 py-2 rounded-full mr-2 mb-2 ${
+              className={`flex-row items-center px-3 py-1 rounded-full mr-2 ${
                 reacted
                   ? "bg-blue-100 dark:bg-blue-900"
                   : "bg-gray-100 dark:bg-neutral-800"
@@ -417,7 +402,6 @@ function AnnouncementReactionsSection({
         </View>
       )}
 
-      {/* Add Reaction Button */}
       <TouchableOpacity
         onPress={onAddReaction}
         className="flex-row items-center py-2 px-3 rounded-full bg-gray-100 dark:bg-neutral-800 self-start"
@@ -476,7 +460,6 @@ function AnnouncementRepliesSection({
         )}
       </View>
 
-      {/* Reply Input */}
       <View className="flex-row items-center mt-4 pt-4 border-t border-gray-200 dark:border-neutral-700">
         <TextInput
           value={replyText}
@@ -524,7 +507,6 @@ function ReplyItem({
         emoji,
       });
     } catch (error) {
-      console.error("Failed to add reaction:", error);
       toastError("Failed to add reaction");
     }
     setShowEmojiPicker(false);
@@ -559,13 +541,11 @@ function ReplyItem({
           )}
         </View>
 
-        {/* Reply Reactions */}
         <ReplyReactionsSection
           replyId={reply.replyId}
           membership={membership}
         />
 
-        {/* Add Reaction to Reply */}
         <TouchableOpacity
           onPress={() => setShowEmojiPicker(true)}
           className="flex-row items-center mt-2 self-start"
@@ -636,7 +616,6 @@ function ReplyReactionsSection({
         await createReactionMutation.mutateAsync({ replyId, emoji });
       }
     } catch (error) {
-      console.error("Failed to update reaction:", error);
       toastError("Failed to update reaction");
     }
   };
@@ -673,7 +652,6 @@ function ReplyReactionsSection({
   );
 }
 
-// Readers Section Component
 function ReadersSection({ announcementId }: { announcementId: number }) {
   const { data: readers = [], isLoading } =
     useAnnouncementReadersQuery(announcementId);
@@ -707,7 +685,10 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
         ))}
 
         {readers.length > 5 && (
-          <View className="flex-row items-center bg-gray-100 dark:bg-neutral-700 rounded-full px-2 py-1">
+          <View
+            key="more-readers"
+            className="flex-row items-center bg-gray-100 dark:bg-neutral-700 rounded-full px-2 py-1"
+          >
             <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
               +{readers.length - 5} more
             </ThemedText>

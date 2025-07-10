@@ -55,6 +55,9 @@ export const useAddAnnouncementMutation = () => {
         queryKey: announcementKeys.byRoom(data.roomId),
       });
       queryClient.invalidateQueries({ queryKey: announcementKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: ["announcement-reads"],
+      });
     },
   });
 };
