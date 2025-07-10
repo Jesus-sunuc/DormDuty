@@ -51,7 +51,6 @@ export const useMarkAnnouncementAsReadMutation = () => {
       return res.data;
     },
     onSuccess: (data) => {
-      // Invalidate related queries
       queryClient.invalidateQueries({
         queryKey: announcementReadKeys.byAnnouncement(data.announcement_id),
       });
@@ -61,11 +60,9 @@ export const useMarkAnnouncementAsReadMutation = () => {
           user?.userId || 0
         ),
       });
-      // Invalidate unread queries for all rooms to update the UI immediately
       queryClient.invalidateQueries({
         queryKey: announcementReadKeys.all,
       });
-      // Also invalidate announcement queries to refresh the main feed
       queryClient.invalidateQueries({
         queryKey: ["announcements"],
       });
