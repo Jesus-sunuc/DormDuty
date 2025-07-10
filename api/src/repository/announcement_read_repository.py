@@ -23,13 +23,13 @@ class AnnouncementReadRepository:
                 WHERE rm.membership_id = %s
             """
             member_result = run_sql(member_sql, [membership_id])
-            member_name = member_result[0]['member_name'] if member_result else "Unknown"
+            member_name = member_result[0][0] if member_result else "Unknown"  # Access by index
             
             return AnnouncementReadResponse(
                 read_id=0,  # We don't have a separate read_id in this design
-                announcement_id=result[0]['announcement_id'],
-                membership_id=result[0]['membership_id'],
-                read_at=result[0]['read_at'],
+                announcement_id=result[0][0],  # announcement_id
+                membership_id=result[0][1],    # membership_id
+                read_at=result[0][2],         # read_at
                 member_name=member_name
             )
         return None
@@ -53,10 +53,10 @@ class AnnouncementReadRepository:
         return [
             AnnouncementReadResponse(
                 read_id=0,
-                announcement_id=row['announcement_id'],
-                membership_id=row['membership_id'],
-                read_at=row['read_at'],
-                member_name=row['member_name']
+                announcement_id=row[0],  # announcement_id
+                membership_id=row[1],    # membership_id
+                read_at=row[2],         # read_at
+                member_name=row[3]      # member_name
             )
             for row in results
         ]
@@ -81,4 +81,4 @@ class AnnouncementReadRepository:
             ORDER BY a.created_at DESC
         """
         results = run_sql(sql, [membership_id, room_id])
-        return [row['announcement_id'] for row in results]
+        return [row[0] for row in results]  # Access by index since run_sql returns tuples

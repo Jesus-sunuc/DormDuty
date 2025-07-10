@@ -242,15 +242,15 @@ const Updates = () => {
                 </View>
               )}
 
-              {/* Section Header with unread badge */}
+              {/* Section Header with enhanced unread badge */}
               <View className="flex-row items-center justify-between mb-4">
                 <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
                   Recent Updates ({announcements.length})
                 </ThemedText>
                 {unreadAnnouncementIds.length > 0 && (
-                  <View className="bg-red-500 rounded-full px-3 py-1 min-w-[28px] items-center">
+                  <View className="bg-red-500 rounded-full px-4 py-2 min-w-[32px] items-center shadow-lg border border-red-300">
                     <ThemedText className="text-white text-sm font-bold">
-                      {unreadAnnouncementIds.length}
+                      {unreadAnnouncementIds.length} new
                     </ThemedText>
                   </View>
                 )}
@@ -346,33 +346,38 @@ function AnnouncementNotificationCard({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`rounded-2xl p-4 mb-3 shadow-sm border ${
+      className={`rounded-2xl p-4 mb-3 shadow-sm border-2 ${
         isUnread
-          ? "bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800"
+          ? "bg-blue-50 dark:bg-blue-950/30 border-blue-400 dark:border-blue-500 shadow-blue-200/50 dark:shadow-blue-900/50"
           : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800"
       }`}
       activeOpacity={0.7}
+      style={isUnread ? { shadowColor: "#3b82f6", elevation: 4 } : {}}
     >
       <View className="flex-row items-start">
         {/* Avatar with status indicator */}
         <View className="relative mr-3">
           <View
-            className={`w-10 h-10 rounded-full items-center justify-center ${
-              isCurrentUser
-                ? "bg-blue-100 dark:bg-blue-900/30"
-                : "bg-gray-100 dark:bg-neutral-700"
+            className={`w-10 h-10 rounded-full items-center justify-center border-2 ${
+              isUnread
+                ? "bg-blue-100 dark:bg-blue-900/30 border-blue-500"
+                : isCurrentUser
+                  ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300"
+                  : "bg-gray-100 dark:bg-neutral-700 border-gray-200 dark:border-neutral-600"
             }`}
           >
             <Ionicons
               name={isCurrentUser ? "person" : "chatbubble"}
               size={18}
-              color={isCurrentUser ? "#3b82f6" : "#6b7280"}
+              color={
+                isUnread ? "#3b82f6" : isCurrentUser ? "#3b82f6" : "#6b7280"
+              }
             />
           </View>
-          {/* Unread indicator badge */}
+          {/* Unread indicator badge - larger and more prominent */}
           {isUnread && (
-            <View className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full items-center justify-center">
-              <View className="w-2 h-2 bg-white rounded-full" />
+            <View className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 border-2 border-white dark:border-neutral-900 rounded-full items-center justify-center">
+              <View className="w-2 h-2 bg-white rounded-full animate-pulse" />
             </View>
           )}
         </View>
@@ -396,24 +401,36 @@ function AnnouncementNotificationCard({
                   </ThemedText>
                 )}
               </ThemedText>
+              {/* Enhanced NEW badge */}
               {isUnread && (
-                <View className="ml-2 px-2 py-0.5 bg-blue-500 rounded-full">
-                  <ThemedText className="text-white text-xs font-bold">
+                <View className="ml-2 px-3 py-1 bg-blue-500 rounded-full shadow-sm border border-blue-300">
+                  <ThemedText className="text-white text-xs font-bold tracking-wide">
                     NEW
                   </ThemedText>
                 </View>
               )}
             </View>
-            <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
-              {formatTimeAgo(announcement.createdAt)}
-            </ThemedText>
+            <View className="flex-row items-center">
+              {isUnread && (
+                <View className="mr-2 w-2 h-2 bg-blue-500 rounded-full" />
+              )}
+              <ThemedText
+                className={`text-xs ${
+                  isUnread
+                    ? "text-blue-600 dark:text-blue-400 font-medium"
+                    : "text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                {formatTimeAgo(announcement.createdAt)}
+              </ThemedText>
+            </View>
           </View>
 
-          {/* Preview Text */}
+          {/* Preview Text with enhanced styling for unread */}
           <ThemedText
             className={`leading-5 mb-2 text-sm ${
               isUnread
-                ? "text-blue-800 dark:text-blue-200"
+                ? "text-blue-900 dark:text-blue-100 font-medium"
                 : "text-gray-600 dark:text-gray-400"
             }`}
           >
@@ -442,7 +459,11 @@ function AnnouncementNotificationCard({
               )}
             </View>
 
-            <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={isUnread ? "#3b82f6" : "#9ca3af"}
+            />
           </View>
         </View>
       </View>

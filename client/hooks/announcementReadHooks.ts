@@ -61,9 +61,13 @@ export const useMarkAnnouncementAsReadMutation = () => {
           user?.userId || 0
         ),
       });
-      // Invalidate unread queries for all rooms (we don't know which room this announcement belongs to)
+      // Invalidate unread queries for all rooms to update the UI immediately
       queryClient.invalidateQueries({
         queryKey: announcementReadKeys.all,
+      });
+      // Also invalidate announcement queries to refresh the main feed
+      queryClient.invalidateQueries({
+        queryKey: ["announcements"],
       });
     },
   });
@@ -119,6 +123,7 @@ export const useUnreadAnnouncementsQuery = (roomId: number) => {
       return res.data;
     },
     enabled: !!roomId && roomId > 0 && !!user?.userId,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 30 * 1000, // 30 seconds for more frequent updates
+    refetchInterval: 60 * 1000, // Auto-refetch every minute
   });
 };
