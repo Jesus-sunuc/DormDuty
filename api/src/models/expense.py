@@ -11,7 +11,7 @@ class ExpenseCreateRequest(BaseModel):
     category: Optional[str] = None
     expense_date: date
     receipt_url: Optional[str] = None
-    split_with: List[int]  # List of membership_ids to split with
+    split_with: List[int]
 
 class ExpenseUpdateRequest(BaseModel):
     expense_id: int

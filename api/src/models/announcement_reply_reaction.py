@@ -1,19 +1,21 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class AnnouncementReplyReactionBase(BaseModel):
+class AnnouncementReplyReactionCreateRequest(BaseModel):
+    reply_id: int
     emoji: str
 
-class AnnouncementReplyReactionCreate(AnnouncementReplyReactionBase):
+class AnnouncementReplyReaction(BaseModel):
+    reply_reaction_id: int
     reply_id: int
+    membership_id: int
+    emoji: str
+    reacted_at: datetime
 
-class AnnouncementReplyReactionResponse(AnnouncementReplyReactionBase):
-    reaction_id: int
+class AnnouncementReplyReactionResponse(BaseModel):
+    reply_reaction_id: int
     reply_id: int
     membership_id: int
     emoji: str
     reacted_at: datetime
     member_name: str
-
-    class Config:
-        from_attributes = True

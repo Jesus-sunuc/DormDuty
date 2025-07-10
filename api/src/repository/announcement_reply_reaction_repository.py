@@ -1,4 +1,4 @@
-from src.models.announcement_reply_reaction import AnnouncementReplyReactionCreate, AnnouncementReplyReactionResponse
+from src.models.announcement_reply_reaction import AnnouncementReplyReactionCreateRequest, AnnouncementReplyReactionResponse
 from src.services.database.helper import run_sql
 from typing import List
 
@@ -21,7 +21,7 @@ class AnnouncementReplyReactionRepository:
         """
         return run_sql(sql, [reply_id, limit], output_class=AnnouncementReplyReactionResponse)
 
-    def create_reaction(self, reaction: AnnouncementReplyReactionCreate, membership_id: int) -> AnnouncementReplyReactionResponse:
+    def create_reaction(self, reaction: AnnouncementReplyReactionCreateRequest, membership_id: int) -> AnnouncementReplyReactionResponse:
         sql = """
             WITH new_reaction AS (
                 INSERT INTO announcement_reply_reaction (reply_id, membership_id, emoji)
@@ -43,7 +43,6 @@ class AnnouncementReplyReactionRepository:
         return result[0] if result else None
 
     def get_user_reaction(self, reply_id: int, membership_id: int) -> AnnouncementReplyReactionResponse:
-        """Get the user's existing reaction for a reply (if any)"""
         sql = """
             SELECT 
                 r.reaction_id,
@@ -60,12 +59,10 @@ class AnnouncementReplyReactionRepository:
         result = run_sql(sql, [reply_id, membership_id], output_class=AnnouncementReplyReactionResponse)
         return result[0] if result else None
 
-    def update_or_create_reaction(self, reaction: AnnouncementReplyReactionCreate, membership_id: int) -> AnnouncementReplyReactionResponse:
-        """Update existing reaction or create new one (only one emoji per user per reply)"""
+    def update_or_create_reaction(self, reaction: AnnouncementReplyReactionCreateRequest, membership_id: int) -> AnnouncementReplyReactionResponse:
         existing_reaction = self.get_user_reaction(reaction.reply_id, membership_id)
         
         if existing_reaction:
-            # Update existing reaction
             sql = """
                 UPDATE announcement_reply_reaction 
                 SET emoji = %s, reacted_at = CURRENT_TIMESTAMP
@@ -80,7 +77,6 @@ class AnnouncementReplyReactionRepository:
             return self.create_reaction(reaction, membership_id)
 
     def delete_user_reaction(self, reply_id: int, membership_id: int) -> bool:
-        """Delete user's reaction for a reply"""
         sql = """
             DELETE FROM announcement_reply_reaction 
             WHERE reply_id = %s AND membership_id = %s

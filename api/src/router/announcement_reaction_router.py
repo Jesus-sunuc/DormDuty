@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Query
 from src.repository.announcement_reaction_repository import AnnouncementReactionRepository
 from src.repository.membership_repository import MembershipRepository
 from src.repository.announcement_repository import AnnouncementRepository
-from src.models.announcement_reaction import AnnouncementReactionCreate, AnnouncementReactionResponse
+from src.models.announcement_reaction import AnnouncementReactionCreateRequest, AnnouncementReactionResponse
 from src.errors import error_handler
 from typing import List
 
@@ -24,7 +24,7 @@ def get_reactions_by_announcement(announcement_id: int):
 @router.post("/create", response_model=AnnouncementReactionResponse)
 @error_handler("Error creating reaction")
 def create_reaction(
-    reaction: AnnouncementReactionCreate,
+    reaction: AnnouncementReactionCreateRequest,
     user_id: int = Query(..., description="User ID from authentication")
 ):
     announcement = announcement_repo.get_announcement_by_id(reaction.announcement_id)

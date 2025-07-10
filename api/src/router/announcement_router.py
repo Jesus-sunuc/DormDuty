@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Query
 from src.repository.announcement_repository import AnnouncementRepository
 from src.repository.membership_repository import MembershipRepository
-from src.models.announcement import AnnouncementCreate, AnnouncementResponse
+from src.models.announcement import AnnouncementCreateRequest, AnnouncementResponse
 from src.errors import error_handler
 from typing import List
 
@@ -24,7 +24,7 @@ def get_room_announcements(room_id: int):
 @router.post("/create", response_model=AnnouncementResponse)
 @error_handler("Error creating announcement")
 def create_announcement(
-    announcement: AnnouncementCreate,
+    announcement: AnnouncementCreateRequest,
     user_id: int = Query(..., description="User ID from authentication")
 ):
     membership = membership_repo.get_membership_by_user_and_room(user_id, announcement.room_id)

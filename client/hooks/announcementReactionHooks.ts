@@ -1,7 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { getQueryClient } from "@/services/queryClient";
-import { useAuth } from "./user/useAuth";
 import {
   AnnouncementReaction,
   AnnouncementReactionCreateRequest,
@@ -28,18 +27,14 @@ export const useAnnouncementReactionsQuery = (announcementId: number) =>
     staleTime: 1 * 60 * 1000,
   });
 
-export const useCreateAnnouncementReactionMutation = () => {
-  const { user } = useAuth();
-  return useMutation({
+export const useAddAnnouncementReactionMutation = () =>
+  useMutation({
     mutationFn: async (
       reaction: AnnouncementReactionCreateRequest
     ): Promise<AnnouncementReaction> => {
       const res = await axiosClient.post(
         `/api/announcement-reactions/create`,
-        reaction,
-        {
-          params: { user_id: user?.userId },
-        }
+        reaction
       );
       return res.data;
     },
@@ -49,49 +44,27 @@ export const useCreateAnnouncementReactionMutation = () => {
       });
     },
   });
-};
 
-export const useRemoveAnnouncementReactionMutation = () => {
-  const { user } = useAuth();
-  return useMutation({
-    mutationFn: async ({
-      announcementId,
-    }: {
-      announcementId: number;
-    }): Promise<void> => {
+export const useRemoveAnnouncementReactionMutation = () =>
+  useMutation({
+    mutationFn: async (announcementId: number): Promise<void> => {
       await axiosClient.delete(
-        `/api/announcement-reactions/announcement/${announcementId}`,
-        {
-          params: { user_id: user?.userId },
-        }
+        `/api/announcement-reactions/announcement/${announcementId}`
       );
     },
-    onSuccess: (_, { announcementId }) => {
+    onSuccess: (_, announcementId) => {
       queryClient.invalidateQueries({
         queryKey: announcementReactionKeys.byAnnouncement(announcementId),
       });
     },
   });
-};
 
-export const useDeleteAnnouncementReactionMutation = () => {
-  const { user } = useAuth();
-  return useMutation({
-    mutationFn: async ({
-      reactionId,
-      announcementId,
-    }: {
-      reactionId: number;
-      announcementId: number;
-    }): Promise<void> => {
-      await axiosClient.delete(`/api/announcement-reactions/${reactionId}`, {
-        params: { user_id: user?.userId },
-      });
+export const useDeleteAnnouncementReactionMutation = () =>
+  useMutation({
+    mutationFn: async (reactionId: number): Promise<void> => {
+      await axiosClient.delete(`/api/announcement-reactions/${reactionId}`);
     },
-    onSuccess: (_, { announcementId }) => {
-      queryClient.invalidateQueries({
-        queryKey: announcementReactionKeys.byAnnouncement(announcementId),
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: announcementReactionKeys.all });
     },
   });
-};

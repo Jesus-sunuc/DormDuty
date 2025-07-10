@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Query
 from src.repository.announcement_reply_reaction_repository import AnnouncementReplyReactionRepository
 from src.repository.membership_repository import MembershipRepository
 from src.repository.announcement_reply_repository import AnnouncementReplyRepository
-from src.models.announcement_reply_reaction import AnnouncementReplyReactionCreate, AnnouncementReplyReactionResponse
+from src.models.announcement_reply_reaction import AnnouncementReplyReactionCreateRequest, AnnouncementReplyReactionResponse
 from src.errors import error_handler
 from typing import List
 
@@ -24,7 +24,7 @@ def get_reactions_by_reply(reply_id: int):
 @router.post("/create", response_model=AnnouncementReplyReactionResponse)
 @error_handler("Error creating reply reaction")
 def create_reply_reaction(
-    reaction: AnnouncementReplyReactionCreate,
+    reaction: AnnouncementReplyReactionCreateRequest,
     user_id: int = Query(..., description="User ID from authentication")
 ):
     # Get the reply to find the room

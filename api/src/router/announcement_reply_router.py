@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Query
 from src.repository.announcement_reply_repository import AnnouncementReplyRepository
 from src.repository.membership_repository import MembershipRepository
 from src.repository.announcement_repository import AnnouncementRepository
-from src.models.announcement_reply import AnnouncementReplyCreate, AnnouncementReplyResponse
+from src.models.announcement_reply import AnnouncementReplyCreateRequest, AnnouncementReplyResponse
 from src.errors import error_handler
 from typing import List
 
@@ -24,7 +24,7 @@ def get_replies_by_announcement(announcement_id: int):
 @router.post("/create", response_model=AnnouncementReplyResponse)
 @error_handler("Error creating reply")
 def create_reply(
-    reply: AnnouncementReplyCreate,
+    reply: AnnouncementReplyCreateRequest,
     user_id: int = Query(..., description="User ID from authentication")
 ):
     announcement = announcement_repo.get_announcement_by_id(reply.announcement_id)

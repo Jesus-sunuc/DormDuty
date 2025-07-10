@@ -13,23 +13,23 @@ import { useRoomsByUserQuery } from "@/hooks/roomHooks";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
 import {
   useRoomAnnouncementsQuery,
-  useCreateAnnouncementMutation,
+  useAddAnnouncementMutation,
   useDeleteAnnouncementMutation,
 } from "@/hooks/announcementHooks";
 import {
   useAnnouncementRepliesQuery,
-  useCreateAnnouncementReplyMutation,
+  useAddAnnouncementReplyMutation,
   useDeleteAnnouncementReplyMutation,
 } from "@/hooks/announcementReplyHooks";
 import {
   useAnnouncementReactionsQuery,
-  useCreateAnnouncementReactionMutation,
+  useAddAnnouncementReactionMutation,
   useDeleteAnnouncementReactionMutation,
   useRemoveAnnouncementReactionMutation,
 } from "@/hooks/announcementReactionHooks";
 import {
   useAnnouncementReplyReactionsQuery,
-  useCreateAnnouncementReplyReactionMutation,
+  useAddAnnouncementReplyReactionMutation,
   useRemoveAnnouncementReplyReactionMutation,
 } from "@/hooks/announcementReplyReactionHooks";
 import { Announcement } from "@/models/Announcement";
@@ -119,11 +119,10 @@ const Updates = () => {
     error: announcementsError,
   } = useRoomAnnouncementsQuery(selectedRoom?.roomId || 0);
 
-  const createAnnouncementMutation = useCreateAnnouncementMutation();
+  const createAnnouncementMutation = useAddAnnouncementMutation();
   const deleteAnnouncementMutation = useDeleteAnnouncementMutation();
-  const createReactionMutation = useCreateAnnouncementReactionMutation();
-  const createReplyReactionMutation =
-    useCreateAnnouncementReplyReactionMutation();
+  const createReactionMutation = useAddAnnouncementReactionMutation();
+  const createReplyReactionMutation = useAddAnnouncementReplyReactionMutation();
 
   useEffect(() => {
     if (rooms.length > 0 && !selectedRoom) {
@@ -188,10 +187,7 @@ const Updates = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              await deleteAnnouncementMutation.mutateAsync({
-                announcementId,
-                roomId: selectedRoom.roomId,
-              });
+              await deleteAnnouncementMutation.mutateAsync(announcementId);
               toastSuccess("Update deleted successfully!");
             } catch (error) {
               toastError("Failed to delete update");
@@ -493,7 +489,7 @@ function AnnouncementRepliesSection({
   const { user } = useAuth();
   const { data: replies = [], isLoading } =
     useAnnouncementRepliesQuery(announcementId);
-  const createReplyMutation = useCreateAnnouncementReplyMutation();
+  const createReplyMutation = useAddAnnouncementReplyMutation();
   const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
   const [replyText, setReplyText] = useState("");
 
@@ -515,12 +511,7 @@ function AnnouncementRepliesSection({
           <ReplyItem
             reply={reply}
             membership={membership}
-            onDelete={() =>
-              deleteReplyMutation.mutate({
-                replyId: reply.replyId,
-                announcementId,
-              })
-            }
+            onDelete={() => deleteReplyMutation.mutate(reply.replyId)}
           />
         )}
         ListEmptyComponent={
@@ -562,8 +553,7 @@ function ReplyItem({
   const { user } = useAuth();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
-  const createReplyReactionMutation =
-    useCreateAnnouncementReplyReactionMutation();
+  const createReplyReactionMutation = useAddAnnouncementReplyReactionMutation();
 
   const handleLongPress = () => {
     setSelectedReplyId(reply.replyId);
@@ -630,7 +620,7 @@ function ReplyReactionsSection({
   membership?: { membershipId: number; role: string };
 }) {
   const { data: reactions = [] } = useAnnouncementReplyReactionsQuery(replyId);
-  const createReactionMutation = useCreateAnnouncementReplyReactionMutation();
+  const createReactionMutation = useAddAnnouncementReplyReactionMutation();
   const removeReactionMutation = useRemoveAnnouncementReplyReactionMutation();
 
   // Find user's current reaction (if any)
@@ -655,7 +645,7 @@ function ReplyReactionsSection({
     try {
       if (isCurrentReaction) {
         // Remove current reaction
-        await removeReactionMutation.mutateAsync({ replyId });
+        await removeReactionMutation.mutateAsync(replyId);
       } else {
         // Add/change reaction
         await createReactionMutation.mutateAsync({ replyId, emoji });
@@ -707,7 +697,7 @@ function AnnouncementReactionsSection({
   const { user } = useAuth();
   const { data: reactions = [] } =
     useAnnouncementReactionsQuery(announcementId);
-  const createReactionMutation = useCreateAnnouncementReactionMutation();
+  const createReactionMutation = useAddAnnouncementReactionMutation();
   const removeReactionMutation = useRemoveAnnouncementReactionMutation();
 
   // Find user's current reaction (if any)
@@ -733,7 +723,7 @@ function AnnouncementReactionsSection({
     try {
       if (isCurrentReaction) {
         // Remove current reaction
-        await removeReactionMutation.mutateAsync({ announcementId });
+        await removeReactionMutation.mutateAsync(announcementId);
       } else {
         // Add/change reaction
         await createReactionMutation.mutateAsync({ announcementId, emoji });

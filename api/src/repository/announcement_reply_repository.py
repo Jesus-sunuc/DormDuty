@@ -1,4 +1,4 @@
-from src.models.announcement_reply import AnnouncementReplyCreate, AnnouncementReplyResponse
+from src.models.announcement_reply import AnnouncementReplyCreateRequest, AnnouncementReplyResponse
 from src.services.database.helper import run_sql
 from typing import List
 
@@ -21,7 +21,7 @@ class AnnouncementReplyRepository:
         """
         return run_sql(sql, [announcement_id, limit], output_class=AnnouncementReplyResponse)
 
-    def create_reply(self, reply: AnnouncementReplyCreate, membership_id: int) -> AnnouncementReplyResponse:
+    def create_reply(self, reply: AnnouncementReplyCreateRequest, membership_id: int) -> AnnouncementReplyResponse:
         sql = """
             WITH new_reply AS (
                 INSERT INTO announcement_reply (announcement_id, membership_id, message)

@@ -1,4 +1,4 @@
-from src.models.announcement import AnnouncementCreate, AnnouncementResponse
+from src.models.announcement import AnnouncementCreateRequest, AnnouncementResponse
 from src.services.database.helper import run_sql
 from typing import List, Optional
 
@@ -23,7 +23,7 @@ class AnnouncementRepository:
         """
         return run_sql(sql, [room_id, limit], output_class=AnnouncementResponse)
 
-    def create_announcement(self, announcement: AnnouncementCreate, membership_id: int) -> AnnouncementResponse:
+    def create_announcement(self, announcement: AnnouncementCreateRequest, membership_id: int) -> AnnouncementResponse:
         sql = """
             WITH new_announcement AS (
                 INSERT INTO announcement (room_id, created_by, message, can_reply)

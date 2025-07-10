@@ -2,7 +2,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { camel_to_snake_serializing_date } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
-import { useAuth } from "./user/useAuth";
 import { Announcement, AnnouncementCreateRequest } from "@/models/Announcement";
 
 const queryClient = getQueryClient();
@@ -37,17 +36,13 @@ export const useAnnouncementQuery = (announcementId: number) =>
     staleTime: 5 * 60 * 1000,
   });
 
-export const useCreateAnnouncementMutation = () => {
-  const { user } = useAuth();
-
-  return useMutation({
+export const useAddAnnouncementMutation = () =>
+  useMutation({
     mutationFn: async (
       announcement: AnnouncementCreateRequest
     ): Promise<Announcement> => {
       const body = camel_to_snake_serializing_date(announcement);
-      const res = await axiosClient.post(`/api/announcements/create`, body, {
-        params: { user_id: user?.userId },
-      });
+      const res = await axiosClient.post(`/api/announcements/create`, body);
       return res.data;
     },
     onSuccess: (data) => {
@@ -57,28 +52,13 @@ export const useCreateAnnouncementMutation = () => {
       queryClient.invalidateQueries({ queryKey: announcementKeys.all });
     },
   });
-};
 
-export const useDeleteAnnouncementMutation = () => {
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: async ({
-      announcementId,
-      roomId,
-    }: {
-      announcementId: number;
-      roomId: number;
-    }): Promise<void> => {
-      await axiosClient.delete(`/api/announcements/${announcementId}`, {
-        params: { user_id: user?.userId },
-      });
+export const useDeleteAnnouncementMutation = () =>
+  useMutation({
+    mutationFn: async (announcementId: number): Promise<void> => {
+      await axiosClient.delete(`/api/announcements/${announcementId}`);
     },
-    onSuccess: (_, { roomId }) => {
-      queryClient.invalidateQueries({
-        queryKey: announcementKeys.byRoom(roomId),
-      });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: announcementKeys.all });
     },
   });
-};
