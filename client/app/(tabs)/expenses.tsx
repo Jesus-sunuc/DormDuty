@@ -282,12 +282,20 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   expense,
   currentUserMembershipId,
 }) => {
+  const router = useRouter();
   const userSplit = expense.splits.find(
     (split) => split.membershipId === currentUserMembershipId
   );
 
+  const handleExpensePress = () => {
+    router.push(`/expenses-details/${expense.expenseId}`);
+  };
+
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-neutral-800">
+    <TouchableOpacity
+      onPress={handleExpensePress}
+      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-neutral-800"
+    >
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">
           <ThemedText className="font-semibold text-gray-900 dark:text-white">
@@ -331,7 +339,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
           </View>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

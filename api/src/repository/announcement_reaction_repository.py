@@ -50,3 +50,53 @@ class AnnouncementReactionRepository:
         """
         result = run_sql(sql, [reaction_id, membership_id])
         return len(result) > 0
+
+    def get_user_reaction(self, announcement_id: int, membership_id: int) -> AnnouncementReactionResponse:
+        """Get the user's existing reaction for an announcement (if any)"""
+        sql = """
+            SELECT 
+                r.reaction_id,
+                r.announcement_id,
+                r.membership_id,
+                r.emoji,
+                r.reacted_at,
+                u.name as member_name
+            FROM announcement_reaction r
+            JOIN room_membership rm ON r.membership_id = rm.membership_id
+            JOIN "user" u ON rm.user_id = u.user_id
+            WHERE r.announcement_id = %s AND r.membership_id = %s
+        """
+        result = run_sql(sql, [announcement_id, membership_id], output_class=AnnouncementReactionResponse)
+        return result[0] if result else None
+
+    def update_or_create_reaction(self, reaction: AnnouncementReactionCreate, membership_id: int) -> AnnouncementReactionResponse:
+        """Update existing reaction or create new one (only one emoji per user)"""
+        # First, check if user already has a reaction
+        existing_reaction = self.get_user_reaction(reaction.announcement_id, membership_id)
+        
+        if existing_reaction:
+            # Update existing reaction
+            sql = """
+                UPDATE announcement_reaction 
+                SET emoji = %s, reacted_at = CURRENT_TIMESTAMP
+                WHERE reaction_id = %s
+                RETURNING reaction_id, announcement_id, membership_id, emoji, reacted_at
+            """
+            result = run_sql(sql, [reaction.emoji, existing_reaction.reactionId])
+            
+            if result:
+                # Get the updated reaction with member name
+                return self.get_user_reaction(reaction.announcement_id, membership_id)
+        else:
+            # Create new reaction
+            return self.create_reaction(reaction, membership_id)
+
+    def delete_user_reaction(self, announcement_id: int, membership_id: int) -> bool:
+        """Delete user's reaction for an announcement"""
+        sql = """
+            DELETE FROM announcement_reaction 
+            WHERE announcement_id = %s AND membership_id = %s
+            RETURNING reaction_id
+        """
+        result = run_sql(sql, [announcement_id, membership_id])
+        return len(result) > 0

@@ -51,6 +51,29 @@ export const useCreateAnnouncementReactionMutation = () => {
   });
 };
 
+export const useRemoveAnnouncementReactionMutation = () => {
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async ({
+      announcementId,
+    }: {
+      announcementId: number;
+    }): Promise<void> => {
+      await axiosClient.delete(
+        `/api/announcement-reactions/announcement/${announcementId}`,
+        {
+          params: { user_id: user?.userId },
+        }
+      );
+    },
+    onSuccess: (_, { announcementId }) => {
+      queryClient.invalidateQueries({
+        queryKey: announcementReactionKeys.byAnnouncement(announcementId),
+      });
+    },
+  });
+};
+
 export const useDeleteAnnouncementReactionMutation = () => {
   const { user } = useAuth();
   return useMutation({

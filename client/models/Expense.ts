@@ -35,12 +35,14 @@ export interface ExpenseCreateRequest {
 
 export interface ExpenseUpdateRequest {
   expenseId: number;
-  amount?: number;
-  description?: string;
+  roomId: number;
+  payerMembershipId: number;
+  amount: number;
+  description: string;
   category?: string;
-  expenseDate?: string;
+  expenseDate: string;
   receiptUrl?: string;
-  splitWith?: number[];
+  splitWith: number[];
 }
 
 export interface ExpensePaymentRequest {

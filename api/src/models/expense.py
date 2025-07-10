@@ -15,12 +15,14 @@ class ExpenseCreateRequest(BaseModel):
 
 class ExpenseUpdateRequest(BaseModel):
     expense_id: int
-    amount: Optional[Decimal] = None
-    description: Optional[str] = None
+    room_id: int
+    payer_membership_id: int
+    amount: Decimal
+    description: str
     category: Optional[str] = None
-    expense_date: Optional[date] = None
+    expense_date: date
     receipt_url: Optional[str] = None
-    split_with: Optional[List[int]] = None
+    split_with: List[int]
 
 class Expense(BaseModel):
     expense_id: int

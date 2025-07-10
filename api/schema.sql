@@ -34,69 +34,89 @@ CREATE TABLE
     CONSTRAINT "UQ_room_membership" UNIQUE ("user_id", "room_id")
   );
 
-CREATE TABLE "announcement" (
-  "announcement_id" SERIAL PRIMARY KEY,
-  "room_id" INTEGER NOT NULL,
-  "created_by" INTEGER NOT NULL,
-  "message" TEXT NOT NULL,
-  "can_reply" BOOLEAN DEFAULT FALSE,
-  "created_at" TIMESTAMPTZ DEFAULT now(),
-  CONSTRAINT "FK_announcement_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE,
-  CONSTRAINT "FK_announcement_created_by" FOREIGN KEY ("created_by") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
-);
+CREATE TABLE
+  "announcement" (
+    "announcement_id" SERIAL PRIMARY KEY,
+    "room_id" INTEGER NOT NULL,
+    "created_by" INTEGER NOT NULL,
+    "message" TEXT NOT NULL,
+    "can_reply" BOOLEAN DEFAULT FALSE,
+    "created_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_announcement_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_announcement_created_by" FOREIGN KEY ("created_by") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+  );
 
-CREATE TABLE "announcement_reaction" (
-  "reaction_id" SERIAL PRIMARY KEY,
-  "announcement_id" INTEGER NOT NULL,
-  "membership_id" INTEGER NOT NULL,
-  "emoji" VARCHAR(10) NOT NULL,
-  "reacted_at" TIMESTAMPTZ DEFAULT now(),
-  CONSTRAINT "FK_reaction_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
-  CONSTRAINT "FK_reaction_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
-  CONSTRAINT "UQ_reaction_unique" UNIQUE ("announcement_id", "membership_id", "emoji")
-);
+CREATE TABLE
+  "announcement_reaction" (
+    "reaction_id" SERIAL PRIMARY KEY,
+    "announcement_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "emoji" VARCHAR(10) NOT NULL,
+    "reacted_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_reaction_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_reaction_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+    CONSTRAINT "UQ_reaction_unique" UNIQUE ("announcement_id", "membership_id")
+  );
 
-CREATE TABLE "announcement_reply" (
-  "reply_id" SERIAL PRIMARY KEY,
-  "announcement_id" INTEGER NOT NULL,
-  "membership_id" INTEGER NOT NULL,
-  "message" TEXT NOT NULL,
-  "replied_at" TIMESTAMPTZ DEFAULT now(),
-  CONSTRAINT "FK_reply_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
-  CONSTRAINT "FK_reply_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
-);
+CREATE TABLE
+  "announcement_reply" (
+    "reply_id" SERIAL PRIMARY KEY,
+    "announcement_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "message" TEXT NOT NULL,
+    "replied_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_reply_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_reply_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+  );
 
+CREATE TABLE
+  "announcement_reply_reaction" (
+    "reaction_id" SERIAL PRIMARY KEY,
+    "reply_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "emoji" VARCHAR(10) NOT NULL,
+    "reacted_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_reply_reaction_reply" FOREIGN KEY ("reply_id") REFERENCES "announcement_reply" ("reply_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_reply_reaction_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+    CONSTRAINT "UQ_reply_reaction_unique" UNIQUE ("reply_id", "membership_id")
+  );
 
-CREATE TABLE "announcement_read" (
-  "announcement_id" INTEGER NOT NULL,
-  "membership_id" INTEGER NOT NULL,
-  "read_at" TIMESTAMPTZ DEFAULT now(),
-  PRIMARY KEY ("announcement_id", "membership_id"),
-  CONSTRAINT "FK_read_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
-  CONSTRAINT "FK_read_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
-);
+CREATE TABLE
+  "announcement_read" (
+    "announcement_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "read_at" TIMESTAMPTZ DEFAULT now (),
+    PRIMARY KEY ("announcement_id", "membership_id"),
+    CONSTRAINT "FK_read_announcement" FOREIGN KEY ("announcement_id") REFERENCES "announcement" ("announcement_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_read_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE
+  );
 
-CREATE TABLE "cleaning_checklist" (
-  "checklist_item_id" SERIAL PRIMARY KEY,
-  "room_id" INTEGER NOT NULL,
-  "title" VARCHAR(255) NOT NULL,
-  "description" TEXT,
-  "is_default" BOOLEAN DEFAULT FALSE,
-  CONSTRAINT "FK_checklist_room" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE
-);
+CREATE TABLE
+  "cleaning_checklist" (
+    "checklist_item_id" SERIAL PRIMARY KEY,
+    "room_id" INTEGER NOT NULL,
+    "title" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    "is_default" BOOLEAN DEFAULT FALSE,
+    CONSTRAINT "FK_checklist_room" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id") ON DELETE CASCADE
+  );
 
-CREATE TABLE "cleaning_check_status" (
-  "status_id" SERIAL PRIMARY KEY,
-  "checklist_item_id" INTEGER NOT NULL,
-  "membership_id" INTEGER NOT NULL,
-  "marked_date" DATE NOT NULL,
-  "is_completed" BOOLEAN DEFAULT FALSE,
-  "updated_at" TIMESTAMPTZ DEFAULT now(),
-  CONSTRAINT "FK_status_checklist_item" FOREIGN KEY ("checklist_item_id") REFERENCES "cleaning_checklist" ("checklist_item_id") ON DELETE CASCADE,
-  CONSTRAINT "FK_status_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
-  CONSTRAINT "UQ_status_per_day" UNIQUE ("checklist_item_id", "membership_id", "marked_date")
-);
-
+CREATE TABLE
+  "cleaning_check_status" (
+    "status_id" SERIAL PRIMARY KEY,
+    "checklist_item_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "marked_date" DATE NOT NULL,
+    "is_completed" BOOLEAN DEFAULT FALSE,
+    "updated_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_status_checklist_item" FOREIGN KEY ("checklist_item_id") REFERENCES "cleaning_checklist" ("checklist_item_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_status_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+    CONSTRAINT "UQ_status_per_day" UNIQUE (
+      "checklist_item_id",
+      "membership_id",
+      "marked_date"
+    )
+  );
 
 CREATE TABLE
   "room_invitation" (
@@ -156,7 +176,7 @@ CREATE TABLE
     "photo_url" TEXT,
     "status" VARCHAR(50) DEFAULT 'pending',
     "points_earned" INTEGER DEFAULT 0,
-    "created_at" TIMESTAMPTZ DEFAULT now(),
+    "created_at" TIMESTAMPTZ DEFAULT now (),
     CONSTRAINT "FK_chore_completion_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
     CONSTRAINT "FK_chore_completion_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id")
   );
@@ -168,7 +188,7 @@ CREATE TABLE
     "verified_by" INTEGER NOT NULL,
     "verification_type" VARCHAR(20) NOT NULL,
     "comment" TEXT,
-    "verified_at" TIMESTAMPTZ DEFAULT now(),
+    "verified_at" TIMESTAMPTZ DEFAULT now (),
     CONSTRAINT "FK_chore_verification_completion_id" FOREIGN KEY ("completion_id") REFERENCES "chore_completion" ("completion_id"),
     CONSTRAINT "FK_chore_verification_verified_by" FOREIGN KEY ("verified_by") REFERENCES "room_membership" ("membership_id")
   );
@@ -178,7 +198,7 @@ CREATE TABLE
     "assignment_id" SERIAL PRIMARY KEY,
     "chore_id" INTEGER NOT NULL,
     "membership_id" INTEGER NOT NULL,
-    "assigned_at" TIMESTAMPTZ DEFAULT now(),
+    "assigned_at" TIMESTAMPTZ DEFAULT now (),
     "completed_at" TIMESTAMPTZ,
     "status" VARCHAR(50) DEFAULT 'assigned',
     CONSTRAINT "FK_chore_assignment_history_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
@@ -193,7 +213,7 @@ CREATE TABLE
     "to_membership" INTEGER NOT NULL,
     "status" VARCHAR(50) DEFAULT 'pending',
     "message" TEXT,
-    "requested_at" TIMESTAMPTZ DEFAULT now(),
+    "requested_at" TIMESTAMPTZ DEFAULT now (),
     "responded_at" TIMESTAMPTZ,
     CONSTRAINT "FK_chore_swap_request_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
     CONSTRAINT "FK_chore_swap_request_from_membership" FOREIGN KEY ("from_membership") REFERENCES "room_membership" ("membership_id"),
@@ -210,7 +230,7 @@ CREATE TABLE
     "category" VARCHAR(100),
     "expense_date" DATE NOT NULL,
     "receipt_url" TEXT,
-    "created_at" TIMESTAMPTZ DEFAULT now(),
+    "created_at" TIMESTAMPTZ DEFAULT now (),
     CONSTRAINT "FK_expense_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id"),
     CONSTRAINT "FK_expense_payer_membership_id" FOREIGN KEY ("payer_membership_id") REFERENCES "room_membership" ("membership_id")
   );
@@ -257,9 +277,11 @@ CREATE INDEX "idx_room_invitation_email" ON "room_invitation" ("invited_email");
 CREATE INDEX "idx_room_invitation_status" ON "room_invitation" ("status", "expires_at");
 
 CREATE INDEX idx_announcement_room_id ON "announcement" ("room_id");
+
 CREATE INDEX idx_announcement_created_by ON "announcement" ("created_by");
 
 CREATE INDEX idx_announcement_reaction_announcement_id ON "announcement_reaction" ("announcement_id");
+
 CREATE INDEX idx_announcement_reaction_membership_id ON "announcement_reaction" ("membership_id");
 
 CREATE INDEX idx_announcement_read_announcement_id ON "announcement_read" ("announcement_id");
@@ -267,11 +289,12 @@ CREATE INDEX idx_announcement_read_announcement_id ON "announcement_read" ("anno
 CREATE INDEX idx_cleaning_checklist_room_id ON "cleaning_checklist" ("room_id");
 
 CREATE INDEX idx_cleaning_check_status_checklist_item_id ON "cleaning_check_status" ("checklist_item_id");
+
 CREATE INDEX idx_cleaning_check_status_membership_id ON "cleaning_check_status" ("membership_id");
 
 CREATE INDEX idx_announcement_reply_announcement_id ON "announcement_reply" ("announcement_id");
-CREATE INDEX idx_announcement_reply_membership_id ON "announcement_reply" ("membership_id");
 
+CREATE INDEX idx_announcement_reply_membership_id ON "announcement_reply" ("membership_id");
 
 CREATE VIEW
   "user_rooms" AS

@@ -41,3 +41,14 @@ def mark_split_as_paid(payment: ExpensePaymentRequest):
 @error_handler("Error fetching user expense summary")
 def get_user_expense_summary(membership_id: int, room_id: int):
     return repo.get_user_expenses_summary(membership_id, room_id)
+
+@router.put("/{expense_id}")
+@error_handler("Error updating expense")
+def update_expense(expense_id: int, expense: ExpenseUpdateRequest):
+    expense.expense_id = expense_id
+    return repo.update_expense(expense)
+
+@router.delete("/{expense_id}")
+@error_handler("Error deleting expense")
+def delete_expense(expense_id: int):
+    return repo.delete_expense(expense_id)

@@ -194,3 +194,61 @@ class ExpenseRepository:
             "total_owed_to_user": total_owed_to_user,
             "net_balance": total_owed_to_user - total_owed
         }
+    
+    def update_expense(self, expense: ExpenseUpdateRequest):
+        # First, update the expense record
+        expense_sql = """
+            UPDATE expense 
+            SET payer_membership_id = %s, amount = %s, description = %s, category = %s, expense_date = %s, receipt_url = %s
+            WHERE expense_id = %s
+        """
+        params = (
+            expense.payer_membership_id,
+            expense.amount,
+            expense.description,
+            expense.category,
+            expense.expense_date,
+            expense.receipt_url,
+            expense.expense_id
+        )
+        
+        run_sql(expense_sql, params)
+        
+        # Delete existing splits
+        delete_splits_sql = "DELETE FROM expense_split WHERE expense_id = %s"
+        run_sql(delete_splits_sql, (expense.expense_id,))
+        
+        # Create new splits
+        total_people = len(expense.split_with)
+        if total_people == 0:
+            raise ValueError("Must specify at least one person to split with")
+        
+        amount_per_person = expense.amount / total_people
+        
+        for membership_id in expense.split_with:
+            split_sql = """
+                INSERT INTO expense_split (expense_id, membership_id, amount_owed, is_paid, paid_at)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            # If the payer is in the split list, mark them as already paid
+            is_paid = membership_id == expense.payer_membership_id
+            paid_at = datetime.now(timezone.utc) if is_paid else None
+            
+            split_params = (expense.expense_id, membership_id, amount_per_person, is_paid, paid_at)
+            run_sql(split_sql, split_params)
+        
+        return {"expense_id": expense.expense_id, "amount_per_person": float(amount_per_person)}
+    
+    def delete_expense(self, expense_id: int):
+        # Delete splits first (due to foreign key constraint)
+        delete_splits_sql = "DELETE FROM expense_split WHERE expense_id = %s"
+        run_sql(delete_splits_sql, (expense_id,))
+        
+        # Delete the expense
+        delete_expense_sql = "DELETE FROM expense WHERE expense_id = %s"
+        result = run_sql(delete_expense_sql, (expense_id,))
+        
+        if not result:
+            raise ValueError(f"Expense with ID {expense_id} not found")
+        
+        return {"success": True}

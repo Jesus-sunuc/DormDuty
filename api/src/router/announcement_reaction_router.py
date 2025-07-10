@@ -37,7 +37,7 @@ def create_reaction(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not a member of this room"
         )
-    return repo.create_reaction(reaction, membership["membership_id"])
+    return repo.update_or_create_reaction(reaction, membership["membership_id"])
 
 @router.delete("/{reaction_id}")
 @error_handler("Error deleting reaction")
@@ -68,3 +68,27 @@ def delete_reaction(
             detail="You can only delete your own reactions"
         )
     return {"message": "Reaction deleted successfully"}
+
+@router.delete("/announcement/{announcement_id}")
+@error_handler("Error removing user reaction")
+def remove_user_reaction(
+    announcement_id: int,
+    user_id: int = Query(..., description="User ID from authentication")
+):
+    announcement = announcement_repo.get_announcement_by_id(announcement_id)
+    if not announcement:
+        raise HTTPException(status_code=404, detail="Announcement not found")
+    room_id = announcement.room_id
+    membership = membership_repo.get_membership_by_user_and_room(user_id, room_id)
+    if not membership:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not a member of this room"
+        )
+    deleted = repo.delete_user_reaction(announcement_id, membership["membership_id"])
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No reaction found to delete"
+        )
+    return {"message": "Reaction removed successfully"}
