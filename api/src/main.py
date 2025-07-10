@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from src.router import announcement_reaction_router, announcement_reply_router
+from src.router import announcement_reaction_router, announcement_reply_router, announcement_reply_reaction_router
 from src.router import users_router
 from src.router import rooms_router
 from src.router import membership_router
@@ -33,6 +33,7 @@ router.include_router(expense_router.router)
 router.include_router(announcement_router.router)
 router.include_router(announcement_reply_router.router)
 router.include_router(announcement_reaction_router.router)
+router.include_router(announcement_reply_reaction_router.router)
 
 app.include_router(router)
 

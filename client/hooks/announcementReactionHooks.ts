@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { getQueryClient } from "@/services/queryClient";
+import { useAuth } from "./user/useAuth";
 import {
   AnnouncementReaction,
   AnnouncementReactionCreateRequest,
@@ -27,14 +28,19 @@ export const useAnnouncementReactionsQuery = (announcementId: number) =>
     staleTime: 1 * 60 * 1000,
   });
 
-export const useAddAnnouncementReactionMutation = () =>
-  useMutation({
+export const useAddAnnouncementReactionMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (
       reaction: AnnouncementReactionCreateRequest
     ): Promise<AnnouncementReaction> => {
       const res = await axiosClient.post(
         `/api/announcement-reactions/create`,
-        reaction
+        reaction,
+        {
+          params: { user_id: user?.userId },
+        }
       );
       return res.data;
     },
@@ -44,12 +50,18 @@ export const useAddAnnouncementReactionMutation = () =>
       });
     },
   });
+};
 
-export const useRemoveAnnouncementReactionMutation = () =>
-  useMutation({
+export const useRemoveAnnouncementReactionMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (announcementId: number): Promise<void> => {
       await axiosClient.delete(
-        `/api/announcement-reactions/announcement/${announcementId}`
+        `/api/announcement-reactions/announcement/${announcementId}`,
+        {
+          params: { user_id: user?.userId },
+        }
       );
     },
     onSuccess: (_, announcementId) => {
@@ -58,13 +70,19 @@ export const useRemoveAnnouncementReactionMutation = () =>
       });
     },
   });
+};
 
-export const useDeleteAnnouncementReactionMutation = () =>
-  useMutation({
+export const useDeleteAnnouncementReactionMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (reactionId: number): Promise<void> => {
-      await axiosClient.delete(`/api/announcement-reactions/${reactionId}`);
+      await axiosClient.delete(`/api/announcement-reactions/${reactionId}`, {
+        params: { user_id: user?.userId },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: announcementReactionKeys.all });
     },
   });
+};

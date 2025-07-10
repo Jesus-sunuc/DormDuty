@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { camel_to_snake_serializing_date } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
+import { useAuth } from "./user/useAuth";
 import { Announcement, AnnouncementCreateRequest } from "@/models/Announcement";
 
 const queryClient = getQueryClient();
@@ -36,13 +37,17 @@ export const useAnnouncementQuery = (announcementId: number) =>
     staleTime: 5 * 60 * 1000,
   });
 
-export const useAddAnnouncementMutation = () =>
-  useMutation({
+export const useAddAnnouncementMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (
       announcement: AnnouncementCreateRequest
     ): Promise<Announcement> => {
       const body = camel_to_snake_serializing_date(announcement);
-      const res = await axiosClient.post(`/api/announcements/create`, body);
+      const res = await axiosClient.post(`/api/announcements/create`, body, {
+        params: { user_id: user?.userId },
+      });
       return res.data;
     },
     onSuccess: (data) => {
@@ -52,13 +57,19 @@ export const useAddAnnouncementMutation = () =>
       queryClient.invalidateQueries({ queryKey: announcementKeys.all });
     },
   });
+};
 
-export const useDeleteAnnouncementMutation = () =>
-  useMutation({
+export const useDeleteAnnouncementMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (announcementId: number): Promise<void> => {
-      await axiosClient.delete(`/api/announcements/${announcementId}`);
+      await axiosClient.delete(`/api/announcements/${announcementId}`, {
+        params: { user_id: user?.userId },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: announcementKeys.all });
     },
   });
+};

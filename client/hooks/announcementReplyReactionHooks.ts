@@ -3,6 +3,7 @@ import { axiosClient } from "@/utils/axiosClient";
 import { AnnouncementReplyReaction } from "@/models/AnnouncementReplyReaction";
 import { snakeToCamel } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
+import { useAuth } from "./user/useAuth";
 
 const queryClient = getQueryClient();
 
@@ -27,8 +28,10 @@ export const useAnnouncementReplyReactionsQuery = (replyId: number) =>
   });
 
 // Create a reaction for a reply
-export const useAddAnnouncementReplyReactionMutation = () =>
-  useMutation({
+export const useAddAnnouncementReplyReactionMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async ({
       replyId,
       emoji,
@@ -41,6 +44,9 @@ export const useAddAnnouncementReplyReactionMutation = () =>
         {
           reply_id: replyId,
           emoji,
+        },
+        {
+          params: { user_id: user?.userId },
         }
       );
       return snakeToCamel<AnnouncementReplyReaction>(response.data);
@@ -51,13 +57,19 @@ export const useAddAnnouncementReplyReactionMutation = () =>
       });
     },
   });
+};
 
 // Remove a reaction from a reply
-export const useRemoveAnnouncementReplyReactionMutation = () =>
-  useMutation({
+export const useRemoveAnnouncementReplyReactionMutation = () => {
+  const { user } = useAuth();
+
+  return useMutation({
     mutationFn: async (replyId: number): Promise<void> => {
       await axiosClient.delete(
-        `/api/announcement-reply-reactions/reply/${replyId}`
+        `/api/announcement-reply-reactions/reply/${replyId}`,
+        {
+          params: { user_id: user?.userId },
+        }
       );
     },
     onSuccess: (_, replyId) => {
@@ -66,3 +78,4 @@ export const useRemoveAnnouncementReplyReactionMutation = () =>
       });
     },
   });
+};
