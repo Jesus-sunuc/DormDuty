@@ -153,6 +153,7 @@ export default function AnnouncementDetails() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showActionsModal, setShowActionsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   const {
     data: announcement,
@@ -167,6 +168,7 @@ export default function AnnouncementDetails() {
 
   const deleteAnnouncementMutation = useDeleteAnnouncementMutation();
   const markAsReadMutation = useMarkAnnouncementAsReadMutation();
+  const createReplyMutation = useAddAnnouncementReplyMutation();
 
   useEffect(() => {
     if (announcement?.announcementId && user?.userId) {
@@ -190,6 +192,15 @@ export default function AnnouncementDetails() {
     } catch (error) {
       toastError("Failed to add reaction");
     }
+  };
+
+  const handleSendReply = async () => {
+    if (!replyText.trim() || !announcement) return;
+    await createReplyMutation.mutateAsync({
+      announcementId: announcement.announcementId,
+      message: replyText.trim(),
+    });
+    setReplyText("");
   };
 
   const handleDeleteAnnouncement = async () => {
@@ -241,65 +252,101 @@ export default function AnnouncementDetails() {
 
   return (
     <>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-6 pt-20">
-          <View className="flex-row items-center mb-6">
-            <TouchableOpacity
-              onPress={() => router.navigate("/(tabs)/updates")}
-              className="mr-4"
-            >
-              <Ionicons name="arrow-back" size={24} color="#6b7280" />
-            </TouchableOpacity>
-            <ThemedText className="text-xl font-bold text-gray-900 dark:text-white flex-1">
-              Announcement
-            </ThemedText>
-            <TouchableOpacity onPress={() => setShowActionsModal(true)}>
-              <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
-            </TouchableOpacity>
-          </View>
-
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
-            <View className="flex-row items-start mb-4">
-              <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
-                <Ionicons name="person" size={20} color="#3b82f6" />
-              </View>
-              <View className="flex-1">
-                <ThemedText className="font-semibold text-gray-900 dark:text-white text-lg">
-                  {announcement.memberName}
-                  {isCurrentUser && (
-                    <ThemedText className="text-sm text-gray-500">
-                      {" "}
-                      (You)
-                    </ThemedText>
-                  )}
-                </ThemedText>
-                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                  {formatTimeAgo(announcement.createdAt)}
-                </ThemedText>
-              </View>
+      <View className="flex-1">
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View
+            className="px-6 pt-20"
+            style={{ paddingBottom: announcement?.canReply ? 100 : 20 }}
+          >
+            <View className="flex-row items-center mb-6">
+              <TouchableOpacity
+                onPress={() => router.navigate("/(tabs)/updates")}
+                className="mr-4"
+              >
+                <Ionicons name="arrow-back" size={24} color="#6b7280" />
+              </TouchableOpacity>
+              <ThemedText className="text-xl font-bold text-gray-900 dark:text-white flex-1">
+                Announcement
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowActionsModal(true)}>
+                <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
+              </TouchableOpacity>
             </View>
 
-            <ThemedText className="text-gray-700 dark:text-gray-300 leading-6 text-base mb-4">
-              {announcement.message}
-            </ThemedText>
+            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+              <View className="flex-row items-start mb-4">
+                <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
+                  <Ionicons name="person" size={20} color="#3b82f6" />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="font-semibold text-gray-900 dark:text-white text-lg">
+                    {announcement.memberName}
+                    {isCurrentUser && (
+                      <ThemedText className="text-sm text-gray-500">
+                        {" "}
+                        (You)
+                      </ThemedText>
+                    )}
+                  </ThemedText>
+                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    {formatTimeAgo(announcement.createdAt)}
+                  </ThemedText>
+                </View>
+              </View>
 
-            <AnnouncementReactionsSection
-              announcementId={announcement.announcementId}
-              membership={membership}
-              onAddReaction={() => setShowEmojiPicker(true)}
-            />
+              <ThemedText className="text-gray-700 dark:text-gray-300 leading-6 text-base mb-4">
+                {announcement.message}
+              </ThemedText>
 
-            <ReadersSection announcementId={announcement.announcementId} />
+              <AnnouncementReactionsSection
+                announcementId={announcement.announcementId}
+                membership={membership}
+                onAddReaction={() => setShowEmojiPicker(true)}
+              />
+
+              <ReadersSection announcementId={announcement.announcementId} />
+            </View>
+
+            {announcement.canReply && (
+              <AnnouncementRepliesSection
+                announcementId={announcement.announcementId}
+                membership={membership}
+              />
+            )}
           </View>
+        </ScrollView>
 
-          {announcement.canReply && (
-            <AnnouncementRepliesSection
-              announcementId={announcement.announcementId}
-              membership={membership}
-            />
-          )}
-        </View>
-      </ScrollView>
+        {/* Fixed reply input at bottom */}
+        {announcement?.canReply && (
+          <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700 p-4">
+            <View className="flex-row items-center">
+              <TextInput
+                value={replyText}
+                onChangeText={setReplyText}
+                placeholder="Write a reply..."
+                multiline
+                className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white max-h-24"
+                placeholderTextColor="#9ca3af"
+              />
+              <TouchableOpacity
+                onPress={handleSendReply}
+                disabled={!replyText.trim()}
+                className={`ml-3 px-4 py-3 rounded-xl ${
+                  replyText.trim()
+                    ? "bg-blue-500"
+                    : "bg-gray-300 dark:bg-gray-700"
+                }`}
+              >
+                <Ionicons
+                  name="send"
+                  size={16}
+                  color={replyText.trim() ? "white" : "#9ca3af"}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </View>
 
       <EmojiPicker
         visible={showEmojiPicker}
@@ -424,28 +471,17 @@ function AnnouncementRepliesSection({
 }) {
   const { data: replies = [], isLoading } =
     useAnnouncementRepliesQuery(announcementId);
-  const createReplyMutation = useAddAnnouncementReplyMutation();
   const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
-  const [replyText, setReplyText] = useState("");
-
-  const handleSendReply = async () => {
-    if (!replyText.trim()) return;
-    await createReplyMutation.mutateAsync({
-      announcementId,
-      message: replyText.trim(),
-    });
-    setReplyText("");
-  };
 
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-neutral-800">
-      <ThemedText className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+      <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
         Replies ({replies.length})
       </ThemedText>
 
       <View>
         {replies.length === 0 && !isLoading ? (
-          <ThemedText className="text-center text-gray-400 py-8">
+          <ThemedText className="text-center text-gray-400 py-6">
             No replies yet. Be the first to reply!
           </ThemedText>
         ) : (
@@ -458,30 +494,6 @@ function AnnouncementRepliesSection({
             />
           ))
         )}
-      </View>
-
-      <View className="flex-row items-center mt-4 pt-4 border-t border-gray-200 dark:border-neutral-700">
-        <TextInput
-          value={replyText}
-          onChangeText={setReplyText}
-          placeholder="Write a reply..."
-          multiline
-          className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white min-h-[44px]"
-          placeholderTextColor="#9ca3af"
-        />
-        <TouchableOpacity
-          onPress={handleSendReply}
-          disabled={!replyText.trim()}
-          className={`ml-3 px-4 py-3 rounded-xl ${
-            replyText.trim() ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-700"
-          }`}
-        >
-          <Ionicons
-            name="send"
-            size={16}
-            color={replyText.trim() ? "white" : "#9ca3af"}
-          />
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -514,19 +526,21 @@ function ReplyItem({
 
   return (
     <>
-      <View className="mb-4 p-4 bg-gray-50 dark:bg-neutral-800 rounded-xl">
-        <View className="flex-row items-start justify-between mb-2">
+      <View className="mb-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+        <View className="flex-row items-start justify-between mb-1">
           <View className="flex-1">
-            <ThemedText className="font-semibold text-gray-900 dark:text-white">
-              {reply.memberName}
-              {membership?.membershipId === reply.membershipId && (
-                <ThemedText className="text-sm text-gray-500">
-                  {" "}
-                  (You)
-                </ThemedText>
-              )}
-            </ThemedText>
-            <ThemedText className="text-gray-700 dark:text-gray-300 mt-1">
+            <View className="flex-row items-center mb-1">
+              <ThemedText className="font-medium text-gray-900 dark:text-white text-sm">
+                {reply.memberName}
+                {membership?.membershipId === reply.membershipId && (
+                  <ThemedText className="text-xs text-gray-500">
+                    {" "}
+                    (You)
+                  </ThemedText>
+                )}
+              </ThemedText>
+            </View>
+            <ThemedText className="text-gray-700 dark:text-gray-300 text-sm leading-5">
               {reply.message}
             </ThemedText>
           </View>
@@ -536,25 +550,27 @@ function ReplyItem({
               onPress={() => setShowDeleteConfirmation(true)}
               className="ml-2 p-1"
             >
-              <Ionicons name="trash-outline" size={16} color="#ef4444" />
+              <Ionicons name="trash-outline" size={14} color="#ef4444" />
             </TouchableOpacity>
           )}
         </View>
 
-        <ReplyReactionsSection
-          replyId={reply.replyId}
-          membership={membership}
-        />
+        <View className="flex-row items-center justify-between">
+          <ReplyReactionsSection
+            replyId={reply.replyId}
+            membership={membership}
+          />
 
-        <TouchableOpacity
-          onPress={() => setShowEmojiPicker(true)}
-          className="flex-row items-center mt-2 self-start"
-        >
-          <Ionicons name="add" size={14} color="#6b7280" />
-          <ThemedText className="ml-1 text-xs text-gray-600 dark:text-gray-400">
-            React
-          </ThemedText>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setShowEmojiPicker(true)}
+            className="flex-row items-center"
+          >
+            <Ionicons name="add" size={12} color="#6b7280" />
+            <ThemedText className="ml-1 text-xs text-gray-600 dark:text-gray-400">
+              React
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <EmojiPicker
@@ -623,19 +639,19 @@ function ReplyReactionsSection({
   if (grouped.length === 0) return null;
 
   return (
-    <View className="flex-row items-center mt-2 flex-wrap">
+    <View className="flex-row items-center flex-wrap">
       {grouped.map(({ emoji, count, reacted }) => (
         <TouchableOpacity
           key={emoji}
           onPress={() => handleReactionPress(emoji, reacted)}
-          className={`flex-row items-center px-2 py-1 rounded-full mr-2 mb-1 ${
+          className={`flex-row items-center px-2 py-1 rounded-full mr-1 mb-1 ${
             reacted
               ? "bg-blue-100 dark:bg-blue-900"
               : "bg-gray-100 dark:bg-neutral-800"
           }`}
         >
           <ThemedText
-            className={`text-sm ${
+            className={`text-xs ${
               reacted ? "text-blue-500" : "text-gray-700 dark:text-gray-300"
             }`}
           >
@@ -670,9 +686,9 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
       </View>
 
       <View className="flex-row flex-wrap">
-        {readers.slice(0, 5).map((reader) => (
+        {readers.slice(0, 5).map((reader, index) => (
           <View
-            key={reader.read_id}
+            key={`reader-${reader.membership_id}-${index}`}
             className="flex-row items-center bg-gray-50 dark:bg-neutral-800 rounded-full px-2 py-1 mr-2 mb-1"
           >
             <View className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-1">
