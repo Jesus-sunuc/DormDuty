@@ -7,12 +7,6 @@ const isoDateTimeTimezoneFormat =
 const isoDateFormat = /^\d{4}-\d{2}-\d{2}$/;
 
 export function handleDates(body: any): any {
-  // console.log(body, body instanceof Array);
-  // if (body instanceof Array) {
-  //   console.log("array", body);
-
-  //   return body.map(o => handleDates(o))
-  // }
   if (body === null || body === undefined || typeof body !== "object")
     return body;
 

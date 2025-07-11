@@ -36,7 +36,6 @@ export const useRoomsByUserQuery = () => {
     queryKey: ["rooms", "by-user", userId],
     queryFn: async (): Promise<Room[]> => {
       if (!userId) {
-        console.log("No userId available, returning empty rooms array");
         return [];
       }
 
