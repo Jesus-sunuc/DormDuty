@@ -1,6 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
-import { camel_to_snake_serializing_date } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
 import { useAuth } from "./user/useAuth";
 import { Announcement, AnnouncementCreateRequest } from "@/models/Announcement";
@@ -44,10 +43,13 @@ export const useAddAnnouncementMutation = () => {
     mutationFn: async (
       announcement: AnnouncementCreateRequest
     ): Promise<Announcement> => {
-      const body = camel_to_snake_serializing_date(announcement);
-      const res = await axiosClient.post(`/api/announcements/create`, body, {
-        params: { user_id: user?.userId },
-      });
+      const res = await axiosClient.post(
+        `/api/announcements/create`,
+        announcement,
+        {
+          params: { user_id: user?.userId },
+        }
+      );
       return res.data;
     },
     onSuccess: (data) => {

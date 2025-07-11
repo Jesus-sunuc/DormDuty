@@ -15,7 +15,6 @@ class AnnouncementReadRepository:
         result = run_sql(sql, [announcement_id, membership_id])
         
         if result:
-            # Get member name for response
             member_sql = """
                 SELECT u.name as member_name
                 FROM room_membership rm

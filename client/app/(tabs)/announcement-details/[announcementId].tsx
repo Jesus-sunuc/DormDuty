@@ -688,14 +688,14 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
       <View className="flex-row flex-wrap">
         {readers.slice(0, 5).map((reader, index) => (
           <View
-            key={`reader-${reader.membership_id}-${index}`}
+            key={`reader-${reader.membershipId}-${index}`}
             className="flex-row items-center bg-gray-50 dark:bg-neutral-800 rounded-full px-2 py-1 mr-2 mb-1"
           >
             <View className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-1">
               <Ionicons name="checkmark" size={10} color="#10b981" />
             </View>
             <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
-              {reader.member_name}
+              {reader.memberName}
             </ThemedText>
           </View>
         ))}

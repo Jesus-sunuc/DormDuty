@@ -1,7 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
 import { AnnouncementReplyReaction } from "@/models/AnnouncementReplyReaction";
-import { snakeToCamel } from "@/utils/apiMapper";
 import { getQueryClient } from "@/services/queryClient";
 import { useAuth } from "./user/useAuth";
 
@@ -13,7 +12,6 @@ export const announcementReplyReactionKeys = {
     ["announcementReplyReactions", "reply", replyId] as const,
 };
 
-// Get reactions for a specific reply
 export const useAnnouncementReplyReactionsQuery = (replyId: number) =>
   useQuery({
     queryKey: announcementReplyReactionKeys.byReply(replyId),
@@ -21,13 +19,12 @@ export const useAnnouncementReplyReactionsQuery = (replyId: number) =>
       const response = await axiosClient.get(
         `/api/announcement-reply-reactions/reply/${replyId}`
       );
-      return response.data.map(snakeToCamel<AnnouncementReplyReaction>);
+      return response.data;
     },
     enabled: !!replyId && replyId > 0,
     staleTime: 1 * 60 * 1000,
   });
 
-// Create a reaction for a reply
 export const useAddAnnouncementReplyReactionMutation = () => {
   const { user } = useAuth();
 
@@ -42,14 +39,14 @@ export const useAddAnnouncementReplyReactionMutation = () => {
       const response = await axiosClient.post(
         `/api/announcement-reply-reactions/create`,
         {
-          reply_id: replyId,
+          replyId,
           emoji,
         },
         {
           params: { user_id: user?.userId },
         }
       );
-      return snakeToCamel<AnnouncementReplyReaction>(response.data);
+      return response.data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -59,7 +56,6 @@ export const useAddAnnouncementReplyReactionMutation = () => {
   });
 };
 
-// Remove a reaction from a reply
 export const useRemoveAnnouncementReplyReactionMutation = () => {
   const { user } = useAuth();
 

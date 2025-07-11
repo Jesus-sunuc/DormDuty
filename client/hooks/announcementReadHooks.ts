@@ -29,11 +29,11 @@ export const announcementReadKeys = {
 };
 
 export interface AnnouncementRead {
-  read_id: number;
-  announcement_id: number;
-  membership_id: number;
-  read_at: string;
-  member_name: string;
+  readId: number;
+  announcementId: number;
+  membershipId: number;
+  readAt: string;
+  memberName: string;
 }
 
 export const useMarkAnnouncementAsReadMutation = () => {
@@ -52,11 +52,11 @@ export const useMarkAnnouncementAsReadMutation = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: announcementReadKeys.byAnnouncement(data.announcement_id),
+        queryKey: announcementReadKeys.byAnnouncement(data.announcementId),
       });
       queryClient.invalidateQueries({
         queryKey: announcementReadKeys.readStatus(
-          data.announcement_id,
+          data.announcementId,
           user?.userId || 0
         ),
       });
@@ -80,7 +80,7 @@ export const useAnnouncementReadersQuery = (announcementId: number) =>
       return res.data;
     },
     enabled: !!announcementId && announcementId > 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useAnnouncementReadStatusQuery = (announcementId: number) => {
@@ -91,7 +91,7 @@ export const useAnnouncementReadStatusQuery = (announcementId: number) => {
       announcementId,
       user?.userId || 0
     ),
-    queryFn: async (): Promise<{ is_read: boolean }> => {
+    queryFn: async (): Promise<{ isRead: boolean }> => {
       const res = await axiosClient.get(
         `/api/announcements/${announcementId}/read-status`,
         {
@@ -120,9 +120,9 @@ export const useUnreadAnnouncementsQuery = (roomId: number) => {
       return res.data;
     },
     enabled: !!roomId && roomId > 0 && !!user?.userId,
-    staleTime: 0, // Always consider data stale for real-time updates
-    refetchInterval: 30 * 1000, // Auto-refetch every 30 seconds
-    refetchOnWindowFocus: true, // Refetch when app comes into focus
-    refetchOnMount: true, // Always refetch on mount
+    staleTime: 0, 
+    refetchInterval: 30 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };
