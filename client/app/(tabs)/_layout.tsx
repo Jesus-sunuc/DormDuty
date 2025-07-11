@@ -89,6 +89,15 @@ const TabLayout = () => {
             }}
           />
           <Tabs.Screen
+            name="updates"
+            options={{
+              title: "Updates",
+              tabBarIcon: ({ color, focused }) => (
+                <AntDesign name="notification" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
             name="chores"
             options={{
               title: "Chores",
@@ -103,15 +112,7 @@ const TabLayout = () => {
               ),
             }}
           />
-          <Tabs.Screen
-            name="updates"
-            options={{
-              title: "Updates",
-              tabBarIcon: ({ color, focused }) => (
-                <AntDesign name="notification" size={24} color={color} />
-              ),
-            }}
-          />
+
           <Tabs.Screen
             name="tools"
             options={{
