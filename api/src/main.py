@@ -7,6 +7,7 @@ from src.router import membership_router
 from src.router import chores_router
 from src.router import expense_router
 from src.router import announcement_router
+from src.router import cleaning_router
 
 
 load_dotenv()
@@ -35,6 +36,7 @@ router.include_router(announcement_reply_router.router)
 router.include_router(announcement_reaction_router.router)
 router.include_router(announcement_reply_reaction_router.router)
 router.include_router(announcement_read_router.router)
+router.include_router(cleaning_router.router)
 
 app.include_router(router)
 

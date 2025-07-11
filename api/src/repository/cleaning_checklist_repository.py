@@ -1,0 +1,175 @@
+from src.models.cleaning_checklist import (
+    CleaningChecklist, 
+    CleaningChecklistCreateRequest, 
+    CleaningChecklistUpdateRequest,
+    CleaningCheckStatus,
+    CleaningCheckStatusCreateRequest,
+    CleaningChecklistWithStatus
+)
+from src.services.database.helper import run_sql
+from datetime import datetime
+
+class CleaningChecklistRepository:
+    def get_checklist_by_room(self, room_id: int, date_filter: str = None):
+        if date_filter is None:
+            date_filter = datetime.now().strftime('%Y-%m-%d')
+            
+        sql = """
+        SELECT 
+            cl.checklist_item_id,
+            cl.room_id,
+            cl.title,
+            cl.description,
+            cl.is_default,
+            COALESCE(u.name, '') as assigned_to,
+            COALESCE(cs.membership_id, 0) as assigned_membership_id,
+            COALESCE(cs.is_completed, false) as is_completed,
+            cs.status_id
+        FROM cleaning_checklist cl
+        LEFT JOIN cleaning_check_status cs ON cl.checklist_item_id = cs.checklist_item_id 
+            AND cs.marked_date = %s
+        LEFT JOIN room_membership rm ON cs.membership_id = rm.membership_id
+        LEFT JOIN "user" u ON rm.user_id = u.user_id
+        WHERE cl.room_id = %s
+        ORDER BY cl.is_default DESC, cl.checklist_item_id ASC
+        """
+        return run_sql(sql, (date_filter, room_id), output_class=CleaningChecklistWithStatus)
+
+    def add_checklist_item(self, item: CleaningChecklistCreateRequest):
+        sql = """
+        INSERT INTO cleaning_checklist (room_id, title, description, is_default)
+        VALUES (%s, %s, %s, %s)
+        RETURNING checklist_item_id
+        """
+        result = run_sql(sql, (item.room_id, item.title, item.description, item.is_default))
+        return {"checklist_item_id": result[0][0]}
+
+    def update_checklist_item(self, checklist_item_id: int, item: CleaningChecklistUpdateRequest):
+        updates = []
+        params = []
+        
+        if item.title is not None:
+            updates.append("title = %s")
+            params.append(item.title)
+        if item.description is not None:
+            updates.append("description = %s")
+            params.append(item.description)
+            
+        if not updates:
+            return None
+            
+        params.append(checklist_item_id)
+        sql = f"UPDATE cleaning_checklist SET {', '.join(updates)} WHERE checklist_item_id = %s"
+        run_sql(sql, params)
+        return {"message": "Checklist item updated successfully"}
+
+    def delete_checklist_item(self, checklist_item_id: int):
+        sql = "DELETE FROM cleaning_checklist WHERE checklist_item_id = %s AND is_default = FALSE"
+        run_sql(sql, (checklist_item_id,))
+        return {"message": "Custom checklist item deleted successfully"}
+
+    def create_default_checklist(self, room_id: int):
+        default_items = [
+            "Dishes",
+            "Living Room/Front Porch", 
+            "Stove/Oven",
+            "Microwave/Fridge",
+            "Bathtub & Vanities",
+            "Bathroom & Toilet",
+            "Bedroom 1",
+            "Bedroom 2", 
+            "Bedroom 3",
+            "Bedroom 4",
+            "Bedroom 5"
+        ]
+        
+        created_items = []
+        for title in default_items:
+            sql = """
+            INSERT INTO cleaning_checklist (room_id, title, description, is_default)
+            VALUES (%s, %s, %s, %s)
+            RETURNING checklist_item_id
+            """
+            result = run_sql(sql, (room_id, title, None, True))
+            if result:
+                created_items.append({"checklist_item_id": result[0][0], "title": title})
+                
+        return created_items
+
+
+class CleaningCheckStatusRepository:
+    def create_or_update_status(self, status: CleaningCheckStatusCreateRequest):
+        sql = """
+        INSERT INTO cleaning_check_status (checklist_item_id, membership_id, marked_date, is_completed, updated_at)
+        VALUES (%s, %s, %s, %s, NOW())
+        ON CONFLICT (checklist_item_id, membership_id, marked_date)
+        DO UPDATE SET 
+            is_completed = EXCLUDED.is_completed,
+            updated_at = NOW()
+        RETURNING status_id
+        """
+        result = run_sql(sql, (
+            status.checklist_item_id,
+            status.membership_id,
+            status.marked_date,
+            status.is_completed
+        ))
+        return {"status_id": result[0][0]}
+
+    def assign_task(self, checklist_item_id: int, membership_id: int, marked_date: str):
+        status = CleaningCheckStatusCreateRequest(
+            checklist_item_id=checklist_item_id,
+            membership_id=membership_id,
+            marked_date=marked_date,
+            is_completed=False
+        )
+        return self.create_or_update_status(status)
+
+    def complete_task(self, checklist_item_id: int, membership_id: int, marked_date: str):
+        status = CleaningCheckStatusCreateRequest(
+            checklist_item_id=checklist_item_id,
+            membership_id=membership_id,
+            marked_date=marked_date,
+            is_completed=True
+        )
+        return self.create_or_update_status(status)
+
+    def toggle_task(self, checklist_item_id: int, membership_id: int, marked_date: str):
+        # Get current status
+        sql = """
+        SELECT is_completed FROM cleaning_check_status
+        WHERE checklist_item_id = %s AND membership_id = %s AND marked_date = %s
+        """
+        result = run_sql(sql, (checklist_item_id, membership_id, marked_date))
+        current_status = result[0][0] if result else False
+        
+        # Toggle it
+        status = CleaningCheckStatusCreateRequest(
+            checklist_item_id=checklist_item_id,
+            membership_id=membership_id,
+            marked_date=marked_date,
+            is_completed=not current_status
+        )
+        return self.create_or_update_status(status)
+
+    def reset_room_tasks(self, room_id: int, marked_date: str):
+        sql = """
+        UPDATE cleaning_check_status 
+        SET is_completed = FALSE, updated_at = NOW()
+        WHERE checklist_item_id IN (
+            SELECT checklist_item_id FROM cleaning_checklist WHERE room_id = %s
+        ) AND marked_date = %s
+        """
+        run_sql(sql, (room_id, marked_date))
+        return {"message": "All tasks reset successfully"}
+
+    def get_status_history(self, room_id: int, start_date: str, end_date: str):
+        sql = """
+        SELECT cs.status_id, cs.checklist_item_id, cs.membership_id, 
+               cs.marked_date, cs.is_completed, cs.updated_at
+        FROM cleaning_check_status cs
+        JOIN cleaning_checklist cl ON cs.checklist_item_id = cl.checklist_item_id
+        WHERE cl.room_id = %s AND cs.marked_date BETWEEN %s AND %s
+        ORDER BY cs.marked_date DESC, cs.checklist_item_id ASC
+        """
+        return run_sql(sql, (room_id, start_date, end_date), output_class=CleaningCheckStatus)
