@@ -30,19 +30,7 @@ export default function ChoresScreen() {
       loadingText="Loading your chores..."
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        <Header
-          title="My Chores"
-          onMenuPress={openSidebar}
-          rightComponent={
-            chores.length > 0 ? (
-              <View className="bg-indigo-500 rounded-full px-3 py-1 min-w-[32px] items-center">
-                <ThemedText className="text-white text-xs font-medium">
-                  {chores.length}
-                </ThemedText>
-              </View>
-            ) : null
-          }
-        />
+        <Header title="My Chores" onMenuPress={openSidebar} />
         <ParallaxScrollViewY>
           {chores.length === 0 ? (
             <View className="flex-1 items-center justify-center px-6 py-20">

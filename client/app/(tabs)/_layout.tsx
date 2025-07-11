@@ -8,10 +8,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import clsx from "clsx";
 import { LayoutWithSidebar } from "@/components/ui/LayoutWithSidebar";
+import { TabBarIconWithBadge } from "@/components/ui/TabBarIconWithBadge";
+import { useChoreCount } from "@/hooks/useChoreCount";
 
 const TabLayout = () => {
   const rawColorScheme = useColorScheme();
   const colorScheme = rawColorScheme === "dark" ? "dark" : "light";
+  const choreCount = useChoreCount();
 
   return (
     <LayoutWithSidebar>
@@ -102,12 +105,14 @@ const TabLayout = () => {
             options={{
               title: "Chores",
               tabBarIcon: ({ color, focused }) => (
-                <Ionicons
+                <TabBarIconWithBadge
                   name={
                     focused ? "checkmark-circle" : "checkmark-circle-outline"
                   }
-                  size={24}
+                  focused={focused}
                   color={color}
+                  size={24}
+                  badgeCount={choreCount}
                 />
               ),
             }}
