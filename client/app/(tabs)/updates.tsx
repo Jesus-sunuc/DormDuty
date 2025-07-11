@@ -15,9 +15,12 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
 import { toastError } from "@/components/ToastService";
+import { Header } from "@/components/ui/Header";
+import { useSidebar } from "@/hooks/useSidebar";
 
 const Updates = () => {
   const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [newUpdate, setNewUpdate] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -123,198 +126,220 @@ const Updates = () => {
   }
 
   return (
-    <View className="flex-1">
-      {selectedRoom ? (
-        <FlatList
-          data={announcements}
-          keyExtractor={(announcement) =>
-            announcement.announcementId.toString()
-          }
-          contentContainerStyle={{
-            paddingHorizontal: 24,
-            paddingTop: 80,
-            paddingBottom: 20,
-          }}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            <>
-              {rooms.length > 0 && (
-                <View className="mb-6">
-                  <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
-                    {rooms.length > 1 ? "Select Room" : "Room"}
-                  </ThemedText>
-                  <FlatList
-                    data={rooms}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(room) => room.roomId.toString()}
-                    renderItem={({ item: room }) => (
-                      <TouchableOpacity
-                        onPress={() => setSelectedRoom(room)}
-                        className={`mr-3 px-4 py-2 rounded-2xl border ${
-                          selectedRoom?.roomId === room.roomId
-                            ? "bg-blue-500 border-blue-500"
-                            : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
-                        }`}
-                      >
-                        <ThemedText
-                          className={`font-medium ${
-                            selectedRoom?.roomId === room.roomId
-                              ? "text-white"
-                              : "text-gray-900 dark:text-white"
-                          }`}
-                        >
-                          {room.name}
-                        </ThemedText>
-                      </TouchableOpacity>
-                    )}
-                  />
-                </View>
-              )}
-
-              {membership && (
-                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
-                  <View className="flex-row items-center mb-4">
-                    <Ionicons name="add-circle" size={24} color="#3b82f6" />
-                    <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
-                      Post Update
-                    </ThemedText>
-                  </View>
-
-                  <TextInput
-                    value={newUpdate}
-                    onChangeText={setNewUpdate}
-                    placeholder="Share an update with your roommates..."
-                    multiline
-                    numberOfLines={4}
-                    className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white mb-4 min-h-[100px] text-base"
-                    placeholderTextColor="#9ca3af"
-                  />
-
-                  <View className="flex-row items-center mb-4">
-                    <Ionicons
-                      name="chatbubbles-outline"
-                      size={20}
-                      color="#6b7280"
-                    />
-                    <ThemedText className="ml-2 mr-3 text-gray-700 dark:text-gray-300">
-                      Allow replies?
-                    </ThemedText>
-                    <TouchableOpacity
-                      onPress={() => setCanReply((prev) => !prev)}
-                      className={`w-12 h-6 rounded-full border-2 transition-colors ${
-                        canReply
-                          ? "bg-blue-500 border-blue-500"
-                          : "bg-gray-200 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
-                      }`}
-                    >
-                      <View
-                        className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                          canReply ? "translate-x-6" : "translate-x-0"
-                        }`}
-                        style={{ marginTop: 2, marginLeft: canReply ? 2 : 2 }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <TouchableOpacity
-                    onPress={handleCreateUpdate}
-                    disabled={isCreating || !newUpdate.trim()}
-                    className={`py-3 px-6 rounded-xl flex-row items-center justify-center ${
-                      isCreating || !newUpdate.trim()
-                        ? "bg-gray-300 dark:bg-gray-700"
-                        : "bg-blue-500"
-                    }`}
-                  >
-                    {isCreating ? (
-                      <>
-                        <Ionicons name="sync" size={20} color="white" />
-                        <ThemedText className="text-white font-medium ml-2">
-                          Posting...
-                        </ThemedText>
-                      </>
-                    ) : (
-                      <>
-                        <Ionicons name="send" size={20} color="white" />
-                        <ThemedText className="text-white font-medium ml-2">
-                          Post Update
-                        </ThemedText>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              <View className="flex-row items-center justify-between mb-4">
-                <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Recent Updates ({announcements.length})
+    <LoadingAndErrorHandling
+      isLoading={roomsLoading || announcementsLoading || membershipLoading}
+      error={roomsError || announcementsError}
+    >
+      <View className="flex-1 bg-gray-50 dark:bg-black">
+        <Header
+          title="Updates"
+          onMenuPress={openSidebar}
+          rightComponent={
+            unreadAnnouncementIds.length > 0 ? (
+              <View className="bg-blue-500 rounded-full px-3 py-1 min-w-[32px] items-center">
+                <ThemedText className="text-white text-xs font-medium">
+                  {unreadAnnouncementIds.length}
                 </ThemedText>
-                {unreadAnnouncementIds.length > 0 && (
-                  <View className="bg-blue-500 rounded-full px-3 py-1 min-w-[32px] items-center">
-                    <ThemedText className="text-white text-xs font-medium">
-                      {unreadAnnouncementIds.length} new
-                    </ThemedText>
-                  </View>
-                )}
               </View>
-            </>
-          }
-          renderItem={({ item: announcement }) => {
-            const isCurrentUser =
-              membership?.membershipId === announcement.createdBy;
-            return (
-              <AnnouncementNotificationCard
-                announcement={announcement}
-                isCurrentUser={isCurrentUser}
-                onPress={() =>
-                  router.push(
-                    `/(tabs)/announcement-details/${announcement.announcementId}`
-                  )
-                }
-                formatTimeAgo={formatTimeAgo}
-                getPreviewText={getPreviewText}
-                unreadAnnouncementIds={unreadAnnouncementIds}
-              />
-            );
-          }}
-          ListEmptyComponent={
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
-              <Ionicons name="chatbubbles-outline" size={48} color="#9ca3af" />
-              <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
-                No updates yet
-              </ThemedText>
-              <ThemedText className="text-center text-gray-500 mt-1 text-sm">
-                Be the first to share an update with your roommates
-              </ThemedText>
-            </View>
+            ) : null
           }
         />
-      ) : (
-        <View className="flex-1 px-6 pt-20">
-          {rooms.length > 0 && (
-            <View className="mb-6">
-              <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
-                Select a Room
-              </ThemedText>
-              {rooms.map((room) => (
-                <TouchableOpacity
-                  key={room.roomId}
-                  onPress={() => setSelectedRoom(room)}
-                  className="mb-3 p-4 rounded-2xl border bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
-                >
-                  <ThemedText className="font-medium text-gray-900 dark:text-white text-lg">
-                    {room.name}
+        {selectedRoom ? (
+          <FlatList
+            data={announcements}
+            keyExtractor={(announcement) =>
+              announcement.announcementId.toString()
+            }
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: 24,
+              paddingBottom: 20,
+            }}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={
+              <>
+                {rooms.length > 0 && (
+                  <View className="mb-6">
+                    <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+                      {rooms.length > 1 ? "Select Room" : "Room"}
+                    </ThemedText>
+                    <FlatList
+                      data={rooms}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(room) => room.roomId.toString()}
+                      renderItem={({ item: room }) => (
+                        <TouchableOpacity
+                          onPress={() => setSelectedRoom(room)}
+                          className={`mr-3 px-4 py-2 rounded-2xl border ${
+                            selectedRoom?.roomId === room.roomId
+                              ? "bg-blue-500 border-blue-500"
+                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+                          }`}
+                        >
+                          <ThemedText
+                            className={`font-medium ${
+                              selectedRoom?.roomId === room.roomId
+                                ? "text-white"
+                                : "text-gray-900 dark:text-white"
+                            }`}
+                          >
+                            {room.name}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      )}
+                    />
+                  </View>
+                )}
+
+                {membership && (
+                  <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+                    <View className="flex-row items-center mb-4">
+                      <Ionicons name="add-circle" size={24} color="#3b82f6" />
+                      <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
+                        Post Update
+                      </ThemedText>
+                    </View>
+
+                    <TextInput
+                      value={newUpdate}
+                      onChangeText={setNewUpdate}
+                      placeholder="Share an update with your roommates..."
+                      multiline
+                      numberOfLines={4}
+                      className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white mb-4 min-h-[100px] text-base"
+                      placeholderTextColor="#9ca3af"
+                    />
+
+                    <View className="flex-row items-center mb-4">
+                      <Ionicons
+                        name="chatbubbles-outline"
+                        size={20}
+                        color="#6b7280"
+                      />
+                      <ThemedText className="ml-2 mr-3 text-gray-700 dark:text-gray-300">
+                        Allow replies?
+                      </ThemedText>
+                      <TouchableOpacity
+                        onPress={() => setCanReply((prev) => !prev)}
+                        className={`w-12 h-6 rounded-full border-2 transition-colors ${
+                          canReply
+                            ? "bg-blue-500 border-blue-500"
+                            : "bg-gray-200 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
+                        }`}
+                      >
+                        <View
+                          className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                            canReply ? "translate-x-6" : "translate-x-0"
+                          }`}
+                          style={{ marginTop: 2, marginLeft: canReply ? 2 : 2 }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={handleCreateUpdate}
+                      disabled={isCreating || !newUpdate.trim()}
+                      className={`py-3 px-6 rounded-xl flex-row items-center justify-center ${
+                        isCreating || !newUpdate.trim()
+                          ? "bg-gray-300 dark:bg-gray-700"
+                          : "bg-blue-500"
+                      }`}
+                    >
+                      {isCreating ? (
+                        <>
+                          <Ionicons name="sync" size={20} color="white" />
+                          <ThemedText className="text-white font-medium ml-2">
+                            Posting...
+                          </ThemedText>
+                        </>
+                      ) : (
+                        <>
+                          <Ionicons name="send" size={20} color="white" />
+                          <ThemedText className="text-white font-medium ml-2">
+                            Post Update
+                          </ThemedText>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <View className="flex-row items-center justify-between mb-4">
+                  <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Recent Updates ({announcements.length})
                   </ThemedText>
-                  <ThemedText className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    Tap to view updates
-                  </ThemedText>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-      )}
-    </View>
+                  {unreadAnnouncementIds.length > 0 && (
+                    <View className="bg-blue-500 rounded-full px-3 py-1 min-w-[32px] items-center">
+                      <ThemedText className="text-white text-xs font-medium">
+                        {unreadAnnouncementIds.length} new
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
+              </>
+            }
+            renderItem={({ item: announcement }) => {
+              const isCurrentUser =
+                membership?.membershipId === announcement.createdBy;
+              return (
+                <AnnouncementNotificationCard
+                  announcement={announcement}
+                  isCurrentUser={isCurrentUser}
+                  onPress={() =>
+                    router.push(
+                      `/(tabs)/announcement-details/${announcement.announcementId}`
+                    )
+                  }
+                  formatTimeAgo={formatTimeAgo}
+                  getPreviewText={getPreviewText}
+                  unreadAnnouncementIds={unreadAnnouncementIds}
+                />
+              );
+            }}
+            ListEmptyComponent={
+              <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={48}
+                  color="#9ca3af"
+                />
+                <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
+                  No updates yet
+                </ThemedText>
+                <ThemedText className="text-center text-gray-500 mt-1 text-sm">
+                  Be the first to share an update with your roommates
+                </ThemedText>
+              </View>
+            }
+          />
+        ) : (
+          <View className="flex-1 px-6 pt-20">
+            {rooms.length > 0 && (
+              <View className="mb-6">
+                <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+                  Select a Room
+                </ThemedText>
+                {rooms.map((room) => (
+                  <TouchableOpacity
+                    key={room.roomId}
+                    onPress={() => setSelectedRoom(room)}
+                    className="mb-3 p-4 rounded-2xl border bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+                  >
+                    <ThemedText className="font-medium text-gray-900 dark:text-white text-lg">
+                      {room.name}
+                    </ThemedText>
+                    <ThemedText className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                      Tap to view updates
+                    </ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+      </View>
+    </LoadingAndErrorHandling>
   );
 };
 

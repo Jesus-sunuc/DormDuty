@@ -8,9 +8,12 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/hooks/user/useAuth";
+import { Header } from "@/components/ui/Header";
+import { useSidebar } from "@/hooks/useSidebar";
 
 export default function ChoresScreen() {
   const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   const {
     data: chores = [],
     isLoading,
@@ -27,27 +30,19 @@ export default function ChoresScreen() {
       loadingText="Loading your chores..."
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mb-4 mt-5">
-            <View className="flex-1">
-              <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Your Tasks
-              </ThemedText>
-            </View>
-          </View>
-
-          <View className="mt-2">
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-              My Chores
-            </ThemedText>
-            <View className="flex-row items-center">
-              <View className="w-2 h-2 rounded-full bg-indigo-500 mr-2" />
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                Tasks assigned to you
-              </ThemedText>
-            </View>
-          </View>
-        </View>
+        <Header
+          title="My Chores"
+          onMenuPress={openSidebar}
+          rightComponent={
+            chores.length > 0 ? (
+              <View className="bg-indigo-500 rounded-full px-3 py-1 min-w-[32px] items-center">
+                <ThemedText className="text-white text-xs font-medium">
+                  {chores.length}
+                </ThemedText>
+              </View>
+            ) : null
+          }
+        />
         <ParallaxScrollViewY>
           {chores.length === 0 ? (
             <View className="flex-1 items-center justify-center px-6 py-20">

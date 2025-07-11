@@ -14,9 +14,12 @@ import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Room } from "@/models/Room";
 import { Expense } from "@/models/Expense";
+import { Header } from "@/components/ui/Header";
+import { useSidebar } from "@/hooks/useSidebar";
 
 const ExpensesScreen = () => {
   const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   const {
@@ -58,7 +61,9 @@ const ExpensesScreen = () => {
   if (roomsLoading) {
     return (
       <LoadingAndErrorHandling isLoading={true}>
-        <View />
+        <View className="flex-1 bg-gray-50 dark:bg-black">
+          <Header title="Expenses" onMenuPress={openSidebar} />
+        </View>
       </LoadingAndErrorHandling>
     );
   }
@@ -66,69 +71,77 @@ const ExpensesScreen = () => {
   if (roomsError) {
     return (
       <LoadingAndErrorHandling error={roomsError}>
-        <View />
+        <View className="flex-1 bg-gray-50 dark:bg-black">
+          <Header title="Expenses" onMenuPress={openSidebar} />
+        </View>
       </LoadingAndErrorHandling>
     );
   }
 
   if (rooms.length === 0) {
     return (
-      <ParallaxScrollViewY>
-        <View className="flex-1 items-center justify-center px-6 py-20">
-          <Ionicons name="receipt-outline" size={64} color="#9ca3af" />
-          <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
-            No rooms yet
-          </ThemedText>
-          <ThemedText className="text-center text-gray-500 mt-2 text-sm">
-            Join or create a room to start tracking expenses
-          </ThemedText>
-        </View>
-      </ParallaxScrollViewY>
+      <View className="flex-1 bg-gray-50 dark:bg-black">
+        <Header title="Expenses" onMenuPress={openSidebar} />
+        <ParallaxScrollViewY>
+          <View className="flex-1 items-center justify-center px-6 py-20">
+            <Ionicons name="receipt-outline" size={64} color="#9ca3af" />
+            <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+              No rooms yet
+            </ThemedText>
+            <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+              Join or create a room to start tracking expenses
+            </ThemedText>
+          </View>
+        </ParallaxScrollViewY>
+      </View>
     );
   }
 
   return (
-    <ParallaxScrollViewY>
-      <View className="px-6 pt-20">
-        {rooms.length > 0 && (
-          <View className="mb-6">
-            <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
-              {rooms.length > 1 ? "Select Room" : "Room"}
-            </ThemedText>
-            <FlatList
-              data={rooms}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(room) => room.roomId.toString()}
-              renderItem={({ item: room }) => (
-                <TouchableOpacity
-                  onPress={() => setSelectedRoom(room)}
-                  className={`mr-3 px-4 py-2 rounded-2xl border ${
-                    currentRoom?.roomId === room.roomId
-                      ? "bg-blue-500 border-blue-500"
-                      : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
-                  }`}
-                >
-                  <ThemedText
-                    className={`font-medium ${
+    <View className="flex-1 bg-gray-50 dark:bg-black">
+      <Header title="Expenses" onMenuPress={openSidebar} />
+      <ParallaxScrollViewY>
+        <View className="px-6 pt-6">
+          {rooms.length > 0 && (
+            <View className="mb-6">
+              <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
+                {rooms.length > 1 ? "Select Room" : "Room"}
+              </ThemedText>
+              <FlatList
+                data={rooms}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(room) => room.roomId.toString()}
+                renderItem={({ item: room }) => (
+                  <TouchableOpacity
+                    onPress={() => setSelectedRoom(room)}
+                    className={`mr-3 px-4 py-2 rounded-2xl border ${
                       currentRoom?.roomId === room.roomId
-                        ? "text-white"
-                        : "text-gray-900 dark:text-white"
+                        ? "bg-blue-500 border-blue-500"
+                        : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
                     }`}
                   >
-                    {room.name}
-                  </ThemedText>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        )}
+                    <ThemedText
+                      className={`font-medium ${
+                        currentRoom?.roomId === room.roomId
+                          ? "text-white"
+                          : "text-gray-900 dark:text-white"
+                      }`}
+                    >
+                      {room.name}
+                    </ThemedText>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
 
-        {currentRoom && (
-          <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
-        )}
-      </View>
-    </ParallaxScrollViewY>
+          {currentRoom && (
+            <RoomExpenseContent room={currentRoom} userId={user?.userId || 0} />
+          )}
+        </View>
+      </ParallaxScrollViewY>
+    </View>
   );
 };
 

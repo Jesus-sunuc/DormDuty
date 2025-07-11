@@ -24,6 +24,8 @@ import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { JoinRoomModal } from "@/components/index/JoinRoomModal";
+import { Header } from "@/components/ui/Header";
+import { useSidebar } from "@/hooks/useSidebar";
 
 const RoomList = ({
   rooms,
@@ -104,6 +106,7 @@ const RoomList = ({
 
 const HomeScreen = () => {
   const { user } = useAuth();
+  const { openSidebar } = useSidebar();
   const router = useRouter();
   const { data: rooms, isLoading, error } = useRoomsByUserQuery();
   const colorScheme = useColorScheme();
@@ -239,20 +242,10 @@ const HomeScreen = () => {
       loadingText="Loading apartments..."
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
-          <View className="flex-row items-center justify-between mt-4">
-            <View className="flex-1">
-              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
-                Your Apartments
-              </ThemedText>
-              <View className="flex-row items-center">
-                <View className="w-2 h-2 rounded-full bg-purple-500 mr-2" />
-                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                  Manage your living spaces
-                </ThemedText>
-              </View>
-            </View>
-
+        <Header
+          title="Your Apartments"
+          onMenuPress={openSidebar}
+          rightComponent={
             <View className="flex-row space-x-3 gap-2">
               <TouchableOpacity
                 onPress={() => setJoinRoomModalVisible(true)}
@@ -301,8 +294,8 @@ const HomeScreen = () => {
                 </ThemedText>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          }
+        />
         <ParallaxScrollViewY>
           <RoomList rooms={rooms || []} onOptionsPress={setOptionsRoom} />
         </ParallaxScrollViewY>
