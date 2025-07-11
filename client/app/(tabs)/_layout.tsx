@@ -5,16 +5,19 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import clsx from "clsx";
 import { LayoutWithSidebar } from "@/components/ui/LayoutWithSidebar";
 import { TabBarIconWithBadge } from "@/components/ui/TabBarIconWithBadge";
 import { useChoreCount } from "@/hooks/useChoreCount";
+import { useUnreadAnnouncementsCount } from "@/hooks/useUnreadAnnouncementsCount";
+import { usePendingExpensesCount } from "@/hooks/usePendingExpensesCount";
 
 const TabLayout = () => {
   const rawColorScheme = useColorScheme();
   const colorScheme = rawColorScheme === "dark" ? "dark" : "light";
   const choreCount = useChoreCount();
+  const unreadCount = useUnreadAnnouncementsCount();
+  const pendingExpensesCount = usePendingExpensesCount();
 
   return (
     <LayoutWithSidebar>
@@ -83,10 +86,12 @@ const TabLayout = () => {
             options={{
               title: "Expenses",
               tabBarIcon: ({ color, focused }) => (
-                <Ionicons
+                <TabBarIconWithBadge
                   name={focused ? "wallet" : "wallet-outline"}
-                  size={24}
+                  focused={focused}
                   color={color}
+                  size={24}
+                  badgeCount={pendingExpensesCount}
                 />
               ),
             }}
@@ -96,7 +101,14 @@ const TabLayout = () => {
             options={{
               title: "Updates",
               tabBarIcon: ({ color, focused }) => (
-                <AntDesign name="notification" size={24} color={color} />
+                <TabBarIconWithBadge
+                  name="notification"
+                  focused={focused}
+                  color={color}
+                  size={24}
+                  badgeCount={unreadCount}
+                  iconFamily="AntDesign"
+                />
               ),
             }}
           />

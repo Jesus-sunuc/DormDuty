@@ -131,19 +131,7 @@ const Updates = () => {
       error={roomsError || announcementsError}
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        <Header
-          title="Updates"
-          onMenuPress={openSidebar}
-          rightComponent={
-            unreadAnnouncementIds.length > 0 ? (
-              <View className="bg-blue-500 rounded-full px-3 py-1 min-w-[32px] items-center">
-                <ThemedText className="text-white text-xs font-medium">
-                  {unreadAnnouncementIds.length}
-                </ThemedText>
-              </View>
-            ) : null
-          }
-        />
+        <Header title="Updates" onMenuPress={openSidebar} />
         {selectedRoom ? (
           <FlatList
             data={announcements}
