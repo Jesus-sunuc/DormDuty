@@ -7,10 +7,10 @@ export interface CleaningChecklist {
 }
 
 export interface CleaningChecklistCreateRequest {
-  room_id: number;
+  roomId: number;
   title: string;
   description?: string;
-  is_default?: boolean;
+  isDefault?: boolean;
 }
 
 export interface CleaningChecklistUpdateRequest {
@@ -28,10 +28,10 @@ export interface CleaningCheckStatus {
 }
 
 export interface CleaningCheckStatusCreateRequest {
-  checklist_item_id: number;
-  membership_id: number;
-  marked_date: string; // YYYY-MM-DD format
-  is_completed?: boolean;
+  checklistItemId: number;
+  membershipId: number;
+  markedDate: string; // YYYY-MM-DD format
+  isCompleted?: boolean;
 }
 
 export interface CleaningChecklistWithStatus {

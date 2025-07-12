@@ -77,10 +77,10 @@ const ToolsScreen = () => {
     if (newTaskName.trim() && selectedRoom) {
       try {
         await createTaskMutation.mutateAsync({
-          room_id: selectedRoom.roomId,
+          roomId: selectedRoom.roomId,
           title: newTaskName.trim(),
           description: undefined,
-          is_default: false,
+          isDefault: false,
         });
         setNewTaskName("");
         setShowAddTask(false);

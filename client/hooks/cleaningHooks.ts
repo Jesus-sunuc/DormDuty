@@ -61,7 +61,7 @@ export const useCreateChecklistItemMutation = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: cleaningKeys.byRoom(variables.room_id),
+        queryKey: cleaningKeys.byRoom(variables.roomId),
       });
       queryClient.invalidateQueries({ queryKey: cleaningKeys.all });
     },
