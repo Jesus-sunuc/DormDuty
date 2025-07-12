@@ -125,16 +125,45 @@ export const useAssignTaskMutation = () => {
   return useMutation({
     mutationFn: async ({
       checklistItemId,
-      membershipId,
+      membershipIds,
       markedDate,
     }: {
       checklistItemId: number;
-      membershipId: number;
+      membershipIds: number[];
       markedDate: string;
     }) => {
-      const res = await axiosClient.post(
-        `/api/cleaning/assign?checklist_item_id=${checklistItemId}&membership_id=${membershipId}&marked_date=${markedDate}`
+      // Assign to multiple members by making multiple API calls
+      const promises = membershipIds.map((membershipId) =>
+        axiosClient.post("/api/cleaning/assign", {
+          checklist_item_id: checklistItemId,
+          membership_id: membershipId,
+          marked_date: markedDate,
+          is_completed: false,
+        })
       );
+
+      const results = await Promise.all(promises);
+      return results.map((res) => res.data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cleaningKeys.all });
+    },
+  });
+};
+
+export const useUnassignTaskMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      checklistItemId,
+      markedDate,
+    }: {
+      checklistItemId: number;
+      markedDate: string;
+    }) => {
+      const res = await axiosClient.post("/api/cleaning/unassign", {
+        checklist_item_id: checklistItemId,
+        marked_date: markedDate,
+      });
       return res.data;
     },
     onSuccess: () => {
@@ -154,9 +183,12 @@ export const useToggleTaskCompletionMutation = () => {
       membershipId: number;
       markedDate: string;
     }) => {
-      const res = await axiosClient.post(
-        `/api/cleaning/toggle?checklist_item_id=${checklistItemId}&membership_id=${membershipId}&marked_date=${markedDate}`
-      );
+      const res = await axiosClient.post("/api/cleaning/toggle", {
+        checklist_item_id: checklistItemId,
+        membership_id: membershipId,
+        marked_date: markedDate,
+        is_completed: false, // This will be toggled by the backend
+      });
       return res.data;
     },
     onSuccess: () => {
@@ -176,9 +208,12 @@ export const useCompleteTaskMutation = () => {
       membershipId: number;
       markedDate: string;
     }) => {
-      const res = await axiosClient.post(
-        `/api/cleaning/complete?checklist_item_id=${checklistItemId}&membership_id=${membershipId}&marked_date=${markedDate}`
-      );
+      const res = await axiosClient.post("/api/cleaning/complete", {
+        checklist_item_id: checklistItemId,
+        membership_id: membershipId,
+        marked_date: markedDate,
+        is_completed: true,
+      });
       return res.data;
     },
     onSuccess: () => {

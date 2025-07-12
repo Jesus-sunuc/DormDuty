@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from src.repository.cleaning_checklist_repository import CleaningChecklistRepository, CleaningCheckStatusRepository
-from src.models.cleaning_checklist import CleaningChecklistCreateRequest, CleaningChecklistUpdateRequest, CleaningCheckStatusCreateRequest
+from src.models.cleaning_checklist import CleaningChecklistCreateRequest, CleaningChecklistUpdateRequest, CleaningCheckStatusCreateRequest, CleaningCheckStatusUnassignRequest
 from src.errors import error_handler
 from datetime import datetime
 
@@ -42,30 +42,23 @@ def initialize_room_checklist(room_id: int):
 
 @router.post("/assign")
 @error_handler("Error assigning task")
-def assign_task(
-    checklist_item_id: int,
-    membership_id: int,
-    marked_date: str = Query(..., description="Date in YYYY-MM-DD format")
-):
-    return status_repo.assign_task(checklist_item_id, membership_id, marked_date)
+def assign_task(request: CleaningCheckStatusCreateRequest):
+    return status_repo.assign_task(request.checklist_item_id, request.membership_id, request.marked_date)
+
+@router.post("/unassign")
+@error_handler("Error unassigning task")
+def unassign_task(request: CleaningCheckStatusUnassignRequest):
+    return status_repo.unassign_task(request.checklist_item_id, request.marked_date)
 
 @router.post("/complete")
 @error_handler("Error completing task")
-def complete_task(
-    checklist_item_id: int,
-    membership_id: int,
-    marked_date: str = Query(..., description="Date in YYYY-MM-DD format")
-):
-    return status_repo.complete_task(checklist_item_id, membership_id, marked_date)
+def complete_task(request: CleaningCheckStatusCreateRequest):
+    return status_repo.complete_task(request.checklist_item_id, request.membership_id, request.marked_date)
 
 @router.post("/toggle")
 @error_handler("Error toggling task status")
-def toggle_task_completion(
-    checklist_item_id: int,
-    membership_id: int,
-    marked_date: str = Query(..., description="Date in YYYY-MM-DD format")
-):
-    return status_repo.toggle_task(checklist_item_id, membership_id, marked_date)
+def toggle_task_completion(request: CleaningCheckStatusCreateRequest):
+    return status_repo.toggle_task(request.checklist_item_id, request.membership_id, request.marked_date)
 
 @router.post("/room/{room_id}/reset")
 @error_handler("Error resetting room tasks")

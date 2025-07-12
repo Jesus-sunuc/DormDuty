@@ -8,28 +8,33 @@ import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useRoomsByUserQuery } from "@/hooks/roomHooks";
-import { useMembershipQuery } from "@/hooks/membershipHooks";
+import {
+  useMembershipQuery,
+  useRoomMembersQuery,
+} from "@/hooks/membershipHooks";
 import {
   useRoomChecklistQuery,
   useCreateChecklistItemMutation,
   useDeleteChecklistItemMutation,
   useToggleTaskCompletionMutation,
   useAssignTaskMutation,
+  useUnassignTaskMutation,
   useResetRoomTasksMutation,
   useInitializeRoomChecklistMutation,
 } from "@/hooks/cleaningHooks";
 import { CleaningChecklistWithStatus } from "@/models/CleaningChecklist";
 import { Room } from "@/models/Room";
+import { MemberSelectionModal } from "@/components/MemberSelectionModal";
 
 const ToolsScreen = () => {
   const { openSidebar } = useSidebar();
   const { user } = useAuth();
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [newTaskName, setNewTaskName] = useState("");
-  const [checkFrequency, setCheckFrequency] = useState<
-    "monthly" | "semester" | "custom"
-  >("monthly");
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showMemberSelection, setShowMemberSelection] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<number[]>([]);
   const [currentDate] = useState(new Date().toISOString().split("T")[0]); // YYYY-MM-DD format
 
   // Queries
@@ -38,17 +43,19 @@ const ToolsScreen = () => {
     user?.userId || 0,
     selectedRoom?.roomId || 0
   );
-  const {
-    data: cleaningTasks = [],
-    isLoading: tasksLoading,
-    refetch: refetchTasks,
-  } = useRoomChecklistQuery(selectedRoom?.roomId || 0, currentDate);
+  const { data: roomMembers = [] } = useRoomMembersQuery(
+    selectedRoom?.roomId?.toString() || ""
+  );
+
+  const { data: cleaningTasks = [], isLoading: tasksLoading } =
+    useRoomChecklistQuery(selectedRoom?.roomId || 0, currentDate);
 
   // Mutations
   const createTaskMutation = useCreateChecklistItemMutation();
   const deleteTaskMutation = useDeleteChecklistItemMutation();
   const toggleTaskMutation = useToggleTaskCompletionMutation();
   const assignTaskMutation = useAssignTaskMutation();
+  const unassignTaskMutation = useUnassignTaskMutation();
   const resetTasksMutation = useResetRoomTasksMutation();
   const initializeChecklistMutation = useInitializeRoomChecklistMutation();
 
@@ -83,13 +90,13 @@ const ToolsScreen = () => {
     }
   };
 
-  const assignTask = async (checklistItemId: number) => {
-    if (!membership || !selectedRoom) return;
+  const assignTask = async (membershipIds: number[]) => {
+    if (!selectedTaskId || !selectedRoom || membershipIds.length === 0) return;
 
     try {
       await assignTaskMutation.mutateAsync({
-        checklistItemId,
-        membershipId: membership.membershipId,
+        checklistItemId: selectedTaskId,
+        membershipIds: membershipIds,
         markedDate: currentDate,
       });
     } catch (error) {
@@ -97,14 +104,47 @@ const ToolsScreen = () => {
     }
   };
 
+  const unassignTask = async (checklistItemId: number) => {
+    if (!selectedRoom) return;
+
+    try {
+      await unassignTaskMutation.mutateAsync({
+        checklistItemId,
+        markedDate: currentDate,
+      });
+    } catch (error) {
+      console.error("Failed to unassign task:", error);
+    }
+  };
+
+  const handleAssignClick = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setSelectedMemberIds([]);
+    setShowMemberSelection(true);
+  };
+
+  const handleMemberSelectionConfirm = async () => {
+    await assignTask(selectedMemberIds);
+    setShowMemberSelection(false);
+    setSelectedTaskId(null);
+    setSelectedMemberIds([]);
+  };
+
   const toggleTaskCompletion = async (
     checklistItemId: number,
-    assignedMembershipId?: number
+    assignedMembershipIds?: string
   ) => {
     if (!selectedRoom) return;
 
-    // Use assigned membership or current user's membership
-    const membershipId = assignedMembershipId || membership?.membershipId;
+    // Use the first assigned membership or current user's membership
+    let membershipId = membership?.membershipId;
+    if (assignedMembershipIds && assignedMembershipIds !== "0") {
+      const ids = assignedMembershipIds
+        .split(",")
+        .map((id) => parseInt(id.trim()));
+      membershipId = ids[0]; // Use the first assigned member
+    }
+
     if (!membershipId) return;
 
     try {
@@ -146,6 +186,7 @@ const ToolsScreen = () => {
     deleteTaskMutation.isPending ||
     toggleTaskMutation.isPending ||
     assignTaskMutation.isPending ||
+    unassignTaskMutation.isPending ||
     resetTasksMutation.isPending;
 
   return (
@@ -157,7 +198,7 @@ const ToolsScreen = () => {
           <View className="px-6 pt-6">
             {/* Cleaning Checks Section */}
             {selectedRoom && (
-              <View className="mb-8">
+              <View key="cleaning-section" className="mb-8">
                 <View className="flex-row items-center mb-4">
                   <View className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-3">
                     <Ionicons
@@ -178,7 +219,10 @@ const ToolsScreen = () => {
 
                 {/* Room Selection */}
                 {rooms.length > 1 && (
-                  <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+                  <View
+                    key="room-selection"
+                    className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800"
+                  >
                     <ThemedText className="text-lg font-medium text-gray-900 dark:text-white mb-3">
                       Select Room
                     </ThemedText>
@@ -213,40 +257,6 @@ const ToolsScreen = () => {
                   </View>
                 )}
 
-                {/* Frequency Selection */}
-                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
-                  <ThemedText className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                    Check Frequency
-                  </ThemedText>
-                  <View className="flex-row space-x-3">
-                    {[
-                      { key: "monthly", label: "Monthly" },
-                      { key: "semester", label: "Semester" },
-                      { key: "custom", label: "Custom" },
-                    ].map((freq) => (
-                      <TouchableOpacity
-                        key={freq.key}
-                        onPress={() => setCheckFrequency(freq.key as any)}
-                        className={`px-4 py-2 rounded-xl border ${
-                          checkFrequency === freq.key
-                            ? "bg-blue-500 border-blue-500"
-                            : "bg-gray-100 dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
-                        }`}
-                      >
-                        <ThemedText
-                          className={`text-sm font-medium ${
-                            checkFrequency === freq.key
-                              ? "text-white"
-                              : "text-gray-700 dark:text-gray-300"
-                          }`}
-                        >
-                          {freq.label}
-                        </ThemedText>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-
                 {/* Cleaning Tasks */}
                 <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
                   <View className="flex-row items-center justify-between mb-4">
@@ -265,9 +275,9 @@ const ToolsScreen = () => {
 
                   {cleaningTasks.map((task, index) => (
                     <View
-                      key={task.checklist_item_id}
+                      key={task.checklistItemId || `task-${index}`}
                       className={`flex-row items-center p-3 rounded-xl mb-2 ${
-                        task.is_completed
+                        task.isCompleted
                           ? "bg-green-50 dark:bg-green-900/20"
                           : "bg-gray-50 dark:bg-neutral-800"
                       }`}
@@ -275,17 +285,17 @@ const ToolsScreen = () => {
                       <TouchableOpacity
                         onPress={() =>
                           toggleTaskCompletion(
-                            task.checklist_item_id,
-                            task.assigned_membership_id
+                            task.checklistItemId,
+                            task.assignedMembershipIds
                           )
                         }
                         className={`w-6 h-6 rounded-full border-2 items-center justify-center mr-3 ${
-                          task.is_completed
+                          task.isCompleted
                             ? "bg-green-500 border-green-500"
                             : "border-gray-300 dark:border-neutral-600"
                         }`}
                       >
-                        {task.is_completed && (
+                        {task.isCompleted && (
                           <Ionicons name="checkmark" size={14} color="white" />
                         )}
                       </TouchableOpacity>
@@ -293,49 +303,44 @@ const ToolsScreen = () => {
                       <View className="flex-1">
                         <ThemedText
                           className={`font-medium ${
-                            task.is_completed
+                            task.isCompleted
                               ? "text-green-700 dark:text-green-300 line-through"
                               : "text-gray-900 dark:text-white"
                           }`}
                         >
                           {task.title}
                         </ThemedText>
-                        {task.assigned_to && (
+                        {task.assignedTo && (
                           <ThemedText className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Assigned to: {task.assigned_to}
+                            Assigned to: {task.assignedTo}
                           </ThemedText>
                         )}
                       </View>
 
                       <TouchableOpacity
                         onPress={() => {
-                          if (task.assigned_to) {
-                            // Unassign task - this would need a separate API endpoint
-                            console.log(
-                              "Unassign task",
-                              task.checklist_item_id
-                            );
+                          if (task.assignedTo) {
+                            // Unassign task
+                            unassignTask(task.checklistItemId);
                           } else {
-                            // Assign task to current user
-                            assignTask(task.checklist_item_id);
+                            // Show member selection modal
+                            handleAssignClick(task.checklistItemId);
                           }
                         }}
                         className={`px-3 py-1 rounded-lg mr-2 ${
-                          task.assigned_to
+                          task.assignedTo
                             ? "bg-blue-100 dark:bg-blue-900/30"
                             : "bg-gray-200 dark:bg-neutral-700"
                         }`}
                       >
                         <ThemedText className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                          {task.assigned_to ? "Assigned" : "Assign"}
+                          {task.assignedTo ? "Unassign" : "Assign"}
                         </ThemedText>
                       </TouchableOpacity>
 
-                      {!task.is_default && (
+                      {!task.isDefault && (
                         <TouchableOpacity
-                          onPress={() =>
-                            removeCustomTask(task.checklist_item_id)
-                          }
+                          onPress={() => removeCustomTask(task.checklistItemId)}
                           className="w-6 h-6 items-center justify-center"
                         >
                           <Ionicons
@@ -398,26 +403,6 @@ const ToolsScreen = () => {
                     </TouchableOpacity>
                   )}
                 </View>
-
-                {/* Action Buttons */}
-                <View className="flex-row space-x-3">
-                  <TouchableOpacity className="flex-1 bg-blue-500 rounded-xl py-3 items-center justify-center">
-                    <View className="flex-row items-center">
-                      <Ionicons name="save-outline" size={20} color="white" />
-                      <ThemedText className="text-white font-medium ml-2">
-                        Save Template
-                      </ThemedText>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity className="flex-1 bg-green-500 rounded-xl py-3 items-center justify-center">
-                    <View className="flex-row items-center">
-                      <Ionicons name="send-outline" size={20} color="white" />
-                      <ThemedText className="text-white font-medium ml-2">
-                        Start Check
-                      </ThemedText>
-                    </View>
-                  </TouchableOpacity>
-                </View>
               </View>
             )}
 
@@ -437,6 +422,21 @@ const ToolsScreen = () => {
           </View>
         </ParallaxScrollViewY>
       </View>
+
+      {/* Member Selection Modal */}
+      <MemberSelectionModal
+        isVisible={showMemberSelection}
+        onClose={() => {
+          setShowMemberSelection(false);
+          setSelectedTaskId(null);
+          setSelectedMemberIds([]);
+        }}
+        members={roomMembers}
+        selectedMemberIds={selectedMemberIds}
+        onSelectionChange={setSelectedMemberIds}
+        onAssign={handleMemberSelectionConfirm}
+        title="Assign Task"
+      />
     </LoadingAndErrorHandling>
   );
 };

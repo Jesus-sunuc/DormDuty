@@ -32,6 +32,10 @@ class CleaningCheckStatusCreateRequest(BaseModel):
     marked_date: str  # YYYY-MM-DD format
     is_completed: bool = False
 
+class CleaningCheckStatusUnassignRequest(BaseModel):
+    checklist_item_id: int
+    marked_date: str  # YYYY-MM-DD format
+
 class CleaningChecklistWithStatus(BaseModel):
     checklist_item_id: int
     room_id: int
@@ -39,6 +43,6 @@ class CleaningChecklistWithStatus(BaseModel):
     description: str | None = None
     is_default: bool
     assigned_to: str | None = None
-    assigned_membership_id: int | None = None
+    assigned_membership_ids: str | None = None
     is_completed: bool = False
     status_id: int | None = None

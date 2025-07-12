@@ -1,5 +1,4 @@
 from src.models.cleaning_checklist import (
-    CleaningChecklist, 
     CleaningChecklistCreateRequest, 
     CleaningChecklistUpdateRequest,
     CleaningCheckStatus,
@@ -21,16 +20,17 @@ class CleaningChecklistRepository:
             cl.title,
             cl.description,
             cl.is_default,
-            COALESCE(u.name, '') as assigned_to,
-            COALESCE(cs.membership_id, 0) as assigned_membership_id,
-            COALESCE(cs.is_completed, false) as is_completed,
-            cs.status_id
+            COALESCE(STRING_AGG(u.name, ', '), '') as assigned_to,
+            COALESCE(STRING_AGG(cs.membership_id::text, ','), '0') as assigned_membership_ids,
+            COALESCE(BOOL_OR(cs.is_completed), false) as is_completed,
+            MIN(cs.status_id) as status_id
         FROM cleaning_checklist cl
         LEFT JOIN cleaning_check_status cs ON cl.checklist_item_id = cs.checklist_item_id 
             AND cs.marked_date = %s
         LEFT JOIN room_membership rm ON cs.membership_id = rm.membership_id
         LEFT JOIN "user" u ON rm.user_id = u.user_id
         WHERE cl.room_id = %s
+        GROUP BY cl.checklist_item_id, cl.room_id, cl.title, cl.description, cl.is_default
         ORDER BY cl.is_default DESC, cl.checklist_item_id ASC
         """
         return run_sql(sql, (date_filter, room_id), output_class=CleaningChecklistWithStatus)
@@ -124,6 +124,14 @@ class CleaningCheckStatusRepository:
             is_completed=False
         )
         return self.create_or_update_status(status)
+
+    def unassign_task(self, checklist_item_id: int, marked_date: str):
+        sql = """
+        DELETE FROM cleaning_check_status
+        WHERE checklist_item_id = %s AND marked_date = %s
+        """
+        run_sql(sql, (checklist_item_id, marked_date))
+        return {"message": "Task unassigned successfully"}
 
     def complete_task(self, checklist_item_id: int, membership_id: int, marked_date: str):
         status = CleaningCheckStatusCreateRequest(
