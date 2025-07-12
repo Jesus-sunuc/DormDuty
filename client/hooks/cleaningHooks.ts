@@ -7,6 +7,7 @@ import {
   CleaningChecklistWithStatus,
 } from "@/models/CleaningChecklist";
 import { getQueryClient } from "@/services/queryClient";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const queryClient = getQueryClient();
 
@@ -53,9 +54,14 @@ export const useRoomStatusHistoryQuery = (
 };
 
 // Checklist Mutations
-export const useCreateChecklistItemMutation = () => {
+export const useCreateChecklistItemMutation = (roomId: number) => {
+  const { isAdmin } = usePermissions(roomId);
+
   return useMutation({
     mutationFn: async (item: CleaningChecklistCreateRequest) => {
+      if (!isAdmin) {
+        throw new Error("Only administrators can add custom tasks");
+      }
       const res = await axiosClient.post("/api/cleaning/add", item);
       return res.data;
     },
@@ -89,9 +95,14 @@ export const useUpdateChecklistItemMutation = () => {
   });
 };
 
-export const useDeleteChecklistItemMutation = () => {
+export const useDeleteChecklistItemMutation = (roomId: number) => {
+  const { isAdmin } = usePermissions(roomId);
+
   return useMutation({
     mutationFn: async (checklistItemId: number) => {
+      if (!isAdmin) {
+        throw new Error("Only administrators can delete tasks");
+      }
       const res = await axiosClient.post(
         `/api/cleaning/${checklistItemId}/delete`
       );
@@ -121,7 +132,9 @@ export const useInitializeRoomChecklistMutation = () => {
 };
 
 // Status Mutations
-export const useAssignTaskMutation = () => {
+export const useAssignTaskMutation = (roomId: number) => {
+  const { isAdmin } = usePermissions(roomId);
+
   return useMutation({
     mutationFn: async ({
       checklistItemId,
@@ -132,7 +145,9 @@ export const useAssignTaskMutation = () => {
       membershipIds: number[];
       markedDate: string;
     }) => {
-      // Assign to multiple members by making multiple API calls
+      if (!isAdmin) {
+        throw new Error("Only administrators can assign tasks");
+      }
       const promises = membershipIds.map((membershipId) =>
         axiosClient.post("/api/cleaning/assign", {
           checklist_item_id: checklistItemId,
@@ -151,7 +166,9 @@ export const useAssignTaskMutation = () => {
   });
 };
 
-export const useUnassignTaskMutation = () => {
+export const useUnassignTaskMutation = (roomId: number) => {
+  const { isAdmin } = usePermissions(roomId);
+
   return useMutation({
     mutationFn: async ({
       checklistItemId,
@@ -160,6 +177,9 @@ export const useUnassignTaskMutation = () => {
       checklistItemId: number;
       markedDate: string;
     }) => {
+      if (!isAdmin) {
+        throw new Error("Only administrators can unassign tasks");
+      }
       const res = await axiosClient.post("/api/cleaning/unassign", {
         checklist_item_id: checklistItemId,
         marked_date: markedDate,
@@ -187,7 +207,7 @@ export const useToggleTaskCompletionMutation = () => {
         checklist_item_id: checklistItemId,
         membership_id: membershipId,
         marked_date: markedDate,
-        is_completed: false, // This will be toggled by the backend
+        is_completed: false,
       });
       return res.data;
     },
@@ -222,7 +242,9 @@ export const useCompleteTaskMutation = () => {
   });
 };
 
-export const useResetRoomTasksMutation = () => {
+export const useResetRoomTasksMutation = (roomId: number) => {
+  const { isAdmin } = usePermissions(roomId);
+
   return useMutation({
     mutationFn: async ({
       roomId,
@@ -231,6 +253,9 @@ export const useResetRoomTasksMutation = () => {
       roomId: number;
       markedDate: string;
     }) => {
+      if (!isAdmin) {
+        throw new Error("Only administrators can reset all tasks");
+      }
       const res = await axiosClient.post(
         `/api/cleaning/room/${roomId}/reset?marked_date=${markedDate}`
       );

@@ -12,6 +12,7 @@ import {
   useMembershipQuery,
   useRoomMembersQuery,
 } from "@/hooks/membershipHooks";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   useRoomChecklistQuery,
   useCreateChecklistItemMutation,
@@ -50,13 +51,24 @@ const ToolsScreen = () => {
   const { data: cleaningTasks = [], isLoading: tasksLoading } =
     useRoomChecklistQuery(selectedRoom?.roomId || 0, currentDate);
 
+  // Permissions
+  const { isAdmin } = usePermissions(selectedRoom?.roomId || 0);
+
   // Mutations
-  const createTaskMutation = useCreateChecklistItemMutation();
-  const deleteTaskMutation = useDeleteChecklistItemMutation();
+  const createTaskMutation = useCreateChecklistItemMutation(
+    selectedRoom?.roomId || 0
+  );
+  const deleteTaskMutation = useDeleteChecklistItemMutation(
+    selectedRoom?.roomId || 0
+  );
   const toggleTaskMutation = useToggleTaskCompletionMutation();
-  const assignTaskMutation = useAssignTaskMutation();
-  const unassignTaskMutation = useUnassignTaskMutation();
-  const resetTasksMutation = useResetRoomTasksMutation();
+  const assignTaskMutation = useAssignTaskMutation(selectedRoom?.roomId || 0);
+  const unassignTaskMutation = useUnassignTaskMutation(
+    selectedRoom?.roomId || 0
+  );
+  const resetTasksMutation = useResetRoomTasksMutation(
+    selectedRoom?.roomId || 0
+  );
   const initializeChecklistMutation = useInitializeRoomChecklistMutation();
 
   // Set default room
@@ -263,14 +275,16 @@ const ToolsScreen = () => {
                     <ThemedText className="text-lg font-medium text-gray-900 dark:text-white">
                       Cleaning Tasks
                     </ThemedText>
-                    <TouchableOpacity
-                      onPress={resetAllTasks}
-                      className="px-3 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg"
-                    >
-                      <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
-                        Reset All
-                      </ThemedText>
-                    </TouchableOpacity>
+                    {isAdmin && (
+                      <TouchableOpacity
+                        onPress={resetAllTasks}
+                        className="px-3 py-1 bg-gray-100 dark:bg-neutral-800 rounded-lg"
+                      >
+                        <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
+                          Reset All
+                        </ThemedText>
+                      </TouchableOpacity>
+                    )}
                   </View>
 
                   {cleaningTasks.map((task, index) => (
@@ -317,28 +331,30 @@ const ToolsScreen = () => {
                         )}
                       </View>
 
-                      <TouchableOpacity
-                        onPress={() => {
-                          if (task.assignedTo) {
-                            // Unassign task
-                            unassignTask(task.checklistItemId);
-                          } else {
-                            // Show member selection modal
-                            handleAssignClick(task.checklistItemId);
-                          }
-                        }}
-                        className={`px-3 py-1 rounded-lg mr-2 ${
-                          task.assignedTo
-                            ? "bg-blue-100 dark:bg-blue-900/30"
-                            : "bg-gray-200 dark:bg-neutral-700"
-                        }`}
-                      >
-                        <ThemedText className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                          {task.assignedTo ? "Unassign" : "Assign"}
-                        </ThemedText>
-                      </TouchableOpacity>
+                      {isAdmin && (
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (task.assignedTo) {
+                              // Unassign task
+                              unassignTask(task.checklistItemId);
+                            } else {
+                              // Show member selection modal
+                              handleAssignClick(task.checklistItemId);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-lg mr-2 ${
+                            task.assignedTo
+                              ? "bg-blue-100 dark:bg-blue-900/30"
+                              : "bg-gray-200 dark:bg-neutral-700"
+                          }`}
+                        >
+                          <ThemedText className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                            {task.assignedTo ? "Unassign" : "Assign"}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      )}
 
-                      {!task.isDefault && (
+                      {isAdmin && !task.isDefault && (
                         <TouchableOpacity
                           onPress={() => removeCustomTask(task.checklistItemId)}
                           className="w-6 h-6 items-center justify-center"
@@ -354,53 +370,74 @@ const ToolsScreen = () => {
                   ))}
 
                   {/* Add Custom Task */}
-                  {showAddTask ? (
-                    <View className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                      <TextInput
-                        value={newTaskName}
-                        onChangeText={setNewTaskName}
-                        placeholder="Enter custom task name..."
-                        className="bg-white dark:bg-neutral-800 rounded-lg p-3 text-gray-900 dark:text-white mb-3"
-                        placeholderTextColor="#9ca3af"
-                      />
-                      <View className="flex-row space-x-2">
+                  {isAdmin && (
+                    <>
+                      {showAddTask ? (
+                        <View className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                          <TextInput
+                            value={newTaskName}
+                            onChangeText={setNewTaskName}
+                            placeholder="Enter custom task name..."
+                            className="bg-white dark:bg-neutral-800 rounded-lg p-3 text-gray-900 dark:text-white mb-3"
+                            placeholderTextColor="#9ca3af"
+                          />
+                          <View className="flex-row space-x-2">
+                            <TouchableOpacity
+                              onPress={addCustomTask}
+                              className="flex-1 bg-blue-500 rounded-lg py-2 items-center"
+                            >
+                              <ThemedText className="text-white font-medium">
+                                Add Task
+                              </ThemedText>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setShowAddTask(false);
+                                setNewTaskName("");
+                              }}
+                              className="flex-1 bg-gray-300 dark:bg-neutral-700 rounded-lg py-2 items-center"
+                            >
+                              <ThemedText className="text-gray-700 dark:text-gray-300 font-medium">
+                                Cancel
+                              </ThemedText>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
                         <TouchableOpacity
-                          onPress={addCustomTask}
-                          className="flex-1 bg-blue-500 rounded-lg py-2 items-center"
+                          onPress={() => setShowAddTask(true)}
+                          className="mt-4 p-3 border-2 border-dashed border-gray-300 dark:border-neutral-600 rounded-xl items-center justify-center"
                         >
-                          <ThemedText className="text-white font-medium">
-                            Add Task
-                          </ThemedText>
+                          <View className="flex-row items-center">
+                            <Ionicons
+                              name="add-circle-outline"
+                              size={20}
+                              color="#6b7280"
+                            />
+                            <ThemedText className="text-gray-600 dark:text-gray-400 ml-2 font-medium">
+                              Add Custom Task
+                            </ThemedText>
+                          </View>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setShowAddTask(false);
-                            setNewTaskName("");
-                          }}
-                          className="flex-1 bg-gray-300 dark:bg-neutral-700 rounded-lg py-2 items-center"
-                        >
-                          <ThemedText className="text-gray-700 dark:text-gray-300 font-medium">
-                            Cancel
-                          </ThemedText>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => setShowAddTask(true)}
-                      className="mt-4 p-3 border-2 border-dashed border-gray-300 dark:border-neutral-600 rounded-xl items-center justify-center"
-                    >
+                      )}
+                    </>
+                  )}
+
+                  {/* Non-admin message */}
+                  {!isAdmin && (
+                    <View className="mt-4 p-3 bg-gray-50 dark:bg-neutral-800 rounded-xl">
                       <View className="flex-row items-center">
                         <Ionicons
-                          name="add-circle-outline"
-                          size={20}
+                          name="information-circle-outline"
+                          size={16}
                           color="#6b7280"
                         />
-                        <ThemedText className="text-gray-600 dark:text-gray-400 ml-2 font-medium">
-                          Add Custom Task
+                        <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                          Only room administrators can add, assign, or delete
+                          tasks
                         </ThemedText>
                       </View>
-                    </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               </View>
