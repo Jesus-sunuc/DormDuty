@@ -10,16 +10,20 @@ import { ChoreDetailsHeader } from "@/components/chores/ChoreDetailsHeader";
 import { ChoreInfoCard } from "@/components/chores/ChoreInfoCard";
 import { ChoreDescriptionCard } from "@/components/chores/ChoreDescriptionCard";
 import { ChoreOptionsModal } from "@/components/chores/ChoreOptionsModal";
+import { ChoreSwapRequestModal } from "@/components/chores/ChoreSwapRequestModal";
 import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useAuth } from "@/hooks/user/useAuth";
 import { Role } from "@/models/Membership";
 
 const ChoreDetailsScreen = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
 
   const choreId = Array.isArray(params.choreId)
     ? params.choreId[0]
@@ -105,6 +109,26 @@ const ChoreDetailsScreen = () => {
     members.map((member) => [member.membershipId, member.name])
   );
 
+  const currentUserMembership = members.find(
+    (member) => member.userId === user?.userId
+  );
+  const currentMembershipId = currentUserMembership?.membershipId;
+
+  const isAssignedToChore = () => {
+    if (!currentMembershipId || !chore) return false;
+
+    if (chore.assignedMemberIds) {
+      const assignedIds = chore.assignedMemberIds
+        .split(",")
+        .map((id) => parseInt(id.trim()));
+      return assignedIds.includes(currentMembershipId);
+    }
+
+    return chore.assignedTo === currentMembershipId;
+  };
+
+  const canRequestSwap = isAssignedToChore() && members.length > 1;
+
   const handleBack = () => {
     if (roomId) {
       router.push(`/rooms/${roomId}`);
@@ -170,7 +194,7 @@ const ChoreDetailsScreen = () => {
         assignedMemberName={assignedMemberName}
         onBack={handleBack}
         onOptions={() => setShowOptionsModal(true)}
-        showOptions={isAdmin}
+        showOptions={isAdmin || canRequestSwap}
       />
 
       <ParallaxScrollView>
@@ -193,7 +217,24 @@ const ChoreDetailsScreen = () => {
         onClose={() => setShowOptionsModal(false)}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onRequestSwap={() => {
+          setShowOptionsModal(false);
+          setShowSwapRequestModal(true);
+        }}
+        showRequestSwap={canRequestSwap}
+        isAdmin={isAdmin}
       />
+
+      {chore && currentMembershipId && (
+        <ChoreSwapRequestModal
+          isVisible={showSwapRequestModal}
+          onClose={() => setShowSwapRequestModal(false)}
+          choreId={chore.choreId}
+          choreName={chore.name}
+          currentMembershipId={currentMembershipId}
+          members={members}
+        />
+      )}
 
       <ConfirmationModal
         visible={showDeleteConfirmation}

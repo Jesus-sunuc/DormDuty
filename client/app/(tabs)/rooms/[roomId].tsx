@@ -17,6 +17,10 @@ import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
 import { useState } from "react";
+import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
+import { SwapRequestNotificationBanner } from "@/components/chores/SwapRequestNotificationBanner";
+import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
+import { useAuth } from "@/hooks/user/useAuth";
 
 const RoomChoresScreen = () => {
   const params = useLocalSearchParams();
@@ -29,13 +33,31 @@ const RoomChoresScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const roomIdNum = roomId ? parseInt(roomId, 10) : 0;
+  const { user } = useAuth();
 
   const permissions = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
   const { data: room, isLoading: roomLoading } = useRoomByIdQuery(roomIdNum);
+  const { data: members = [] } = useRoomMembersQuery(roomId || "");
+  const { data: swapRequests = [], refetch: refetchSwapRequests } =
+    useSwapRequestsByRoomQuery(roomIdNum);
 
   const [membersExpanded, setMembersExpanded] = useState(false);
+  const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
 
   const router = useRouter();
+
+  // Get current user's membership ID in this room
+  const currentUserMembership = members.find(
+    (member) => member.userId === user?.userId
+  );
+  const currentMembershipId = currentUserMembership?.membershipId;
+
+  // Filter pending swap requests that are directed to the current user
+  const pendingRequestsForUser = swapRequests.filter(
+    (request) =>
+      request.status === "pending" &&
+      request.toMembership === currentMembershipId
+  );
 
   if (!roomId) {
     return (
@@ -108,6 +130,14 @@ const RoomChoresScreen = () => {
             </View>
           </View>
 
+          {/* Swap Request Notification Banner */}
+          {currentMembershipId && (
+            <SwapRequestNotificationBanner
+              requestCount={pendingRequestsForUser.length}
+              onPress={() => setShowSwapRequestModal(true)}
+            />
+          )}
+
           <ParallaxScrollViewY>
             {roomId && <ChoreList roomId={roomId} />}
           </ParallaxScrollViewY>
@@ -167,6 +197,17 @@ const RoomChoresScreen = () => {
             />
           </TouchableOpacity>
         </View>
+      )}
+
+      {/* Swap Request Modal */}
+      {currentMembershipId && (
+        <SwapRequestModal
+          isVisible={showSwapRequestModal}
+          onClose={() => setShowSwapRequestModal(false)}
+          requests={pendingRequestsForUser}
+          currentMembershipId={currentMembershipId}
+          onRequestUpdate={refetchSwapRequests}
+        />
       )}
     </View>
   );

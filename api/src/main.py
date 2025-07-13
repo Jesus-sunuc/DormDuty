@@ -5,6 +5,7 @@ from src.router import users_router
 from src.router import rooms_router
 from src.router import membership_router
 from src.router import chores_router
+from src.router import chore_swap_request_router
 from src.router import expense_router
 from src.router import announcement_router
 from src.router import cleaning_router
@@ -27,6 +28,7 @@ def health_check():
 
 
 router.include_router(chores_router.router)
+router.include_router(chore_swap_request_router.router)
 router.include_router(membership_router.router)
 router.include_router(rooms_router.router)
 router.include_router(users_router.router)

@@ -173,6 +173,12 @@ const TabLayout = () => {
               href: null,
             }}
           />
+          <Tabs.Screen
+            name="swap-requests"
+            options={{
+              href: null,
+            }}
+          />
         </Tabs>
       </View>
     </LayoutWithSidebar>
