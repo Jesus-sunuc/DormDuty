@@ -149,8 +149,19 @@ const ChoreDetailsScreen = () => {
     });
   };
 
-  const assignedMemberName =
-    memberMap.get(chore?.assignedTo ?? -1) || "Unassigned";
+  const getAssignedMemberNames = () => {
+    if (chore?.assignedMemberNames) {
+      return chore.assignedMemberNames;
+    }
+
+    if (chore?.assignedTo) {
+      return memberMap.get(chore.assignedTo) || "Unassigned";
+    }
+
+    return "Unassigned";
+  };
+
+  const assignedMemberName = getAssignedMemberNames();
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-black">

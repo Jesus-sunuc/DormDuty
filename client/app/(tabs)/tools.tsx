@@ -208,7 +208,6 @@ const ToolsScreen = () => {
 
         <ParallaxScrollViewY>
           <View className="px-6 pt-6">
-            {/* Cleaning Checks Section */}
             {selectedRoom && (
               <View key="cleaning-section" className="mb-8">
                 <View className="flex-row items-center mb-4">
@@ -229,7 +228,6 @@ const ToolsScreen = () => {
                   tasks to members and track completion.
                 </ThemedText>
 
-                {/* Room Selection */}
                 {rooms.length > 1 && (
                   <View
                     key="room-selection"
@@ -269,7 +267,6 @@ const ToolsScreen = () => {
                   </View>
                 )}
 
-                {/* Cleaning Tasks */}
                 <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
                   <View className="flex-row items-center justify-between mb-4">
                     <ThemedText className="text-lg font-medium text-gray-900 dark:text-white">
@@ -335,10 +332,8 @@ const ToolsScreen = () => {
                         <TouchableOpacity
                           onPress={() => {
                             if (task.assignedTo) {
-                              // Unassign task
                               unassignTask(task.checklistItemId);
                             } else {
-                              // Show member selection modal
                               handleAssignClick(task.checklistItemId);
                             }
                           }}
@@ -369,7 +364,6 @@ const ToolsScreen = () => {
                     </View>
                   ))}
 
-                  {/* Add Custom Task */}
                   {isAdmin && (
                     <>
                       {showAddTask ? (
@@ -423,7 +417,6 @@ const ToolsScreen = () => {
                     </>
                   )}
 
-                  {/* Non-admin message */}
                   {!isAdmin && (
                     <View className="mt-4 p-3 bg-gray-50 dark:bg-neutral-800 rounded-xl">
                       <View className="flex-row items-center">
@@ -443,7 +436,6 @@ const ToolsScreen = () => {
               </View>
             )}
 
-            {/* Coming Soon Section */}
             <View className="items-center justify-center py-20">
               <View className="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mb-4">
                 <Ionicons name="construct" size={40} color="#3b82f6" />
@@ -460,7 +452,6 @@ const ToolsScreen = () => {
         </ParallaxScrollViewY>
       </View>
 
-      {/* Member Selection Modal */}
       <MemberSelectionModal
         isVisible={showMemberSelection}
         onClose={() => {
@@ -471,8 +462,11 @@ const ToolsScreen = () => {
         members={roomMembers}
         selectedMemberIds={selectedMemberIds}
         onSelectionChange={setSelectedMemberIds}
-        onAssign={handleMemberSelectionConfirm}
+        onConfirm={handleMemberSelectionConfirm}
         title="Assign Task"
+        description="Select members to assign to this task:"
+        confirmButtonText="Assign"
+        allowMultiple={true}
       />
     </LoadingAndErrorHandling>
   );

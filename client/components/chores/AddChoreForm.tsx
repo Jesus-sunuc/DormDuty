@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, ScrollView, Text, TouchableOpacity } from "react-native";
 import {
   TextInputField,
@@ -7,19 +7,22 @@ import {
   TimePickerField,
 } from "@/components/forms/FormFields";
 import { frequencyOptions, daysOfWeek } from "@/constants/choreConstants";
+import { MemberSelectionModal } from "@/components/MemberSelectionModal";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { ThemedText } from "@/components/ThemedText";
 
 interface Member {
   userId: number;
   name: string;
   membershipId: number;
+  role: string;
 }
 
 interface AddChoreFormProps {
   name: string;
   setName: (name: string) => void;
-  assignedTo: number | undefined;
-  setAssignedTo: (userId: number | undefined) => void;
+  assignedTo: number[] | undefined;
+  setAssignedTo: (membershipIds: number[] | undefined) => void;
   frequency: string;
   setFrequency: (frequency: string) => void;
   startDate: string | undefined;
@@ -56,18 +59,33 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   isPending,
   isEdit = false,
 }) => {
+  const [showMemberSelection, setShowMemberSelection] = useState(false);
+
   const safeMembers = Array.isArray(members)
     ? members.filter((member) => member != null)
     : [];
 
-  const memberItems = [
-    { label: "Unassigned", value: undefined, key: "unassigned" },
-    ...safeMembers.map((member) => ({
-      label: member?.name || "Unknown",
-      value: member?.membershipId,
-      key: member?.membershipId?.toString() || `member-${Math.random()}`,
-    })),
-  ];
+  const getAssignedMemberNames = () => {
+    if (!assignedTo || assignedTo.length === 0) return "No one assigned";
+
+    const assignedMembers = safeMembers.filter((member) =>
+      assignedTo.includes(member.membershipId)
+    );
+
+    if (assignedMembers.length === 0) return "No one assigned";
+
+    if (assignedMembers.length === 1) return assignedMembers[0].name;
+
+    if (assignedMembers.length === 2) {
+      return `${assignedMembers[0].name} and ${assignedMembers[1].name}`;
+    }
+
+    return `${assignedMembers[0].name} and ${assignedMembers.length - 1} others`;
+  };
+
+  const handleMemberSelection = () => {
+    setShowMemberSelection(false);
+  };
 
   const frequencyItems = frequencyOptions.map((option) => ({
     label: option,
@@ -105,12 +123,31 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                 onChangeText={setName}
               />
 
-              <PickerField
-                label="Assign to"
-                selectedValue={assignedTo}
-                onValueChange={setAssignedTo}
-                items={memberItems}
-              />
+              {/* Member Assignment */}
+              <View className="space-y-2">
+                <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  Assign to members
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowMemberSelection(true)}
+                  className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700"
+                >
+                  <View className="flex-1">
+                    <ThemedText className="text-neutral-900 dark:text-white">
+                      {getAssignedMemberNames()}
+                    </ThemedText>
+                    {assignedTo && assignedTo.length > 0 && (
+                      <ThemedText className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                        Assigned to {assignedTo.length} member
+                        {assignedTo.length !== 1 ? "s" : ""}
+                        {assignedTo.length > 1 &&
+                          " (first member will be primary)"}
+                      </ThemedText>
+                    )}
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color="#6b7280" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
@@ -209,6 +246,19 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
           )}
         </TouchableOpacity>
       </View>
+
+      <MemberSelectionModal
+        isVisible={showMemberSelection}
+        onClose={() => setShowMemberSelection(false)}
+        members={safeMembers}
+        selectedMemberIds={assignedTo || []}
+        onSelectionChange={setAssignedTo}
+        onConfirm={handleMemberSelection}
+        title="Assign Chore"
+        description="Select members to assign this chore to:"
+        confirmButtonText="Assign"
+        allowMultiple={true}
+      />
     </View>
   );
 };

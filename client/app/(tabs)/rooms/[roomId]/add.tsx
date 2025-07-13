@@ -39,7 +39,7 @@ const AddChoreScreen = () => {
   const [frequency, setFrequency] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<number | undefined>();
   const [timingInput, setTimingInput] = useState("");
-  const [assignedTo, setAssignedTo] = useState<number | undefined>();
+  const [assignedTo, setAssignedTo] = useState<number[] | undefined>();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
 
@@ -93,6 +93,7 @@ const AddChoreScreen = () => {
         userId: member.userId,
         name: member.name,
         membershipId: member.membershipId,
+        role: member.role,
       }))
     : [];
 
@@ -112,7 +113,8 @@ const AddChoreScreen = () => {
       timing: timingInput ? `${timingInput}:00` : undefined,
       description: description?.trim(),
       startDate,
-      assignedTo: assignedTo,
+      assignedMemberIds:
+        assignedTo && assignedTo.length > 0 ? assignedTo : undefined,
       isActive: true,
     };
 

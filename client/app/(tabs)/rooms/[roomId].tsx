@@ -232,6 +232,14 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
     ])
   );
 
+  const getAssignedMemberDisplay = (chore: any) => {
+    const assignedMemberName = memberMap.get(chore?.assignedTo ?? -1);
+    if (assignedMemberName) {
+      return assignedMemberName;
+    }
+    return "Unassigned";
+  };
+
   return (
     <View className="px-6 pt-6 pb-4">
       {chores.map((chore) => (
@@ -274,7 +282,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                 <View className="flex-row items-center">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
                   <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {memberMap.get(chore?.assignedTo ?? -1) || "Unassigned"}
+                    {getAssignedMemberDisplay(chore)}
                   </ThemedText>
                 </View>
               </View>

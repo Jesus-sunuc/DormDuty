@@ -141,7 +141,7 @@ const EditChoreScreen = () => {
   const timingInput = timingInputState[0];
   const setTimingInput = timingInputState[1];
 
-  const assignedToState = useState<number | undefined>();
+  const assignedToState = useState<number[] | undefined>();
   const assignedTo = assignedToState[0];
   const setAssignedTo = assignedToState[1];
 
@@ -159,13 +159,32 @@ const EditChoreScreen = () => {
       setFrequency(chore.frequency || "");
       setDayOfWeek(chore.dayOfWeek);
       setTimingInput(toTimeString(chore.timing));
-      setAssignedTo(chore.assignedTo);
+
+      if (chore.assignedMemberIds) {
+        const memberIds = chore.assignedMemberIds
+          .split(",")
+          .map((id) => parseInt(id.trim()))
+          .filter((id) => !isNaN(id));
+        setAssignedTo(memberIds.length > 0 ? memberIds : undefined);
+      } else if (chore.assignedTo) {
+        setAssignedTo([chore.assignedTo]);
+      } else {
+        setAssignedTo(undefined);
+      }
+
       setStartDate(toISODateString(chore.startDate as any));
       setDescription(chore.description);
     }
   }, [chore]);
 
-  const formattedMembers = members || [];
+  const formattedMembers = Array.isArray(members)
+    ? members.map((member) => ({
+        userId: member.userId,
+        name: member.name,
+        membershipId: member.membershipId,
+        role: member.role,
+      }))
+    : [];
 
   const handleSubmit = () => {
     if (!name.trim() || !roomId || !choreId) return;
@@ -178,7 +197,8 @@ const EditChoreScreen = () => {
       timing: timingInput ? `${timingInput}:00` : undefined,
       description: description?.trim(),
       startDate,
-      assignedTo: assignedTo,
+      assignedMemberIds:
+        assignedTo && assignedTo.length > 0 ? assignedTo : undefined,
       isActive: chore?.isActive ?? true,
     };
 

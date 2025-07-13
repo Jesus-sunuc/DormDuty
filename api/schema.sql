@@ -168,6 +168,18 @@ CREATE TABLE
   );
 
 CREATE TABLE
+  "chore_assignment" (
+    "assignment_id" SERIAL PRIMARY KEY,
+    "chore_id" INTEGER NOT NULL,
+    "membership_id" INTEGER NOT NULL,
+    "is_active" BOOLEAN DEFAULT TRUE,
+    "assigned_at" TIMESTAMPTZ DEFAULT now (),
+    CONSTRAINT "FK_chore_assignment_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id") ON DELETE CASCADE,
+    CONSTRAINT "FK_chore_assignment_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,
+    CONSTRAINT "UQ_chore_assignment_active" UNIQUE ("chore_id", "membership_id")
+  );
+
+CREATE TABLE
   "chore_completion" (
     "completion_id" SERIAL PRIMARY KEY,
     "chore_id" INTEGER NOT NULL,

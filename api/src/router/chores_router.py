@@ -1,4 +1,4 @@
-from src.models.chore import ChoreCreateRequest
+from src.models.chore import ChoreCreateRequest, ChoreAssignRequest, ChoreUnassignRequest
 from fastapi import APIRouter
 from src.repository.chores_repository import ChoreRepository
 from src.errors import error_handler
@@ -50,3 +50,20 @@ def update_chore(chore_id: int, chore: ChoreCreateRequest):
 @error_handler("Error deleting chore")
 def delete_chore(chore_id: int):
     return repo.delete_chore(chore_id)
+
+@router.post("/{chore_id}/assign")
+@error_handler("Error assigning chore")
+def assign_chore(chore_id: int, request: ChoreAssignRequest):
+    repo.assign_multiple_members(chore_id, request.membership_ids)
+    return {"message": "Chore assigned successfully"}
+
+@router.post("/{chore_id}/unassign")
+@error_handler("Error unassigning chore")
+def unassign_chore(chore_id: int, request: ChoreUnassignRequest):
+    repo.unassign_chore(chore_id, request.membership_id)
+    return {"message": "Chore unassigned successfully"}
+
+@router.get("/{chore_id}/assignments")
+@error_handler("Error fetching chore assignments")
+def get_chore_assignments(chore_id: int):
+    return repo.get_chore_assignments(chore_id)

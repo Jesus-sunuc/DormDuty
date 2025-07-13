@@ -16,8 +16,11 @@ interface MemberSelectionModalProps {
   members: Member[];
   selectedMemberIds: number[];
   onSelectionChange: (memberIds: number[]) => void;
-  onAssign: () => void;
+  onConfirm: () => void;
   title: string;
+  description?: string;
+  confirmButtonText?: string;
+  allowMultiple?: boolean;
 }
 
 export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
@@ -26,19 +29,28 @@ export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
   members,
   selectedMemberIds,
   onSelectionChange,
-  onAssign,
+  onConfirm,
   title,
+  description = "Select members:",
+  confirmButtonText = "Assign",
+  allowMultiple = true,
 }) => {
   const toggleMember = (membershipId: number) => {
-    if (selectedMemberIds.includes(membershipId)) {
-      onSelectionChange(selectedMemberIds.filter((id) => id !== membershipId));
+    if (!allowMultiple) {
+      onSelectionChange([membershipId]);
     } else {
-      onSelectionChange([...selectedMemberIds, membershipId]);
+      if (selectedMemberIds.includes(membershipId)) {
+        onSelectionChange(
+          selectedMemberIds.filter((id) => id !== membershipId)
+        );
+      } else {
+        onSelectionChange([...selectedMemberIds, membershipId]);
+      }
     }
   };
 
-  const handleAssign = () => {
-    onAssign();
+  const handleConfirm = () => {
+    onConfirm();
     onClose();
   };
 
@@ -61,7 +73,7 @@ export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
           </View>
 
           <ThemedText className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Select members to assign to this task:
+            {description}
           </ThemedText>
 
           <ScrollView className="max-h-48 mb-4">
@@ -115,7 +127,7 @@ export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={handleAssign}
+              onPress={handleConfirm}
               disabled={selectedMemberIds.length === 0}
               className={`flex-1 rounded-xl py-3 items-center ${
                 selectedMemberIds.length > 0
@@ -130,7 +142,7 @@ export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
                     : "text-gray-500 dark:text-gray-400"
                 }`}
               >
-                Assign ({selectedMemberIds.length})
+                {confirmButtonText} ({selectedMemberIds.length})
               </ThemedText>
             </TouchableOpacity>
           </View>
