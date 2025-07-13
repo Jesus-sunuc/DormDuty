@@ -233,10 +233,31 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   );
 
   const getAssignedMemberDisplay = (chore: any) => {
+    if (chore?.assignedMemberNames) {
+      return chore.assignedMemberNames;
+    }
+
+    if (chore?.assignedMemberIds) {
+      const memberIds = chore.assignedMemberIds
+        .split(",")
+        .map((id: string) => parseInt(id.trim()))
+        .filter((id: number) => !isNaN(id));
+      const assignedNames = memberIds
+        .map((id: number) => memberMap.get(id))
+        .filter(Boolean);
+      if (assignedNames.length > 0) {
+        if (assignedNames.length === 1) return assignedNames[0];
+        if (assignedNames.length === 2)
+          return `${assignedNames[0]} and ${assignedNames[1]}`;
+        return `${assignedNames[0]} and ${assignedNames.length - 1} others`;
+      }
+    }
+
     const assignedMemberName = memberMap.get(chore?.assignedTo ?? -1);
     if (assignedMemberName) {
       return assignedMemberName;
     }
+
     return "Unassigned";
   };
 
