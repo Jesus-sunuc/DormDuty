@@ -55,7 +55,6 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
     }
 
     try {
-      // Send requests to all selected members
       const promises = selectedMemberIds.map((membershipId) =>
         createSwapRequestMutation.mutateAsync({
           fromMembershipId: currentMembershipId,

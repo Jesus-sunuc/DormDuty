@@ -157,13 +157,11 @@ const ToolsScreen = () => {
       assignedMembershipIds !== "0" &&
       assignedMembershipIds !== ""
     ) {
-      // Task is assigned to someone, use the first assigned member to toggle completion
       const assignedIds = assignedMembershipIds
         .split(",")
         .map((id) => parseInt(id));
       membershipIdToUse = assignedIds[0];
     } else {
-      // Task is not assigned, use current user's membership for completion tracking
       const currentUserMembership = membership?.membershipId;
       if (!currentUserMembership) return;
       membershipIdToUse = currentUserMembership;

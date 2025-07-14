@@ -4,7 +4,6 @@ from src.models.chore_swap_request import (
     ChoreSwapRequestResponseRequest
 )
 from src.services.database.helper import run_sql
-from datetime import datetime
 
 class ChoreSwapRequestRepository:
     
