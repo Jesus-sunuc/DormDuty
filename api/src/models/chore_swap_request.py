@@ -7,7 +7,7 @@ class ChoreSwapRequest(BaseModel):
     chore_id: int
     from_membership: int
     to_membership: int
-    status: str  # 'pending', 'accepted', 'declined'
+    status: str  # 'pending', 'accepted', 'declined', 'cancelled'
     message: Optional[str] = None
     requested_at: datetime
     responded_at: Optional[datetime] = None

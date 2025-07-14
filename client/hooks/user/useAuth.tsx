@@ -7,6 +7,7 @@ import {
 } from "react";
 import { User } from "@/models/User";
 import { axiosClient } from "@/utils/axiosClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AuthContextType = {
   user: User | null;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = (props: { children: ReactNode }) => {
   const children = props?.children;
+  const queryClient = useQueryClient();
 
   const usersState = useState<User[]>([]);
   const users = usersState[0];
@@ -49,6 +51,11 @@ export const AuthProvider = (props: { children: ReactNode }) => {
     const selected = users.find((u) => u.userId === userId);
     if (selected) {
       setUser(selected);
+
+      // Invalidate all user-dependent queries when switching users
+      queryClient.invalidateQueries({ queryKey: ["membership"] });
+      queryClient.invalidateQueries({ queryKey: ["chore-swap"] });
+      queryClient.invalidateQueries({ queryKey: ["chores"] });
     }
   };
 

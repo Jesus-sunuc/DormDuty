@@ -36,7 +36,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
   currentMembershipId,
   members,
 }) => {
-  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<number[]>([]);
   const [message, setMessage] = useState("");
 
   const createSwapRequestMutation = useCreateSwapRequestMutation();
@@ -45,39 +45,67 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
     (member) => member.membershipId !== currentMembershipId
   );
 
-  const handleSubmit = () => {
-    if (!selectedMemberId) {
-      toastError("Please select a member to request the swap from");
+  const isAllSelected = selectedMemberIds.length === availableMembers.length;
+  const isPartiallySelected = selectedMemberIds.length > 0 && !isAllSelected;
+
+  const handleSubmit = async () => {
+    if (selectedMemberIds.length === 0) {
+      toastError("Please select at least one member to request the swap from");
       return;
     }
 
-    createSwapRequestMutation.mutate(
-      {
-        fromMembershipId: currentMembershipId,
-        request: {
-          choreId,
-          toMembership: selectedMemberId,
-          message: message.trim() || undefined,
-        },
-      },
-      {
-        onSuccess: () => {
-          toastSuccess("Swap request sent successfully!");
-          onClose();
-          setSelectedMemberId(null);
-          setMessage("");
-        },
-        onError: () => {
-          toastError("Failed to send swap request");
-        },
-      }
-    );
+    try {
+      // Send requests to all selected members
+      const promises = selectedMemberIds.map((membershipId) =>
+        createSwapRequestMutation.mutateAsync({
+          fromMembershipId: currentMembershipId,
+          request: {
+            choreId,
+            toMembership: membershipId,
+            message: message.trim() || undefined,
+          },
+        })
+      );
+
+      await Promise.all(promises);
+
+      const memberCount = selectedMemberIds.length;
+      toastSuccess(
+        memberCount === 1
+          ? "Swap request sent successfully!"
+          : `${memberCount} swap requests sent successfully!`
+      );
+
+      onClose();
+      setSelectedMemberIds([]);
+      setMessage("");
+    } catch (error) {
+      toastError("Failed to send swap request(s)");
+    }
   };
 
   const handleClose = () => {
     onClose();
-    setSelectedMemberId(null);
+    setSelectedMemberIds([]);
     setMessage("");
+  };
+
+  const toggleMemberSelection = (membershipId: number) => {
+    setSelectedMemberIds((prev) =>
+      prev.includes(membershipId)
+        ? prev.filter((id) => id !== membershipId)
+        : [...prev, membershipId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedMemberIds([]);
+    } else {
+      setSelectedMemberIds(
+        availableMembers.map((member) => member.membershipId)
+      );
+    }
   };
 
   return (
@@ -105,13 +133,20 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
           </View>
           <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center">
             Ask another member to take over "{choreName}"
+            {selectedMemberIds.length > 0 && (
+              <Text className="text-blue-600 dark:text-blue-400">
+                {"\n"}
+                {selectedMemberIds.length} member
+                {selectedMemberIds.length > 1 ? "s" : ""} selected
+              </Text>
+            )}
           </ThemedText>
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
             <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-              Select Member
+              Select Member{availableMembers.length > 1 ? "s" : ""}
             </ThemedText>
 
             {availableMembers.length === 0 ? (
@@ -123,37 +158,91 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
               </View>
             ) : (
               <View className="space-y-3">
-                {availableMembers.map((member) => (
-                  <TouchableOpacity
-                    key={member.membershipId}
-                    onPress={() => setSelectedMemberId(member.membershipId)}
-                    className={`flex-row items-center p-4 rounded-xl border-2 mb-2 ${
-                      selectedMemberId === member.membershipId
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
-                    }`}
-                  >
-                    <View
-                      className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                        selectedMemberId === member.membershipId
-                          ? "border-blue-500 bg-blue-500"
-                          : "border-gray-300 dark:border-neutral-600"
+                {/* Select All Option */}
+                {availableMembers.length > 1 && (
+                  <>
+                    <TouchableOpacity
+                      onPress={toggleSelectAll}
+                      className={`flex-row items-center p-4 rounded-xl border-2 mb-3 ${
+                        isAllSelected
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                          : isPartiallySelected
+                            ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
+                            : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
                       }`}
                     >
-                      {selectedMemberId === member.membershipId && (
-                        <Ionicons name="checkmark" size={12} color="white" />
-                      )}
-                    </View>
-                    <View className="flex-1">
-                      <ThemedText className="font-medium">
-                        {member.name}
-                      </ThemedText>
-                      <ThemedText className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                        {member.role}
-                      </ThemedText>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                      <View
+                        className={`w-4 h-4 rounded border-2 mr-3 items-center justify-center ${
+                          isAllSelected
+                            ? "border-blue-500 bg-blue-500"
+                            : isPartiallySelected
+                              ? "border-orange-500 bg-orange-500"
+                              : "border-gray-300 dark:border-neutral-600"
+                        }`}
+                      >
+                        {isAllSelected && (
+                          <Ionicons name="checkmark" size={12} color="white" />
+                        )}
+                        {isPartiallySelected && (
+                          <Ionicons name="remove" size={12} color="white" />
+                        )}
+                      </View>
+                      <View className="flex-1">
+                        <ThemedText className="font-semibold">
+                          {isAllSelected ? "Deselect All" : "Select All"}
+                        </ThemedText>
+                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                          {isAllSelected
+                            ? "Remove all members from selection"
+                            : isPartiallySelected
+                              ? `Select all ${availableMembers.length} members`
+                              : `Send request to all ${availableMembers.length} members`}
+                        </ThemedText>
+                      </View>
+                    </TouchableOpacity>
+
+                    {/* Divider */}
+                    <View className="h-px bg-gray-200 dark:bg-neutral-700 my-2" />
+                  </>
+                )}
+
+                {/* Individual Members */}
+                {availableMembers.map((member) => {
+                  const isSelected = selectedMemberIds.includes(
+                    member.membershipId
+                  );
+                  return (
+                    <TouchableOpacity
+                      key={member.membershipId}
+                      onPress={() => toggleMemberSelection(member.membershipId)}
+                      className={`flex-row items-center p-4 rounded-xl border-2 mb-2 ${
+                        isSelected
+                          ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                          : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
+                      }`}
+                    >
+                      <View
+                        className={`w-4 h-4 rounded border-2 mr-3 items-center justify-center ${
+                          isSelected
+                            ? "border-green-500 bg-green-500"
+                            : "border-gray-300 dark:border-neutral-600"
+                        }`}
+                      >
+                        {isSelected && (
+                          <Ionicons name="checkmark" size={12} color="white" />
+                        )}
+                      </View>
+                      <View className="flex-1">
+                        <ThemedText className="font-medium">
+                          {member.name}
+                        </ThemedText>
+                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+                          {member.role}
+                        </ThemedText>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             )}
           </View>
@@ -178,9 +267,13 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
         <View className="p-6 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
           <TouchableOpacity
             onPress={handleSubmit}
-            disabled={!selectedMemberId || createSwapRequestMutation.isPending}
+            disabled={
+              selectedMemberIds.length === 0 ||
+              createSwapRequestMutation.isPending
+            }
             className={`py-4 rounded-2xl flex-row items-center justify-center ${
-              !selectedMemberId || createSwapRequestMutation.isPending
+              selectedMemberIds.length === 0 ||
+              createSwapRequestMutation.isPending
                 ? "bg-gray-300 dark:bg-neutral-700"
                 : "bg-blue-600"
             }`}
@@ -188,13 +281,17 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
             {createSwapRequestMutation.isPending ? (
               <>
                 <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
-                <Text className="text-white font-semibold">Sending...</Text>
+                <Text className="text-white font-semibold">
+                  Sending{selectedMemberIds.length > 1 ? " Requests" : ""}...
+                </Text>
               </>
             ) : (
               <>
                 <Ionicons name="swap-horizontal" size={20} color="white" />
                 <Text className="text-white font-semibold ml-2">
-                  Send Request
+                  Send Request{selectedMemberIds.length > 1 ? "s" : ""}
+                  {selectedMemberIds.length > 0 &&
+                    ` (${selectedMemberIds.length})`}
                 </Text>
               </>
             )}

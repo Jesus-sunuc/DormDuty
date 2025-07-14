@@ -6,7 +6,7 @@ export interface ChoreSwapRequest {
   fromUserName: string;
   toMembership: number;
   toUserName: string;
-  status: "pending" | "accepted" | "declined";
+  status: "pending" | "accepted" | "declined" | "cancelled";
   message?: string;
   requestedAt: string;
   respondedAt?: string;

@@ -66,6 +66,9 @@ export const usePendingSwapRequestsQuery = (membershipId: number) => {
       return res.data;
     },
     enabled: !!membershipId && membershipId > 0,
+    staleTime: 0, // Always refetch to get latest pending requests
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -77,6 +80,9 @@ export const useSwapRequestsByRoomQuery = (roomId: number) => {
       return res.data;
     },
     enabled: !!roomId && roomId > 0,
+    staleTime: 0, // Always refetch to get latest swap requests
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };
 

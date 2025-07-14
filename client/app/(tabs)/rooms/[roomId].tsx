@@ -16,11 +16,12 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
 import { SwapRequestNotificationBanner } from "@/components/chores/SwapRequestNotificationBanner";
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
 import { useAuth } from "@/hooks/user/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RoomChoresScreen = () => {
   const params = useLocalSearchParams();
@@ -34,10 +35,13 @@ const RoomChoresScreen = () => {
   const colors = Colors[colorScheme ?? "light"];
   const roomIdNum = roomId ? parseInt(roomId, 10) : 0;
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const permissions = usePermissions(isNaN(roomIdNum) ? 0 : roomIdNum);
   const { data: room, isLoading: roomLoading } = useRoomByIdQuery(roomIdNum);
-  const { data: members = [] } = useRoomMembersQuery(roomId || "");
+  const { data: members = [], refetch: refetchMembers } = useRoomMembersQuery(
+    roomId || ""
+  );
   const { data: swapRequests = [], refetch: refetchSwapRequests } =
     useSwapRequestsByRoomQuery(roomIdNum);
 
@@ -45,6 +49,17 @@ const RoomChoresScreen = () => {
   const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
 
   const router = useRouter();
+
+  // Refetch data when user changes
+  useEffect(() => {
+    if (user?.userId) {
+      // Invalidate and refetch all relevant queries when user changes
+      queryClient.invalidateQueries({ queryKey: ["memberships"] });
+      queryClient.invalidateQueries({ queryKey: ["chore-swap"] });
+      refetchMembers();
+      refetchSwapRequests();
+    }
+  }, [user?.userId, queryClient, refetchMembers, refetchSwapRequests]);
 
   // Get current user's membership ID in this room
   const currentUserMembership = members.find(
