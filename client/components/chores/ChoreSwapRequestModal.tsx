@@ -97,7 +97,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
               <Ionicons name="close" size={20} color="#6b7280" />
             </TouchableOpacity>
             <View className="flex-1 mx-4">
-              <ThemedText className="text-lg font-semibold text-center">
+              <ThemedText className="text-lg font-semibold text-center text-gray-200 dark:text-gray-300">
                 Request Chore Swap
               </ThemedText>
             </View>
@@ -110,7 +110,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
 
         <ScrollView className="flex-1 px-6 py-6">
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
-            <ThemedText className="text-lg font-semibold mb-4">
+            <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Select Member
             </ThemedText>
 
@@ -127,7 +127,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
                   <TouchableOpacity
                     key={member.membershipId}
                     onPress={() => setSelectedMemberId(member.membershipId)}
-                    className={`flex-row items-center p-4 rounded-xl border-2 ${
+                    className={`flex-row items-center p-4 rounded-xl border-2 mb-2 ${
                       selectedMemberId === member.membershipId
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                         : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
@@ -159,7 +159,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
           </View>
 
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
-            <ThemedText className="text-lg font-semibold mb-4">
+            <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Message (Optional)
             </ThemedText>
             <TextInput

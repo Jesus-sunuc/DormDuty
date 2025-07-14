@@ -16,11 +16,11 @@ export const SwapRequestNotificationBanner: React.FC<
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="mx-6 mb-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-4 shadow-sm"
+      className="mx-6 mt-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-4 shadow-sm"
       activeOpacity={0.7}
     >
       <View className="flex-row items-center">
-        <View className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 items-center justify-center mr-3">
+        <View className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 items-center justify-center mr-3 ">
           <Ionicons name="swap-horizontal" size={20} color="#f59e0b" />
         </View>
         <View className="flex-1">

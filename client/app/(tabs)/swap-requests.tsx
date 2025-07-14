@@ -83,7 +83,7 @@ const SwapRequestsScreen = () => {
             <Ionicons name="arrow-back" size={20} color="#6b7280" />
           </TouchableOpacity>
           <View className="flex-1 mx-4">
-            <ThemedText className="text-lg font-semibold text-center">
+            <ThemedText className="text-lg font-semibold text-center ">
               Chore Swap Requests
             </ThemedText>
           </View>

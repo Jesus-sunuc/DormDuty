@@ -44,7 +44,7 @@ export const SwapRequestModal: React.FC<SwapRequestModalProps> = ({
               <Ionicons name="close" size={20} color="#6b7280" />
             </TouchableOpacity>
             <View className="flex-1 mx-4">
-              <ThemedText className="text-lg font-semibold text-center">
+              <ThemedText className="text-lg font-semibold text-center text-gray-700 dark:text-gray-300">
                 Swap Requests
               </ThemedText>
             </View>
