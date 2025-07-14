@@ -1,6 +1,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import { useChoresByRoomQuery } from "@/hooks/choreHooks";
+import {
+  useChoresByRoomQuery,
+  usePendingCompletionsByRoomQuery,
+} from "@/hooks/choreHooks";
 import { useRoomByIdQuery } from "@/hooks/roomHooks";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import {
@@ -11,7 +14,10 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDate } from "../chores";
-import { useRoomMembersQuery } from "@/hooks/membershipHooks";
+import {
+  useRoomMembersQuery,
+  useMembershipQuery,
+} from "@/hooks/membershipHooks";
 import { usePermissions } from "@/hooks/usePermissions";
 import { RoomMembersList } from "@/components/rooms/RoomMembersList";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
@@ -20,8 +26,11 @@ import { useState, useEffect } from "react";
 import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
 import { SwapRequestNotificationBanner } from "@/components/chores/SwapRequestNotificationBanner";
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
+import { ChoreVerificationModal } from "@/components/chores/ChoreVerificationModal";
+import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
+import { Role } from "@/models/Membership";
 
 const RoomChoresScreen = () => {
   const params = useLocalSearchParams();
@@ -47,6 +56,27 @@ const RoomChoresScreen = () => {
 
   const [membersExpanded, setMembersExpanded] = useState(false);
   const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+
+  // Get user's membership in this room for verification
+  const { data: membership } = useMembershipQuery(user?.userId || 0, roomIdNum);
+
+  // Get pending completions for verification (admin only)
+  const { data: pendingCompletions = [] } =
+    usePendingCompletionsByRoomQuery(roomIdNum);
+
+  // Only admins can verify completions
+  const canVerify = permissions.hasPermission(Role.ADMIN);
+
+  // Debug logging
+  console.log("Debug - Room verification banner:", {
+    roomId: roomIdNum,
+    canVerify,
+    isAdmin: permissions.isAdmin,
+    role: permissions.role,
+    pendingCount: pendingCompletions.length,
+    pendingCompletions: pendingCompletions,
+  });
 
   const router = useRouter();
 
@@ -153,6 +183,14 @@ const RoomChoresScreen = () => {
             />
           )}
 
+          {/* Verification Banner */}
+          {canVerify && pendingCompletions.length > 0 && (
+            <PendingVerificationsBanner
+              pendingCount={pendingCompletions.length}
+              onPress={() => setShowVerificationModal(true)}
+            />
+          )}
+
           <ParallaxScrollViewY>
             {roomId && <ChoreList roomId={roomId} />}
           </ParallaxScrollViewY>
@@ -212,6 +250,18 @@ const RoomChoresScreen = () => {
             />
           </TouchableOpacity>
         </View>
+      )}
+
+      {/* Swap Request Modal */}
+      {/* Verification Modal */}
+      {canVerify && membership && (
+        <ChoreVerificationModal
+          isVisible={showVerificationModal}
+          onClose={() => setShowVerificationModal(false)}
+          completions={pendingCompletions}
+          verifierMembershipId={membership.membershipId}
+          isAdmin={permissions.hasPermission(Role.ADMIN)}
+        />
       )}
 
       {/* Swap Request Modal */}

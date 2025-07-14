@@ -42,6 +42,8 @@ const AddChoreScreen = () => {
   const [assignedTo, setAssignedTo] = useState<number[] | undefined>();
   const [startDate, setStartDate] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
+  const [approvalRequired, setApprovalRequired] = useState(false);
+  const [photoRequired, setPhotoRequired] = useState(false);
 
   if (!roomId) {
     return (
@@ -115,6 +117,8 @@ const AddChoreScreen = () => {
       startDate,
       assignedMemberIds:
         assignedTo && assignedTo.length > 0 ? assignedTo : undefined,
+      approvalRequired,
+      photoRequired,
       isActive: true,
     };
 
@@ -157,6 +161,10 @@ const AddChoreScreen = () => {
           setTimingInput={setTimingInput}
           description={description}
           setDescription={setDescription}
+          approvalRequired={approvalRequired}
+          setApprovalRequired={setApprovalRequired}
+          photoRequired={photoRequired}
+          setPhotoRequired={setPhotoRequired}
           members={formattedMembers}
           onSave={handleSubmit}
           isPending={isPending}

@@ -1,6 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/utils/axiosClient";
-import { Chore, ChoreCreateRequest } from "@/models/Chore";
+import {
+  Chore,
+  ChoreCreateRequest,
+  ChoreCompletion,
+  ChoreCompletionCreateRequest,
+  ChoreVerificationCreateRequest,
+  ChoreWithCompletionStatus,
+} from "@/models/Chore";
 import { useAuth } from "./user/useAuth";
 import { getQueryClient } from "@/services/queryClient";
 
@@ -142,6 +149,108 @@ export const useDeleteChoreMutation = () => {
           query.queryKey[0] === "chores" &&
           (query.queryKey[1] === "by-room" ||
             query.queryKey[1] === "assigned-to-user"),
+      });
+    },
+  });
+};
+
+// Chore Completion Hooks
+export const useChoresWithCompletionStatusQuery = (
+  roomId: number,
+  userId?: number
+) => {
+  return useQuery({
+    queryKey: ["chores", "with-completion-status", roomId, userId],
+    queryFn: async (): Promise<ChoreWithCompletionStatus[]> => {
+      const params = userId ? `?user_id=${userId}` : "";
+      const res = await axiosClient.get(
+        `/api/chores/room/${roomId}/with-completion-status${params}`
+      );
+      return res.data;
+    },
+    enabled: !!roomId,
+  });
+};
+
+export const useCompleteChoreMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      choreId,
+      membershipId,
+      completionRequest,
+    }: {
+      choreId: number;
+      membershipId: number;
+      completionRequest: ChoreCompletionCreateRequest;
+    }) => {
+      const res = await axiosClient.post(
+        `/api/chores/${choreId}/complete?membership_id=${membershipId}`,
+        completionRequest
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      // Invalidate all chore-related queries
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === "chores",
+      });
+    },
+  });
+};
+
+export const usePendingCompletionsByRoomQuery = (roomId: number) => {
+  return useQuery({
+    queryKey: ["chores", "pending-completions", roomId],
+    queryFn: async () => {
+      const res = await axiosClient.get(
+        `/api/chores/room/${roomId}/pending-completions`
+      );
+      return res.data as ChoreCompletion[];
+    },
+    enabled: !!roomId && roomId > 0,
+  });
+};
+
+export const useUserCompletionsQuery = (userId: number, roomId?: number) => {
+  return useQuery({
+    queryKey: ["chores", "user-completions", userId, roomId],
+    queryFn: async () => {
+      const params = new URLSearchParams({ user_id: String(userId) });
+      if (roomId) params.append("room_id", String(roomId));
+
+      const res = await axiosClient.get(
+        `/api/chores/user-completions?${params}`
+      );
+      return res.data as ChoreCompletion[];
+    },
+    enabled: !!userId && userId > 0,
+  });
+};
+
+export const useVerifyCompletionMutation = () => {
+  return useMutation({
+    mutationFn: async ({
+      completionId,
+      membershipId,
+      verificationRequest,
+    }: {
+      completionId: number;
+      membershipId: number;
+      verificationRequest: ChoreVerificationCreateRequest;
+    }) => {
+      const res = await axiosClient.post(
+        `/api/chores/completions/${completionId}/verify?verified_by_membership_id=${membershipId}`,
+        verificationRequest
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      // Invalidate completion-related queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === "chores" &&
+          (query.queryKey.includes("pending-completions") ||
+            query.queryKey.includes("with-completion-status")),
       });
     },
   });

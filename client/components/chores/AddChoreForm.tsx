@@ -33,6 +33,10 @@ interface AddChoreFormProps {
   setTimingInput: (time: string) => void;
   description: string | undefined;
   setDescription: (description: string | undefined) => void;
+  approvalRequired: boolean;
+  setApprovalRequired: (required: boolean) => void;
+  photoRequired: boolean;
+  setPhotoRequired: (required: boolean) => void;
   members: Member[];
   onSave: () => void;
   isPending: boolean;
@@ -54,6 +58,10 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   setTimingInput,
   description,
   setDescription,
+  approvalRequired,
+  setApprovalRequired,
+  photoRequired,
+  setPhotoRequired,
   members,
   onSave,
   isPending,
@@ -211,6 +219,92 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
               numberOfLines={6}
               style={{ minHeight: 120 }}
             />
+          </View>
+
+          {/* Approval Settings Section */}
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
+            <View className="flex-row items-center mb-6">
+              <View className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full items-center justify-center mr-4">
+                <Ionicons name="shield-checkmark" size={24} color="#f97316" />
+              </View>
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
+                Approval Settings
+              </Text>
+            </View>
+
+            <View className="space-y-4">
+              {/* Approval Required Toggle */}
+              <View className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                <View className="flex-1 mr-4">
+                  <Text className="text-base font-medium text-neutral-900 dark:text-white">
+                    Approval Required
+                  </Text>
+                  <Text className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                    Require admin approval when members complete this chore
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    setApprovalRequired(!approvalRequired);
+                    if (!approvalRequired) {
+                      setPhotoRequired(false); // Reset photo requirement if disabling approval
+                    }
+                  }}
+                  className={`w-12 h-7 rounded-full border-2 ${
+                    approvalRequired
+                      ? "bg-blue-600 border-blue-600"
+                      : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
+                  }`}
+                >
+                  <View
+                    className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+                      approvalRequired ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Photo Required Toggle - Only shown if approval is required */}
+              {approvalRequired && (
+                <View className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                  <View className="flex-1 mr-4">
+                    <Text className="text-base font-medium text-neutral-900 dark:text-white">
+                      Photo Proof Required
+                    </Text>
+                    <Text className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                      Members must provide photo evidence when completing this
+                      chore
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setPhotoRequired(!photoRequired)}
+                    className={`w-12 h-7 rounded-full border-2 ${
+                      photoRequired
+                        ? "bg-blue-600 border-blue-600"
+                        : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
+                    }`}
+                  >
+                    <View
+                      className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+                        photoRequired ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Info text explaining the flow */}
+              <View className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <Text className="text-sm text-blue-700 dark:text-blue-300">
+                  💡{" "}
+                  {approvalRequired
+                    ? photoRequired
+                      ? "Members will need to upload a photo and wait for admin approval when completing this chore."
+                      : "Members will mark the chore as complete, but it will need admin approval before being considered finished."
+                    : "Members can mark this chore as complete immediately without requiring approval."}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </ScrollView>

@@ -237,6 +237,25 @@ class MembershipRepository:
                 "message": f"User {target_name} was successfully removed from the room."
             }
     
+    def get_membership_by_id(self, membership_id: int):
+        sql = """
+            SELECT membership_id, user_id, room_id, role
+            FROM room_membership
+            WHERE membership_id = %s AND is_active = TRUE
+        """
+        result = run_sql(sql, (membership_id,))
+
+        if not result:
+            return None
+        
+        membership_id, user_id, room_id, role = result[0]
+        return {
+            "membership_id": membership_id,
+            "user_id": user_id,
+            "room_id": room_id,
+            "role": role
+        }
+    
     def _delete_room_completely(self, room_id: int):
         """
         Delete room and all related data completely

@@ -148,25 +148,27 @@ CREATE TABLE
     )
   );
 
-CREATE TABLE
-  "chore" (
-    "chore_id" SERIAL PRIMARY KEY,
-    "room_id" INTEGER NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "frequency" VARCHAR(50) NOT NULL,
-    "frequency_value" INTEGER,
-    "day_of_week" INTEGER,
-    "timing" TIME,
-    "description" TEXT,
-    "start_date" DATE,
-    "last_completed" TIMESTAMP,
-    "assigned_to" INTEGER,
-    "is_active" BOOLEAN DEFAULT TRUE,
-    "created_at" TIMESTAMPTZ DEFAULT now (),
-    "updated_at" TIMESTAMPTZ DEFAULT now (),
-    CONSTRAINT "FK_chore_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id"),
-    CONSTRAINT "FK_chore_assigned_to" FOREIGN KEY ("assigned_to") REFERENCES "room_membership" ("membership_id")
-  );
+CREATE TABLE "chore" (
+  "chore_id" SERIAL PRIMARY KEY,
+  "room_id" INTEGER NOT NULL,
+  "name" VARCHAR(255) NOT NULL,
+  "frequency" VARCHAR(50) NOT NULL,
+  "frequency_value" INTEGER,
+  "day_of_week" INTEGER,
+  "timing" TIME,
+  "description" TEXT,
+  "start_date" DATE,
+  "last_completed" TIMESTAMP,
+  "assigned_to" INTEGER,
+  "approval_required" BOOLEAN DEFAULT FALSE,
+  "photo_required" BOOLEAN DEFAULT FALSE,
+  "is_active" BOOLEAN DEFAULT TRUE,
+  "created_at" TIMESTAMPTZ DEFAULT now(),
+  "updated_at" TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT "FK_chore_room_id" FOREIGN KEY ("room_id") REFERENCES "room" ("room_id"),
+  CONSTRAINT "FK_chore_assigned_to" FOREIGN KEY ("assigned_to") REFERENCES "room_membership" ("membership_id")
+);
+
 
 CREATE TABLE
   "chore_assignment" (
@@ -188,7 +190,6 @@ CREATE TABLE
     "completed_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "photo_url" TEXT,
     "status" VARCHAR(50) DEFAULT 'pending',
-    "points_earned" INTEGER DEFAULT 0,
     "created_at" TIMESTAMPTZ DEFAULT now (),
     CONSTRAINT "FK_chore_completion_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
     CONSTRAINT "FK_chore_completion_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id")
