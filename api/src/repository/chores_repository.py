@@ -149,6 +149,7 @@ class ChoreRepository:
             self.unassign_chore(chore_id)
 
     def delete_chore(self, chore_id: int):
+        """Delete a chore (database CASCADE will handle related data)"""
         sql = "DELETE FROM chore WHERE chore_id = %s"
         run_sql(sql, (chore_id,))
 

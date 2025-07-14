@@ -191,7 +191,7 @@ CREATE TABLE
     "photo_url" TEXT,
     "status" VARCHAR(50) DEFAULT 'pending',
     "created_at" TIMESTAMPTZ DEFAULT now (),
-    CONSTRAINT "FK_chore_completion_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
+    CONSTRAINT "FK_chore_completion_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id") ON DELETE CASCADE,
     CONSTRAINT "FK_chore_completion_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id")
   );
 
@@ -203,7 +203,7 @@ CREATE TABLE
     "verification_type" VARCHAR(20) NOT NULL,
     "comment" TEXT,
     "verified_at" TIMESTAMPTZ DEFAULT now (),
-    CONSTRAINT "FK_chore_verification_completion_id" FOREIGN KEY ("completion_id") REFERENCES "chore_completion" ("completion_id"),
+    CONSTRAINT "FK_chore_verification_completion_id" FOREIGN KEY ("completion_id") REFERENCES "chore_completion" ("completion_id") ON DELETE CASCADE,
     CONSTRAINT "FK_chore_verification_verified_by" FOREIGN KEY ("verified_by") REFERENCES "room_membership" ("membership_id")
   );
 
@@ -215,7 +215,7 @@ CREATE TABLE
     "assigned_at" TIMESTAMPTZ DEFAULT now (),
     "completed_at" TIMESTAMPTZ,
     "status" VARCHAR(50) DEFAULT 'assigned',
-    CONSTRAINT "FK_chore_assignment_history_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
+    CONSTRAINT "FK_chore_assignment_history_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id") ON DELETE CASCADE,
     CONSTRAINT "FK_chore_assignment_history_membership_id" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id")
   );
 
@@ -229,7 +229,7 @@ CREATE TABLE
     "message" TEXT,
     "requested_at" TIMESTAMPTZ DEFAULT now (),
     "responded_at" TIMESTAMPTZ,
-    CONSTRAINT "FK_chore_swap_request_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id"),
+    CONSTRAINT "FK_chore_swap_request_chore_id" FOREIGN KEY ("chore_id") REFERENCES "chore" ("chore_id") ON DELETE CASCADE,
     CONSTRAINT "FK_chore_swap_request_from_membership" FOREIGN KEY ("from_membership") REFERENCES "room_membership" ("membership_id"),
     CONSTRAINT "FK_chore_swap_request_to_membership" FOREIGN KEY ("to_membership") REFERENCES "room_membership" ("membership_id")
   );
