@@ -24,10 +24,8 @@ import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { Colors } from "@/constants/Colors";
 import { useState, useEffect } from "react";
 import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
-import { SwapRequestNotificationBanner } from "@/components/chores/SwapRequestNotificationBanner";
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
 import { ChoreVerificationModal } from "@/components/chores/ChoreVerificationModal";
-import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
 import { RoomNotificationModal } from "@/components/notifications/RoomNotificationModal";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -69,16 +67,6 @@ const RoomChoresScreen = () => {
 
   // Only admins can verify completions
   const canVerify = permissions.hasPermission(Role.ADMIN);
-
-  // Debug logging
-  console.log("Debug - Room verification banner:", {
-    roomId: roomIdNum,
-    canVerify,
-    isAdmin: permissions.isAdmin,
-    role: permissions.role,
-    pendingCount: pendingCompletions.length,
-    pendingCompletions: pendingCompletions,
-  });
 
   const router = useRouter();
 
@@ -198,21 +186,9 @@ const RoomChoresScreen = () => {
             </View>
           </View>
 
-          {/* Swap Request Notification Banner */}
-          {currentMembershipId && (
-            <SwapRequestNotificationBanner
-              requestCount={pendingRequestsForUser.length}
-              onPress={() => setShowSwapRequestModal(true)}
-            />
-          )}
+          {/* Swap Request Notification Banner - Removed since we now have unified notifications */}
 
-          {/* Verification Banner */}
-          {canVerify && pendingCompletions.length > 0 && (
-            <PendingVerificationsBanner
-              pendingCount={pendingCompletions.length}
-              onPress={() => setShowVerificationModal(true)}
-            />
-          )}
+          {/* Verification Banner - Removed since we now have unified notifications */}
 
           <ParallaxScrollViewY>
             {roomId && <ChoreList roomId={roomId} />}
@@ -303,7 +279,7 @@ const RoomChoresScreen = () => {
         isVisible={showNotificationModal}
         onClose={() => setShowNotificationModal(false)}
         swapRequests={swapRequests}
-        pendingCompletions={pendingCompletions}
+        pendingCompletions={pendingCompletions as any} // Backend returns extended completion data
         onSwapRequestAction={() => {
           setShowNotificationModal(false);
           setShowSwapRequestModal(true);

@@ -12,11 +12,16 @@ import { formatDistance } from "date-fns";
 import { ChoreSwapRequest } from "@/models/ChoreSwapRequest";
 import { ChoreCompletion } from "@/models/Chore";
 
+interface ExtendedChoreCompletion extends ChoreCompletion {
+  choreName?: string;
+  completedBy?: string;
+}
+
 interface RoomNotificationModalProps {
   isVisible: boolean;
   onClose: () => void;
   swapRequests: ChoreSwapRequest[];
-  pendingCompletions: ChoreCompletion[];
+  pendingCompletions: ExtendedChoreCompletion[];
   onSwapRequestAction: () => void;
   onVerificationAction: () => void;
   isAdmin: boolean;
@@ -159,10 +164,14 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
                   <View className="flex-row items-start justify-between">
                     <View className="flex-1">
                       <ThemedText className="text-base font-medium text-gray-900 dark:text-white mb-1">
-                        Chore completion awaiting verification
+                        {completion.completedBy
+                          ? `${completion.completedBy} completed a chore`
+                          : "Chore completion awaiting verification"}
                       </ThemedText>
                       <ThemedText className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                        Chore ID: {completion.choreId}
+                        {completion.choreName
+                          ? `Chore: ${completion.choreName}`
+                          : `Chore ID: ${completion.choreId}`}
                       </ThemedText>
                       <View className="flex-row items-center">
                         {completion.photoUrl && (
