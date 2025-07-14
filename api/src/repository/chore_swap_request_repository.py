@@ -1,5 +1,4 @@
 from src.models.chore_swap_request import (
-    ChoreSwapRequest,
     ChoreSwapRequestWithDetails,
     ChoreSwapRequestCreateRequest,
     ChoreSwapRequestResponseRequest
@@ -105,17 +104,14 @@ class ChoreSwapRequestRepository:
         if not result:
             return None
         
-        # If accepted, we need to swap the chore assignments
         if response.status == 'accepted':
             self._execute_chore_swap(swap_id)
-            # After successful swap, cancel other pending requests for this chore if needed
             self._cancel_redundant_swap_requests(swap_id)
         
         return {"swap_id": result[0][0], "status": response.status}
     
     def _execute_chore_swap(self, swap_id: int):
         """Execute the actual chore assignment swap"""
-        # Get swap request details
         swap_sql = """
             SELECT chore_id, from_membership, to_membership
             FROM chore_swap_request
@@ -127,14 +123,12 @@ class ChoreSwapRequestRepository:
         
         chore_id, from_membership, to_membership = swap_result[0]
         
-        # Remove current assignment for the requesting user
         remove_sql = """
             DELETE FROM chore_assignment 
             WHERE chore_id = %s AND membership_id = %s
         """
         run_sql(remove_sql, (chore_id, from_membership))
         
-        # Add assignment for the accepting user
         add_sql = """
             INSERT INTO chore_assignment (chore_id, membership_id, assigned_at, is_active)
             VALUES (%s, %s, NOW(), TRUE)
@@ -145,9 +139,8 @@ class ChoreSwapRequestRepository:
     
     def _cancel_redundant_swap_requests(self, accepted_swap_id: int):
         """Cancel other pending swap requests for the same chore from the same requester 
-        if enough people have accepted to cover the original assignment"""
+        when one request has been accepted"""
         
-        # Get details of the accepted swap request
         swap_details_sql = """
             SELECT chore_id, from_membership
             FROM chore_swap_request
@@ -159,47 +152,15 @@ class ChoreSwapRequestRepository:
         
         chore_id, original_from_membership = swap_result[0]
         
-        # Count how many people were originally assigned to this chore (including the requester)
-        original_assigned_sql = """
-            SELECT COUNT(*) 
-            FROM chore_assignment 
-            WHERE chore_id = %s AND is_active = TRUE
-        """
-        original_result = run_sql(original_assigned_sql, (chore_id,))
-        original_assigned_count = original_result[0][0] if original_result else 0
-        
-        # Count how many swap requests from this requester for this chore have been accepted
-        accepted_count_sql = """
-            SELECT COUNT(*)
-            FROM chore_swap_request
+        cancel_sql = """
+            UPDATE chore_swap_request 
+            SET status = 'cancelled', responded_at = NOW()
             WHERE chore_id = %s 
             AND from_membership = %s 
-            AND status = 'accepted'
+            AND status = 'pending'
+            AND swap_id != %s
         """
-        accepted_result = run_sql(accepted_count_sql, (chore_id, original_from_membership))
-        accepted_count = accepted_result[0][0] if accepted_result else 0
-        
-        # Check if the original requester was assigned to this chore
-        requester_assigned_sql = """
-            SELECT COUNT(*)
-            FROM chore_assignment
-            WHERE chore_id = %s AND membership_id = %s AND is_active = TRUE
-        """
-        requester_result = run_sql(requester_assigned_sql, (chore_id, original_from_membership))
-        requester_was_assigned = requester_result[0][0] > 0 if requester_result else False
-        
-        # If the requester was assigned and we have enough acceptances to cover their part,
-        # cancel remaining pending requests from this requester
-        if requester_was_assigned and accepted_count >= 1:
-            cancel_sql = """
-                UPDATE chore_swap_request 
-                SET status = 'cancelled', responded_at = NOW()
-                WHERE chore_id = %s 
-                AND from_membership = %s 
-                AND status = 'pending'
-                AND swap_id != %s
-            """
-            run_sql(cancel_sql, (chore_id, original_from_membership, accepted_swap_id))
+        run_sql(cancel_sql, (chore_id, original_from_membership, accepted_swap_id))
     
     def cancel_swap_request(self, swap_id: int, membership_id: int):
         """Cancel a pending swap request (only by the requester)"""
