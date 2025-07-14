@@ -48,9 +48,7 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
           `"${chore.name}" has been submitted for admin review. You'll be notified when it's approved!`
         );
       } else {
-        toastSuccess(
-          `"${chore.name}" completed successfully! Points have been added to your account.`
-        );
+        toastSuccess(`"${chore.name}" completed successfully!`);
       }
       onClose();
     } catch (error) {
@@ -192,8 +190,8 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
                     }`}
                   >
                     {chore.approvalRequired
-                      ? "Once you submit, a room admin will review and approve your work before you earn points."
-                      : "This chore will be marked as complete immediately and you'll earn points right away."}
+                      ? "Once you submit, a room admin will review and approve your work."
+                      : "This chore will be marked as complete immediately."}
                   </ThemedText>
                 </View>
               </View>

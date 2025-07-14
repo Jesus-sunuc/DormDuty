@@ -68,7 +68,6 @@ class ChoreCompletion(BaseModel):
     completed_at: datetime
     photo_url: Optional[str] = None
     status: str = "pending"  # pending, approved, rejected
-    points_earned: int = 0
     created_at: datetime
 
 class ChoreCompletionCreateRequest(BaseModel):

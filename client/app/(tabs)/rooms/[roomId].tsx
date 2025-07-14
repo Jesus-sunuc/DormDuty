@@ -28,6 +28,7 @@ import { SwapRequestNotificationBanner } from "@/components/chores/SwapRequestNo
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
 import { ChoreVerificationModal } from "@/components/chores/ChoreVerificationModal";
 import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
+import { RoomNotificationModal } from "@/components/notifications/RoomNotificationModal";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { Role } from "@/models/Membership";
@@ -57,6 +58,7 @@ const RoomChoresScreen = () => {
   const [membersExpanded, setMembersExpanded] = useState(false);
   const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   // Get user's membership in this room for verification
   const { data: membership } = useMembershipQuery(user?.userId || 0, roomIdNum);
@@ -104,6 +106,10 @@ const RoomChoresScreen = () => {
       request.toMembership === currentMembershipId
   );
 
+  // Calculate total notifications
+  const totalNotifications =
+    pendingRequestsForUser.length + (canVerify ? pendingCompletions.length : 0);
+
   if (!roomId) {
     return (
       <LoadingAndErrorHandling>
@@ -130,6 +136,23 @@ const RoomChoresScreen = () => {
                   Room Chores
                 </ThemedText>
               </View>
+              <TouchableOpacity
+                onPress={() => setShowNotificationModal(true)}
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center mr-2 relative"
+              >
+                <Ionicons
+                  name="notifications-outline"
+                  size={24}
+                  color="#6b7280"
+                />
+                {totalNotifications > 0 && (
+                  <View className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 items-center justify-center">
+                    <ThemedText className="text-xs font-bold text-white">
+                      {totalNotifications > 9 ? "9+" : totalNotifications}
+                    </ThemedText>
+                  </View>
+                )}
+              </TouchableOpacity>
 
               {permissions.isAdmin && (
                 <TouchableOpacity
@@ -274,6 +297,24 @@ const RoomChoresScreen = () => {
           onRequestUpdate={refetchSwapRequests}
         />
       )}
+
+      {/* Unified Notification Modal */}
+      <RoomNotificationModal
+        isVisible={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+        swapRequests={swapRequests}
+        pendingCompletions={pendingCompletions}
+        onSwapRequestAction={() => {
+          setShowNotificationModal(false);
+          setShowSwapRequestModal(true);
+        }}
+        onVerificationAction={() => {
+          setShowNotificationModal(false);
+          setShowVerificationModal(true);
+        }}
+        isAdmin={canVerify}
+        currentMembershipId={currentMembershipId}
+      />
     </View>
   );
 };

@@ -42,7 +42,6 @@ export interface ChoreCompletion {
   completedAt: string;
   photoUrl?: string;
   status: "pending" | "approved" | "rejected";
-  pointsEarned: number;
   createdAt: string;
 }
 

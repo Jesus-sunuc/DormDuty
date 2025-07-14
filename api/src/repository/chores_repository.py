@@ -246,7 +246,7 @@ class ChoreRepository:
         """Get all pending completions for a room"""
         sql = """
             SELECT cc.completion_id, cc.chore_id, cc.membership_id, cc.completed_at, 
-                   cc.photo_url, cc.status, cc.points_earned, cc.created_at,
+                   cc.photo_url, cc.status, cc.created_at,
                    c.name as chore_name, u.name as completed_by_name
             FROM chore_completion cc
             JOIN chore c ON cc.chore_id = c.chore_id
@@ -267,10 +267,9 @@ class ChoreRepository:
                 "completedAt": row[3],
                 "photoUrl": row[4],
                 "status": row[5],
-                "pointsEarned": row[6],
-                "createdAt": row[7],
-                "choreName": row[8],
-                "completedBy": row[9]
+                "createdAt": row[6],
+                "choreName": row[7],
+                "completedBy": row[8]
             }
             completions.append(completion)
         
@@ -312,14 +311,13 @@ class ChoreRepository:
         
         # Update completion status based on verification
         status = "approved" if verification_request.verification_type == "approved" else "rejected"
-        points = 10 if status == "approved" else 0  # Simple point system
         
         update_sql = """
             UPDATE chore_completion 
-            SET status = %s, points_earned = %s 
+            SET status = %s 
             WHERE completion_id = %s
         """
-        run_sql(update_sql, (status, points, verification_request.completion_id))
+        run_sql(update_sql, (status, verification_request.completion_id))
         
         # If approved, update the chore's last_completed timestamp
         if status == "approved":
@@ -348,7 +346,6 @@ class ChoreRepository:
                    cc.completed_at,
                    cc.photo_url,
                    cc.status as completion_status,
-                   cc.points_earned,
                    CASE 
                        WHEN c.frequency = 'daily' THEN 
                            CASE WHEN c.last_completed IS NULL OR c.last_completed < CURRENT_DATE 
@@ -379,7 +376,7 @@ class ChoreRepository:
                      c.day_of_week, c.timing, c.description, c.start_date, 
                      c.last_completed, c.assigned_to, c.approval_required, c.photo_required,
                      c.is_active, c.created_at, c.updated_at,
-                     cc.completion_id, cc.completed_at, cc.photo_url, cc.status, cc.points_earned
+                     cc.completion_id, cc.completed_at, cc.photo_url, cc.status
             ORDER BY is_due DESC, c.name ASC
         """
         
