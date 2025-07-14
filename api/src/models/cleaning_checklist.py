@@ -24,6 +24,7 @@ class CleaningCheckStatus(BaseModel):
     membership_id: int
     marked_date: datetime
     is_completed: bool
+    is_assigned: bool = False
     updated_at: datetime
 
 class CleaningCheckStatusCreateRequest(BaseModel):
@@ -31,6 +32,7 @@ class CleaningCheckStatusCreateRequest(BaseModel):
     membership_id: int
     marked_date: str  # YYYY-MM-DD format
     is_completed: bool = False
+    is_assigned: bool = False
 
 class CleaningCheckStatusUnassignRequest(BaseModel):
     checklist_item_id: int

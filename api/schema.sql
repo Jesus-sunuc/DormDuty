@@ -108,6 +108,7 @@ CREATE TABLE
     "membership_id" INTEGER NOT NULL,
     "marked_date" DATE NOT NULL,
     "is_completed" BOOLEAN DEFAULT FALSE,
+    "is_assigned" BOOLEAN DEFAULT FALSE,
     "updated_at" TIMESTAMPTZ DEFAULT now (),
     CONSTRAINT "FK_status_checklist_item" FOREIGN KEY ("checklist_item_id") REFERENCES "cleaning_checklist" ("checklist_item_id") ON DELETE CASCADE,
     CONSTRAINT "FK_status_membership" FOREIGN KEY ("membership_id") REFERENCES "room_membership" ("membership_id") ON DELETE CASCADE,

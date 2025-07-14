@@ -16,6 +16,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import {
   useRoomChecklistQuery,
   useCreateChecklistItemMutation,
+  useUpdateChecklistItemMutation,
   useDeleteChecklistItemMutation,
   useToggleTaskCompletionMutation,
   useAssignTaskMutation,
@@ -37,8 +38,12 @@ const ToolsScreen = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedMemberIds, setSelectedMemberIds] = useState<number[]>([]);
   const [currentDate] = useState(new Date().toISOString().split("T")[0]); // YYYY-MM-DD format
+  const [editingTask, setEditingTask] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
+  const [editTaskName, setEditTaskName] = useState("");
 
-  // Queries
   const { data: rooms = [], isLoading: roomsLoading } = useRoomsByUserQuery();
   const { data: membership } = useMembershipQuery(
     user?.userId || 0,
@@ -51,13 +56,12 @@ const ToolsScreen = () => {
   const { data: cleaningTasks = [], isLoading: tasksLoading } =
     useRoomChecklistQuery(selectedRoom?.roomId || 0, currentDate);
 
-  // Permissions
   const { isAdmin } = usePermissions(selectedRoom?.roomId || 0);
 
-  // Mutations
   const createTaskMutation = useCreateChecklistItemMutation(
     selectedRoom?.roomId || 0
   );
+  const updateTaskMutation = useUpdateChecklistItemMutation();
   const deleteTaskMutation = useDeleteChecklistItemMutation(
     selectedRoom?.roomId || 0
   );
@@ -71,14 +75,12 @@ const ToolsScreen = () => {
   );
   const initializeChecklistMutation = useInitializeRoomChecklistMutation();
 
-  // Set default room
   useEffect(() => {
     if (rooms.length > 0 && !selectedRoom) {
       setSelectedRoom(rooms[0]);
     }
   }, [rooms, selectedRoom]);
 
-  // Initialize checklist if empty and room is selected
   useEffect(() => {
     if (selectedRoom && cleaningTasks.length === 0 && !tasksLoading) {
       initializeChecklistMutation.mutate(selectedRoom.roomId);
@@ -148,21 +150,29 @@ const ToolsScreen = () => {
   ) => {
     if (!selectedRoom) return;
 
-    // Use the first assigned membership or current user's membership
-    let membershipId = membership?.membershipId;
-    if (assignedMembershipIds && assignedMembershipIds !== "0") {
-      const ids = assignedMembershipIds
-        .split(",")
-        .map((id) => parseInt(id.trim()));
-      membershipId = ids[0]; // Use the first assigned member
-    }
+    let membershipIdToUse: number;
 
-    if (!membershipId) return;
+    if (
+      assignedMembershipIds &&
+      assignedMembershipIds !== "0" &&
+      assignedMembershipIds !== ""
+    ) {
+      // Task is assigned to someone, use the first assigned member to toggle completion
+      const assignedIds = assignedMembershipIds
+        .split(",")
+        .map((id) => parseInt(id));
+      membershipIdToUse = assignedIds[0];
+    } else {
+      // Task is not assigned, use current user's membership for completion tracking
+      const currentUserMembership = membership?.membershipId;
+      if (!currentUserMembership) return;
+      membershipIdToUse = currentUserMembership;
+    }
 
     try {
       await toggleTaskMutation.mutateAsync({
         checklistItemId,
-        membershipId,
+        membershipId: membershipIdToUse,
         markedDate: currentDate,
       });
     } catch (error) {
@@ -175,6 +185,33 @@ const ToolsScreen = () => {
       await deleteTaskMutation.mutateAsync(checklistItemId);
     } catch (error) {
       console.error("Failed to delete task:", error);
+    }
+  };
+
+  const startEditTask = (checklistItemId: number, currentTitle: string) => {
+    setEditingTask({ id: checklistItemId, title: currentTitle });
+    setEditTaskName(currentTitle);
+  };
+
+  const cancelEditTask = () => {
+    setEditingTask(null);
+    setEditTaskName("");
+  };
+
+  const saveEditTask = async () => {
+    if (!editingTask || !editTaskName.trim()) return;
+
+    try {
+      await updateTaskMutation.mutateAsync({
+        checklistItemId: editingTask.id,
+        update: {
+          title: editTaskName.trim(),
+        },
+      });
+      setEditingTask(null);
+      setEditTaskName("");
+    } catch (error) {
+      console.error("Failed to update task:", error);
     }
   };
 
@@ -195,6 +232,7 @@ const ToolsScreen = () => {
     roomsLoading ||
     tasksLoading ||
     createTaskMutation.isPending ||
+    updateTaskMutation.isPending ||
     deleteTaskMutation.isPending ||
     toggleTaskMutation.isPending ||
     assignTaskMutation.isPending ||
@@ -312,54 +350,105 @@ const ToolsScreen = () => {
                       </TouchableOpacity>
 
                       <View className="flex-1">
-                        <ThemedText
-                          className={`font-medium ${
-                            task.isCompleted
-                              ? "text-green-700 dark:text-green-300 line-through"
-                              : "text-gray-900 dark:text-white"
-                          }`}
-                        >
-                          {task.title}
-                        </ThemedText>
-                        {task.assignedTo && (
-                          <ThemedText className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Assigned to: {task.assignedTo}
-                          </ThemedText>
+                        {editingTask?.id === task.checklistItemId ? (
+                          <View className="flex-1">
+                            <TextInput
+                              value={editTaskName}
+                              onChangeText={setEditTaskName}
+                              className="bg-white dark:bg-neutral-700 rounded-lg p-2 text-gray-900 dark:text-white mb-2"
+                              placeholderTextColor="#9ca3af"
+                            />
+                            <View className="flex-row space-x-2">
+                              <TouchableOpacity
+                                onPress={saveEditTask}
+                                className="flex-1 bg-blue-500 rounded-lg py-1 items-center"
+                              >
+                                <ThemedText className="text-white text-xs font-medium">
+                                  Save
+                                </ThemedText>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={cancelEditTask}
+                                className="flex-1 bg-gray-300 dark:bg-neutral-600 rounded-lg py-1 items-center"
+                              >
+                                <ThemedText className="text-gray-700 dark:text-gray-300 text-xs font-medium">
+                                  Cancel
+                                </ThemedText>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ) : (
+                          <>
+                            <ThemedText
+                              className={`font-medium ${
+                                task.isCompleted
+                                  ? "text-green-700 dark:text-green-300 line-through"
+                                  : "text-gray-900 dark:text-white"
+                              }`}
+                            >
+                              {task.title}
+                            </ThemedText>
+                            {task.assignedTo && (
+                              <ThemedText className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Assigned to: {task.assignedTo}
+                              </ThemedText>
+                            )}
+                            {!task.assignedTo && (
+                              <ThemedText className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                Unassigned - Anyone can complete
+                              </ThemedText>
+                            )}
+                          </>
                         )}
                       </View>
 
-                      {isAdmin && (
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (task.assignedTo) {
-                              unassignTask(task.checklistItemId);
-                            } else {
-                              handleAssignClick(task.checklistItemId);
-                            }
-                          }}
-                          className={`px-3 py-1 rounded-lg mr-2 ${
-                            task.assignedTo
-                              ? "bg-blue-100 dark:bg-blue-900/30"
-                              : "bg-gray-200 dark:bg-neutral-700"
-                          }`}
-                        >
-                          <ThemedText className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                            {task.assignedTo ? "Unassign" : "Assign"}
-                          </ThemedText>
-                        </TouchableOpacity>
-                      )}
+                      {isAdmin && editingTask?.id !== task.checklistItemId && (
+                        <>
+                          <TouchableOpacity
+                            onPress={() => {
+                              if (task.assignedTo) {
+                                unassignTask(task.checklistItemId);
+                              } else {
+                                handleAssignClick(task.checklistItemId);
+                              }
+                            }}
+                            className={`px-3 py-1 rounded-lg mr-2 ${
+                              task.assignedTo
+                                ? "bg-blue-100 dark:bg-blue-900/30"
+                                : "bg-gray-200 dark:bg-neutral-700"
+                            }`}
+                          >
+                            <ThemedText className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                              {task.assignedTo ? "Unassign" : "Assign"}
+                            </ThemedText>
+                          </TouchableOpacity>
 
-                      {isAdmin && !task.isDefault && (
-                        <TouchableOpacity
-                          onPress={() => removeCustomTask(task.checklistItemId)}
-                          className="w-6 h-6 items-center justify-center"
-                        >
-                          <Ionicons
-                            name="trash-outline"
-                            size={16}
-                            color="#ef4444"
-                          />
-                        </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() =>
+                              startEditTask(task.checklistItemId, task.title)
+                            }
+                            className="w-6 h-6 items-center justify-center mr-2"
+                          >
+                            <Ionicons
+                              name="pencil-outline"
+                              size={16}
+                              color="#6b7280"
+                            />
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            onPress={() =>
+                              removeCustomTask(task.checklistItemId)
+                            }
+                            className="w-6 h-6 items-center justify-center"
+                          >
+                            <Ionicons
+                              name="trash-outline"
+                              size={16}
+                              color="#ef4444"
+                            />
+                          </TouchableOpacity>
+                        </>
                       )}
                     </View>
                   ))}
@@ -426,8 +515,9 @@ const ToolsScreen = () => {
                           color="#6b7280"
                         />
                         <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                          Only room administrators can add, assign, or delete
-                          tasks
+                          You can complete any task by tapping the checkboxes.
+                          Only room administrators can add, edit, assign, or
+                          delete tasks.
                         </ThemedText>
                       </View>
                     </View>

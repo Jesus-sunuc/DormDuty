@@ -20,8 +20,8 @@ class CleaningChecklistRepository:
             cl.title,
             cl.description,
             cl.is_default,
-            COALESCE(STRING_AGG(u.name, ', '), '') as assigned_to,
-            COALESCE(STRING_AGG(cs.membership_id::text, ','), '0') as assigned_membership_ids,
+            COALESCE(STRING_AGG(CASE WHEN cs.is_assigned = TRUE THEN u.name END, ', '), '') as assigned_to,
+            COALESCE(STRING_AGG(CASE WHEN cs.is_assigned = TRUE THEN cs.membership_id::text END, ','), '0') as assigned_membership_ids,
             COALESCE(BOOL_OR(cs.is_completed), false) as is_completed,
             MIN(cs.status_id) as status_id
         FROM cleaning_checklist cl
@@ -64,9 +64,9 @@ class CleaningChecklistRepository:
         return {"message": "Checklist item updated successfully"}
 
     def delete_checklist_item(self, checklist_item_id: int):
-        sql = "DELETE FROM cleaning_checklist WHERE checklist_item_id = %s AND is_default = FALSE"
+        sql = "DELETE FROM cleaning_checklist WHERE checklist_item_id = %s"
         run_sql(sql, (checklist_item_id,))
-        return {"message": "Custom checklist item deleted successfully"}
+        return {"message": "Checklist item deleted successfully"}
 
     def create_default_checklist(self, room_id: int):
         default_items = [
@@ -100,11 +100,12 @@ class CleaningChecklistRepository:
 class CleaningCheckStatusRepository:
     def create_or_update_status(self, status: CleaningCheckStatusCreateRequest):
         sql = """
-        INSERT INTO cleaning_check_status (checklist_item_id, membership_id, marked_date, is_completed, updated_at)
-        VALUES (%s, %s, %s, %s, NOW())
+        INSERT INTO cleaning_check_status (checklist_item_id, membership_id, marked_date, is_completed, is_assigned, updated_at)
+        VALUES (%s, %s, %s, %s, %s, NOW())
         ON CONFLICT (checklist_item_id, membership_id, marked_date)
         DO UPDATE SET 
             is_completed = EXCLUDED.is_completed,
+            is_assigned = EXCLUDED.is_assigned,
             updated_at = NOW()
         RETURNING status_id
         """
@@ -112,7 +113,8 @@ class CleaningCheckStatusRepository:
             status.checklist_item_id,
             status.membership_id,
             status.marked_date,
-            status.is_completed
+            status.is_completed,
+            status.is_assigned
         ))
         return {"status_id": result[0][0]}
 
@@ -121,7 +123,8 @@ class CleaningCheckStatusRepository:
             checklist_item_id=checklist_item_id,
             membership_id=membership_id,
             marked_date=marked_date,
-            is_completed=False
+            is_completed=False,
+            is_assigned=True
         )
         return self.create_or_update_status(status)
 
@@ -138,25 +141,28 @@ class CleaningCheckStatusRepository:
             checklist_item_id=checklist_item_id,
             membership_id=membership_id,
             marked_date=marked_date,
-            is_completed=True
+            is_completed=True,
+            is_assigned=False  # Just completing, not assigning
         )
         return self.create_or_update_status(status)
 
     def toggle_task(self, checklist_item_id: int, membership_id: int, marked_date: str):
         # Get current status
         sql = """
-        SELECT is_completed FROM cleaning_check_status
+        SELECT is_completed, is_assigned FROM cleaning_check_status
         WHERE checklist_item_id = %s AND membership_id = %s AND marked_date = %s
         """
         result = run_sql(sql, (checklist_item_id, membership_id, marked_date))
-        current_status = result[0][0] if result else False
+        current_completion = result[0][0] if result else False
+        current_assignment = result[0][1] if result else False
         
-        # Toggle it
+        # Toggle completion - keep assignment status as is, or set to False for new records
         status = CleaningCheckStatusCreateRequest(
             checklist_item_id=checklist_item_id,
             membership_id=membership_id,
             marked_date=marked_date,
-            is_completed=not current_status
+            is_completed=not current_completion,
+            is_assigned=current_assignment  # Keep existing assignment status, False for new records
         )
         return self.create_or_update_status(status)
 
