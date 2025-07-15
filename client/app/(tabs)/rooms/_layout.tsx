@@ -21,6 +21,24 @@ export default function RoomsLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[roomId]/notifications"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="[roomId]/verifications"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="[roomId]/swap-requests"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
