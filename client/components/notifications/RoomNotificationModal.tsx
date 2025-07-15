@@ -62,24 +62,27 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
         {/* Header */}
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-sm">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white">
-                Notifications
-              </ThemedText>
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {totalNotifications === 0
-                  ? "All caught up!"
-                  : `${totalNotifications} notification${totalNotifications !== 1 ? "s" : ""}`}
-              </ThemedText>
-            </View>
+        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6">
+          <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
               onPress={onClose}
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
             >
-              <Ionicons name="close" size={20} color="#6b7280" />
+              <Ionicons name="arrow-back" size={20} color="#6b7280" />
             </TouchableOpacity>
+            <View className="flex-1 mx-4">
+              <ThemedText className="text-xl font-bold text-center text-gray-900 dark:text-white">
+                Notifications
+              </ThemedText>
+            </View>
+            <View className="w-10" />
+          </View>
+          <View className="bg-gray-100 dark:bg-neutral-800 px-3 py-2 rounded-lg">
+            <ThemedText className="text-sm text-center text-gray-600 dark:text-gray-400">
+              {totalNotifications === 0
+                ? "No new notifications"
+                : `${totalNotifications} notification${totalNotifications !== 1 ? "s" : ""}`}
+            </ThemedText>
           </View>
         </View>
 
@@ -105,33 +108,34 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
                 <TouchableOpacity
                   key={request.swapId}
                   onPress={onSwapRequestAction}
-                  className="bg-white dark:bg-neutral-900 rounded-xl p-4 mb-3 border border-blue-200 dark:border-blue-800"
+                  className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border-l-4 border-blue-500"
                 >
-                  <View className="flex-row items-start justify-between">
+                  <View className="flex-row items-center mb-3">
+                    <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+                      <Ionicons name="person" size={18} color="#3b82f6" />
+                    </View>
                     <View className="flex-1">
-                      <ThemedText className="text-base font-medium text-gray-900 dark:text-white mb-1">
+                      <ThemedText className="text-base font-semibold text-gray-900 dark:text-white">
                         {request.fromUserName} wants to swap
                       </ThemedText>
-                      <ThemedText className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                        Chore: {request.choreName}
-                      </ThemedText>
-                      <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
+                      <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDistance(
                           new Date(request.requestedAt),
                           new Date(),
-                          {
-                            addSuffix: true,
-                          }
+                          { addSuffix: true }
                         )}
                       </ThemedText>
                     </View>
-                    <View className="ml-3">
-                      <Ionicons
-                        name="chevron-forward"
-                        size={16}
-                        color="#9ca3af"
-                      />
-                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color="#3b82f6"
+                    />
+                  </View>
+                  <View className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                    <ThemedText className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                      Chore: {request.choreName}
+                    </ThemedText>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -159,46 +163,47 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
                 <TouchableOpacity
                   key={completion.completionId}
                   onPress={onVerificationAction}
-                  className="bg-white dark:bg-neutral-900 rounded-xl p-4 mb-3 border border-orange-200 dark:border-orange-800"
+                  className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border-l-4 border-orange-500"
                 >
-                  <View className="flex-row items-start justify-between">
+                  <View className="flex-row items-center mb-3">
+                    <View className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-3">
+                      <Ionicons name="checkmark" size={18} color="#f97316" />
+                    </View>
                     <View className="flex-1">
-                      <ThemedText className="text-base font-medium text-gray-900 dark:text-white mb-1">
+                      <ThemedText className="text-base font-semibold text-gray-900 dark:text-white">
                         {completion.completedBy
                           ? `${completion.completedBy} completed a chore`
-                          : "Chore completion awaiting verification"}
+                          : "Chore completion pending"}
                       </ThemedText>
-                      <ThemedText className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                      <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                        {formatDistance(
+                          new Date(completion.completedAt),
+                          new Date(),
+                          { addSuffix: true }
+                        )}
+                      </ThemedText>
+                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color="#f97316"
+                    />
+                  </View>
+                  <View className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3">
+                    <View className="flex-row items-center justify-between">
+                      <ThemedText className="text-sm font-medium text-orange-800 dark:text-orange-300">
                         {completion.choreName
                           ? `Chore: ${completion.choreName}`
                           : `Chore ID: ${completion.choreId}`}
                       </ThemedText>
-                      <View className="flex-row items-center">
-                        {completion.photoUrl && (
-                          <View className="flex-row items-center mr-3">
-                            <Ionicons name="camera" size={12} color="#f97316" />
-                            <ThemedText className="text-xs text-orange-600 dark:text-orange-400 ml-1">
-                              Photo included
-                            </ThemedText>
-                          </View>
-                        )}
-                        <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatDistance(
-                            new Date(completion.completedAt),
-                            new Date(),
-                            {
-                              addSuffix: true,
-                            }
-                          )}
-                        </ThemedText>
-                      </View>
-                    </View>
-                    <View className="ml-3">
-                      <Ionicons
-                        name="chevron-forward"
-                        size={16}
-                        color="#9ca3af"
-                      />
+                      {completion.photoUrl && (
+                        <View className="flex-row items-center">
+                          <Ionicons name="camera" size={14} color="#f97316" />
+                          <ThemedText className="text-xs text-orange-600 dark:text-orange-400 ml-1">
+                            Photo
+                          </ThemedText>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </TouchableOpacity>
