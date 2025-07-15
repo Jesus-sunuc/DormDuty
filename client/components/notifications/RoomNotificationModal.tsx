@@ -60,7 +60,7 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
       onRequestClose={onClose}
     >
       <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-4 pb-4">
+        <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-6 pb-4 border-b border-gray-200 dark:border-neutral-800">
           <View className="flex-row">
             <TouchableOpacity
               onPress={onClose}
@@ -95,7 +95,7 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
           </View>
         </View>
 
-        <ScrollView className="flex-1 px-6 py-4">
+        <ScrollView className="flex-1 px-6 py-6">
           {relevantSwapRequests.length > 0 && (
             <View className="mb-6">
               <View className="flex-row items-center mb-4">
