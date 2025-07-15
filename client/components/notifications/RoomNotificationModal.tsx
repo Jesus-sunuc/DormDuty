@@ -47,7 +47,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
       request.toMembership === currentMembershipId
   );
 
-  // Only admins see verification requests
   const relevantCompletions = isAdmin ? pendingCompletions : [];
 
   const totalNotifications =
@@ -61,7 +60,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
       onRequestClose={onClose}
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        {/* Header */}
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
@@ -87,7 +85,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-4">
-          {/* Swap Requests Section */}
           {relevantSwapRequests.length > 0 && (
             <View className="mb-6">
               <View className="flex-row items-center mb-4">
@@ -142,7 +139,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
             </View>
           )}
 
-          {/* Verification Requests Section */}
           {relevantCompletions.length > 0 && (
             <View className="mb-6">
               <View className="flex-row items-center mb-4">
@@ -211,7 +207,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
             </View>
           )}
 
-          {/* Empty State */}
           {totalNotifications === 0 && (
             <View className="flex-1 items-center justify-center py-20">
               <View className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mb-4">

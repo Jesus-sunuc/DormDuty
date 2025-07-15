@@ -124,23 +124,6 @@ const RoomChoresScreen = () => {
                   Room Chores
                 </ThemedText>
               </View>
-              <TouchableOpacity
-                onPress={() => setShowNotificationModal(true)}
-                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center mr-2 relative"
-              >
-                <Ionicons
-                  name="notifications-outline"
-                  size={24}
-                  color="#6b7280"
-                />
-                {totalNotifications > 0 && (
-                  <View className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 items-center justify-center">
-                    <ThemedText className="text-xs font-bold text-white">
-                      {totalNotifications > 9 ? "9+" : totalNotifications}
-                    </ThemedText>
-                  </View>
-                )}
-              </TouchableOpacity>
 
               {permissions.isAdmin && (
                 <TouchableOpacity
@@ -165,6 +148,23 @@ const RoomChoresScreen = () => {
                   </ThemedText>
                 </TouchableOpacity>
               )}
+              <TouchableOpacity
+                onPress={() => setShowNotificationModal(true)}
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-2 relative"
+              >
+                <Ionicons
+                  name="notifications-outline"
+                  size={24}
+                  color="#6b7280"
+                />
+                {totalNotifications > 0 && (
+                  <View className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 items-center justify-center">
+                    <ThemedText className="text-xs font-bold text-white">
+                      {totalNotifications > 9 ? "9+" : totalNotifications}
+                    </ThemedText>
+                  </View>
+                )}
+              </TouchableOpacity>
             </View>
 
             <View className="mt-2">
