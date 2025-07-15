@@ -26,7 +26,6 @@ import { useState, useEffect } from "react";
 import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
 import { ChoreVerificationModalWrapper } from "@/components/chores/ChoreVerificationModalWrapper";
-import { RoomNotificationModal } from "@/components/notifications/RoomNotificationModal";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { Role } from "@/models/Membership";
@@ -56,7 +55,6 @@ const RoomChoresScreen = () => {
   const [membersExpanded, setMembersExpanded] = useState(false);
   const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const { data: membership } = useMembershipQuery(user?.userId || 0, roomIdNum);
 
@@ -141,7 +139,9 @@ const RoomChoresScreen = () => {
                 </TouchableOpacity>
               )}
               <TouchableOpacity
-                onPress={() => setShowNotificationModal(true)}
+                onPress={() =>
+                  router.push(`/(tabs)/rooms/${roomId}/notifications`)
+                }
                 className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-2 relative"
               >
                 <Ionicons
@@ -258,30 +258,6 @@ const RoomChoresScreen = () => {
           onRequestUpdate={refetchSwapRequests}
         />
       )}
-
-      <RoomNotificationModal
-        isVisible={showNotificationModal}
-        onClose={() => setShowNotificationModal(false)}
-        swapRequests={swapRequests}
-        pendingCompletions={pendingCompletions as any}
-        onSwapRequestAction={() => {
-          setShowNotificationModal(false);
-          setShowSwapRequestModal(true);
-        }}
-        onVerificationAction={() => {
-          console.log(
-            "🚀 Review button clicked - about to show verification modal"
-          );
-          setShowNotificationModal(false);
-          console.log(
-            "📱 Notification modal closed, now setting verification modal to true"
-          );
-          setShowVerificationModal(true);
-          console.log("✅ Verification modal state set to true");
-        }}
-        isAdmin={canVerify}
-        currentMembershipId={currentMembershipId}
-      />
     </View>
   );
 };
