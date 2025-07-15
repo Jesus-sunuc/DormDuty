@@ -59,28 +59,39 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6">
-          <View className="flex-row items-center justify-between mb-4">
+      <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
+        <View className="bg-white dark:bg-neutral-900 px-6 pt-4 pb-4">
+          <View className="flex-row">
             <TouchableOpacity
               onPress={onClose}
-              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+              className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-neutral-800 items-center justify-center"
             >
-              <Ionicons name="arrow-back" size={20} color="#6b7280" />
+              <Ionicons
+                name="chevron-back"
+                size={22}
+                color={colorScheme === "dark" ? "#d1d5db" : "#4b5563"}
+              />
             </TouchableOpacity>
-            <View className="flex-1 mx-4">
-              <ThemedText className="text-xl font-bold text-center text-gray-900 dark:text-white">
+
+            <View className="flex-1 flex-row items-center ml-2">
+              <ThemedText className="text-xl font-bold text-gray-900 dark:text-white mr-3">
                 Notifications
               </ThemedText>
+              {totalNotifications > 0 && (
+                <View className="bg-blue-500 dark:bg-blue-600 px-2 py-1 rounded-full min-w-[24px] items-center">
+                  <ThemedText className="text-white font-semibold text-sm">
+                    {totalNotifications > 99 ? "99+" : totalNotifications}
+                  </ThemedText>
+                </View>
+              )}
+              {totalNotifications === 0 && (
+                <View className="bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                  <Ionicons name="checkmark-circle" size={16} color="#10b981" />
+                </View>
+              )}
             </View>
+
             <View className="w-10" />
-          </View>
-          <View className="bg-gray-100 dark:bg-neutral-800 px-3 py-2 rounded-lg">
-            <ThemedText className="text-sm text-center text-gray-600 dark:text-gray-400">
-              {totalNotifications === 0
-                ? "No new notifications"
-                : `${totalNotifications} notification${totalNotifications !== 1 ? "s" : ""}`}
-            </ThemedText>
           </View>
         </View>
 
