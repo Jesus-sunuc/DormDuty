@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/user/useAuth";
 import { Header } from "@/components/ui/Header";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useState } from "react";
-import { ChoreVerificationModal } from "@/components/chores/ChoreVerificationModal";
+import { ChoreVerificationModalWrapper } from "@/components/chores/ChoreVerificationModalWrapper";
 import { Chore } from "@/models/Chore";
 import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
 import { ChoreCompletionModal } from "@/components/chores/ChoreCompletionModal";
@@ -222,7 +222,7 @@ export default function ChoresScreen() {
 
         {/* Verification Modal */}
         {canVerify && membership && (
-          <ChoreVerificationModal
+          <ChoreVerificationModalWrapper
             isVisible={showVerificationModal}
             onClose={() => setShowVerificationModal(false)}
             completions={pendingCompletions}

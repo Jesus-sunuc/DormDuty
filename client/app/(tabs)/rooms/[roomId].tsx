@@ -25,7 +25,7 @@ import { Colors } from "@/constants/Colors";
 import { useState, useEffect } from "react";
 import { useSwapRequestsByRoomQuery } from "@/hooks/choreSwapHooks";
 import { SwapRequestModal } from "@/components/chores/SwapRequestModal";
-import { ChoreVerificationModal } from "@/components/chores/ChoreVerificationModal";
+import { ChoreVerificationModalWrapper } from "@/components/chores/ChoreVerificationModalWrapper";
 import { RoomNotificationModal } from "@/components/notifications/RoomNotificationModal";
 import { useAuth } from "@/hooks/user/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -254,7 +254,7 @@ const RoomChoresScreen = () => {
       {/* Swap Request Modal */}
       {/* Verification Modal */}
       {canVerify && membership && (
-        <ChoreVerificationModal
+        <ChoreVerificationModalWrapper
           isVisible={showVerificationModal}
           onClose={() => setShowVerificationModal(false)}
           completions={pendingCompletions}
@@ -285,8 +285,15 @@ const RoomChoresScreen = () => {
           setShowSwapRequestModal(true);
         }}
         onVerificationAction={() => {
+          console.log(
+            "🚀 Review button clicked - about to show verification modal"
+          );
           setShowNotificationModal(false);
+          console.log(
+            "📱 Notification modal closed, now setting verification modal to true"
+          );
           setShowVerificationModal(true);
+          console.log("✅ Verification modal state set to true");
         }}
         isAdmin={canVerify}
         currentMembershipId={currentMembershipId}
