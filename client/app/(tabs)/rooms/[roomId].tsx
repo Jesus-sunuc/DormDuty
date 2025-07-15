@@ -58,22 +58,17 @@ const RoomChoresScreen = () => {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-  // Get user's membership in this room for verification
   const { data: membership } = useMembershipQuery(user?.userId || 0, roomIdNum);
 
-  // Get pending completions for verification (admin only)
   const { data: pendingCompletions = [] } =
     usePendingCompletionsByRoomQuery(roomIdNum);
 
-  // Only admins can verify completions
   const canVerify = permissions.hasPermission(Role.ADMIN);
 
   const router = useRouter();
 
-  // Refetch data when user changes
   useEffect(() => {
     if (user?.userId) {
-      // Invalidate and refetch all relevant queries when user changes
       queryClient.invalidateQueries({ queryKey: ["memberships"] });
       queryClient.invalidateQueries({ queryKey: ["chore-swap"] });
       refetchMembers();
@@ -81,20 +76,17 @@ const RoomChoresScreen = () => {
     }
   }, [user?.userId, queryClient, refetchMembers, refetchSwapRequests]);
 
-  // Get current user's membership ID in this room
   const currentUserMembership = members.find(
     (member) => member.userId === user?.userId
   );
   const currentMembershipId = currentUserMembership?.membershipId;
 
-  // Filter pending swap requests that are directed to the current user
   const pendingRequestsForUser = swapRequests.filter(
     (request) =>
       request.status === "pending" &&
       request.toMembership === currentMembershipId
   );
 
-  // Calculate total notifications
   const totalNotifications =
     pendingRequestsForUser.length + (canVerify ? pendingCompletions.length : 0);
 
@@ -186,10 +178,6 @@ const RoomChoresScreen = () => {
             </View>
           </View>
 
-          {/* Swap Request Notification Banner - Removed since we now have unified notifications */}
-
-          {/* Verification Banner - Removed since we now have unified notifications */}
-
           <ParallaxScrollViewY>
             {roomId && <ChoreList roomId={roomId} />}
           </ParallaxScrollViewY>
@@ -251,8 +239,6 @@ const RoomChoresScreen = () => {
         </View>
       )}
 
-      {/* Swap Request Modal */}
-      {/* Verification Modal */}
       {canVerify && membership && (
         <ChoreVerificationModalWrapper
           isVisible={showVerificationModal}
@@ -263,7 +249,6 @@ const RoomChoresScreen = () => {
         />
       )}
 
-      {/* Swap Request Modal */}
       {currentMembershipId && (
         <SwapRequestModal
           isVisible={showSwapRequestModal}
@@ -274,12 +259,11 @@ const RoomChoresScreen = () => {
         />
       )}
 
-      {/* Unified Notification Modal */}
       <RoomNotificationModal
         isVisible={showNotificationModal}
         onClose={() => setShowNotificationModal(false)}
         swapRequests={swapRequests}
-        pendingCompletions={pendingCompletions as any} // Backend returns extended completion data
+        pendingCompletions={pendingCompletions as any}
         onSwapRequestAction={() => {
           setShowNotificationModal(false);
           setShowSwapRequestModal(true);

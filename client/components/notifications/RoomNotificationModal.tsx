@@ -40,7 +40,6 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
 }) => {
   const colorScheme = useColorScheme();
 
-  // Filter swap requests for current user
   const relevantSwapRequests = swapRequests.filter(
     (request) =>
       request.status === "pending" &&
@@ -59,7 +58,7 @@ export const RoomNotificationModal: React.FC<RoomNotificationModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
+      <View className="flex-1 bg-gray-50 dark:bg-black">
         <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-6 pb-4 border-b border-gray-200 dark:border-neutral-800">
           <View className="flex-row">
             <TouchableOpacity

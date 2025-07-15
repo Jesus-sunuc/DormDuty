@@ -52,7 +52,6 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
       <View className="flex-1 bg-gray-50 dark:bg-black">
-        {/* Header */}
         <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
@@ -71,7 +70,6 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
-          {/* Completion Info Card */}
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
             <View className="flex-row items-center mb-4">
               <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
@@ -87,7 +85,6 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
               </View>
             </View>
 
-            {/* Photo placeholder */}
             <View className="mb-4">
               <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Completion Photo:
@@ -117,7 +114,6 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
             />
           </View>
 
-          {/* Action buttons */}
           <View className="flex-row gap-4 mb-8">
             <TouchableOpacity
               onPress={() => {
@@ -196,7 +192,6 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
     useState<CompletionWithChoreInfo | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  // Add the mutation hook
   const verifyCompletionMutation = useVerifyCompletionMutation();
 
   const pendingCompletions = completions.filter(
@@ -230,7 +225,6 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
       toastSuccess("Completion approved successfully!");
       handleCloseDetails();
 
-      // Close main modal if no more completions
       if (pendingCompletions.length <= 1) {
         onClose();
       }
@@ -256,7 +250,6 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
       toastSuccess("Completion rejected successfully!");
       handleCloseDetails();
 
-      // Close main modal if no more completions
       if (pendingCompletions.length <= 1) {
         onClose();
       }
@@ -288,7 +281,6 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
 
               toastSuccess("Completion rejected successfully!");
 
-              // Close main modal if no more completions
               if (pendingCompletions.length <= 1) {
                 onClose();
               }
@@ -305,7 +297,6 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
     <>
       <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
         <View className="flex-1 bg-gray-50 dark:bg-black">
-          {/* Header */}
           <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
             <View className="flex-row items-center justify-between mb-4">
               <TouchableOpacity
