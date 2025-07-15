@@ -7,6 +7,7 @@ import {
   ChoreCompletionCreateRequest,
   ChoreVerificationCreateRequest,
   ChoreWithCompletionStatus,
+  ChoreVerification,
 } from "@/models/Chore";
 import { useAuth } from "./user/useAuth";
 import { getQueryClient } from "@/services/queryClient";
@@ -68,7 +69,7 @@ export const useChoresAssignedWithStatusQuery = () => {
   return useQuery({
     queryKey: ["chores", "assigned-with-status", userId],
     queryFn: async (): Promise<{
-      chores: Chore[];
+      chores: (Chore & { rejectionInfo?: ChoreCompletion })[];
       rejectedCompletions: ChoreCompletion[];
     }> => {
       if (!userId) return { chores: [], rejectedCompletions: [] };
@@ -83,6 +84,7 @@ export const useChoresAssignedWithStatusQuery = () => {
 
       let allRejected: ChoreCompletion[] = [];
       let approvedChoreIds = new Set<number>();
+      let rejectionMap = new Map<number, ChoreCompletion>();
 
       for (const room of rooms) {
         const completionsRes = await axiosClient.get(
@@ -111,6 +113,11 @@ export const useChoresAssignedWithStatusQuery = () => {
         });
         allRejected.push(...recentRejected);
 
+        // Map rejected completions to their chore IDs
+        recentRejected.forEach((comp) => {
+          rejectionMap.set(comp.choreId, comp);
+        });
+
         const roomApprovedIds = completions
           .filter((comp: ChoreCompletion) => comp.status === "approved")
           .map((comp: ChoreCompletion) => comp.choreId);
@@ -118,9 +125,14 @@ export const useChoresAssignedWithStatusQuery = () => {
         roomApprovedIds.forEach((id: number) => approvedChoreIds.add(id));
       }
 
-      const filteredChores = assignedChores.filter((chore: Chore) => {
-        return !approvedChoreIds.has(chore.choreId);
-      });
+      const filteredChores = assignedChores
+        .filter((chore: Chore) => {
+          return !approvedChoreIds.has(chore.choreId);
+        })
+        .map((chore: Chore) => ({
+          ...chore,
+          rejectionInfo: rejectionMap.get(chore.choreId),
+        }));
 
       return {
         chores: filteredChores,
@@ -322,5 +334,55 @@ export const useVerifyCompletionMutation = () => {
             query.queryKey.includes("with-completion-status")),
       });
     },
+  });
+};
+
+export const useChoreVerificationDetailsQuery = (
+  choreId: number,
+  userId: number
+) => {
+  return useQuery({
+    queryKey: ["chores", "verification-details", choreId, userId],
+    queryFn: async (): Promise<ChoreVerification | null> => {
+      if (!choreId || !userId) return null;
+
+      try {
+        const completionsRes = await axiosClient.get(
+          `/api/chores/user/${userId}/completions`
+        );
+        const completionsData = completionsRes.data;
+
+        const choreCompletion = completionsData.find(
+          (compArray: any[]) => compArray[1] === choreId
+        );
+
+        if (!choreCompletion) return null;
+
+        const completionId = choreCompletion[0];
+        const status = choreCompletion[5];
+
+        if (status !== "rejected" && status !== "approved") return null;
+
+        try {
+          const verificationRes = await axiosClient.get(
+            `/api/chores/completions/${completionId}/verification`
+          );
+          return verificationRes.data;
+        } catch (error) {
+          return {
+            verificationId: 0,
+            completionId,
+            verifiedBy: 0,
+            verificationType: status as "approved" | "rejected",
+            comment: undefined,
+            verifiedAt: choreCompletion[6],
+          };
+        }
+      } catch (error) {
+        console.error("Error fetching verification details:", error);
+        return null;
+      }
+    },
+    enabled: !!choreId && !!userId && choreId > 0 && userId > 0,
   });
 };

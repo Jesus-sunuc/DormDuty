@@ -1,5 +1,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useChoreByIdQuery, useDeleteChoreMutation } from "@/hooks/choreHooks";
+import {
+  useChoreByIdQuery,
+  useDeleteChoreMutation,
+  useChoreVerificationDetailsQuery,
+} from "@/hooks/choreHooks";
 import { View } from "react-native";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
@@ -12,6 +16,7 @@ import { ChoreDescriptionCard } from "@/components/chores/ChoreDescriptionCard";
 import { ChoreOptionsModal } from "@/components/chores/ChoreOptionsModal";
 import { ChoreSwapRequestModal } from "@/components/chores/ChoreSwapRequestModal";
 import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
+import { ChoreVerificationCard } from "@/components/chores/ChoreVerificationCard";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useAuth } from "@/hooks/user/useAuth";
@@ -43,6 +48,9 @@ const ChoreDetailsScreen = () => {
     error: choreError,
     isLoading: choreLoading,
   } = useChoreByIdQuery(choreIdNumber);
+
+  const { data: verificationDetails, isLoading: verificationLoading } =
+    useChoreVerificationDetailsQuery(choreIdNumber, user?.userId || 0);
 
   const {
     mutate: deleteChore,
@@ -205,7 +213,13 @@ const ChoreDetailsScreen = () => {
             dayOfWeek={chore?.dayOfWeek}
             timing={chore?.timing}
           />
+        </View>
 
+        {verificationDetails && (
+          <ChoreVerificationCard verification={verificationDetails} />
+        )}
+
+        <View className="px-6">
           {chore?.description && (
             <ChoreDescriptionCard description={chore.description} />
           )}

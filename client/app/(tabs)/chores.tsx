@@ -49,7 +49,6 @@ export default function ChoresScreen() {
 
   // Use the filtered data if available, fallback to original
   const chores = choreData?.chores?.length ? choreData.chores : assignedChores;
-  const rejectedCompletions = choreData?.rejectedCompletions || [];
   const isLoading = assignedLoading || statusLoading;
   const finalError = error || statusError;
 
@@ -90,23 +89,6 @@ export default function ChoresScreen() {
     >
       <View className="flex-1 bg-gray-50 dark:bg-black">
         <Header title="My Chores" onMenuPress={openSidebar} />
-
-        {/* Rejected Completions Notification */}
-        {rejectedCompletions.length > 0 && (
-          <View className="mx-6 mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
-            <View className="flex-row items-center mb-2">
-              <Ionicons name="alert-circle" size={20} color="#dc2626" />
-              <ThemedText className="text-red-700 dark:text-red-300 ml-2 font-semibold">
-                {rejectedCompletions.length} chore completion
-                {rejectedCompletions.length > 1 ? "s" : ""} rejected
-              </ThemedText>
-            </View>
-            <ThemedText className="text-red-600 dark:text-red-400 text-sm">
-              Your recent chore completions were not approved. Please check and
-              resubmit if needed.
-            </ThemedText>
-          </View>
-        )}
 
         <ParallaxScrollViewY>
           {/* Verification Banner */}
@@ -200,6 +182,22 @@ export default function ChoresScreen() {
                               </View>
                             </View>
 
+                            {/* Show rejection status if chore was recently rejected */}
+                            {(chore as any).rejectionInfo && (
+                              <View className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                                <View className="flex-row items-center">
+                                  <Ionicons
+                                    name="close-circle-outline"
+                                    size={14}
+                                    color="#dc2626"
+                                  />
+                                  <ThemedText className="text-xs text-red-700 dark:text-red-300 ml-1 font-medium">
+                                    Completion rejected • Click to view details
+                                  </ThemedText>
+                                </View>
+                              </View>
+                            )}
+
                             {isPendingCompletion && (
                               <View className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                                 <View className="flex-row items-center">
@@ -227,6 +225,17 @@ export default function ChoresScreen() {
                               />
                               <ThemedText className="text-amber-700 dark:text-amber-300 text-sm font-medium ml-2">
                                 Pending
+                              </ThemedText>
+                            </View>
+                          ) : (chore as any).rejectionInfo ? (
+                            <View className="px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex-row items-center">
+                              <Ionicons
+                                name="close-circle"
+                                size={16}
+                                color="#dc2626"
+                              />
+                              <ThemedText className="text-red-700 dark:text-red-300 text-sm font-medium ml-2">
+                                Rejected
                               </ThemedText>
                             </View>
                           ) : (

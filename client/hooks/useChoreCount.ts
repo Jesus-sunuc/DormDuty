@@ -1,16 +1,21 @@
-import { useChoresAssignedToUserQuery } from "@/hooks/choreHooks";
+import { useChoresAssignedWithStatusQuery } from "@/hooks/choreHooks";
 import { useMemo } from "react";
 
 export const useChoreCount = () => {
-  const { data: chores, isLoading, error } = useChoresAssignedToUserQuery();
+  const {
+    data: choreData,
+    isLoading,
+    error,
+  } = useChoresAssignedWithStatusQuery();
 
   const choreCount = useMemo(() => {
-    if (isLoading || error || !chores) {
+    if (isLoading || error || !choreData) {
       return 0;
     }
 
-    return chores.length;
-  }, [chores, isLoading, error]);
+    // Use the filtered chores count (excludes approved chores)
+    return choreData.chores.length;
+  }, [choreData, isLoading, error]);
 
   return choreCount;
 };

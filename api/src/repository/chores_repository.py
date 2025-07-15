@@ -106,7 +106,6 @@ class ChoreRepository:
         result = run_sql(sql, params)
         chore_id = result[0][0]
         
-        # Handle multiple member assignments
         if chore.assigned_member_ids:
             self.assign_multiple_members(chore_id, chore.assigned_member_ids)
         elif chore.assigned_to:
@@ -139,13 +138,11 @@ class ChoreRepository:
         )
         run_sql(sql, params)
         
-        # Handle multiple member assignments
         if chore.assigned_member_ids:
             self.assign_multiple_members(chore_id, chore.assigned_member_ids)
         elif chore.assigned_to:
             self.assign_multiple_members(chore_id, [chore.assigned_to])
         else:
-            # If no assignments specified, unassign all
             self.unassign_chore(chore_id)
 
     def delete_chore(self, chore_id: int):
@@ -167,7 +164,6 @@ class ChoreRepository:
             sql = "UPDATE chore_assignment SET is_active = FALSE WHERE chore_id = %s AND membership_id = %s"
             run_sql(sql, (chore_id, membership_id))
         else:
-            # Unassign all members from the chore
             sql = "UPDATE chore_assignment SET is_active = FALSE WHERE chore_id = %s"
             run_sql(sql, (chore_id,))
 
@@ -182,18 +178,14 @@ class ChoreRepository:
         return run_sql(sql, (chore_id,))
 
     def assign_multiple_members(self, chore_id: int, membership_ids: list):
-        # First unassign all current assignments
         self.unassign_chore(chore_id)
         
-        # Then assign all the new members
         for membership_id in membership_ids:
             self.assign_chore(chore_id, membership_id)
 
-    # Chore Completion Methods
     def create_completion(self, membership_id: int, completion_request: ChoreCompletionCreateRequest):
         """Mark a chore as completed by a member"""
         
-        # First, get the chore to check if approval is required
         chore_sql = "SELECT approval_required, photo_required FROM chore WHERE chore_id = %s"
         chore_result = run_sql(chore_sql, (completion_request.chore_id,))
         
@@ -202,11 +194,9 @@ class ChoreRepository:
             
         approval_required, photo_required = chore_result[0]
         
-        # Check if photo is required but not provided
         if photo_required and not completion_request.photo_url:
             raise ValueError("Photo proof is required for this chore")
         
-        # Determine the initial status based on approval requirement
         initial_status = 'pending' if approval_required else 'approved'
         
         sql = """
@@ -258,7 +248,6 @@ class ChoreRepository:
         """
         results = run_sql(sql, (room_id,))
         
-        # Convert raw tuples to structured objects
         completions = []
         for row in results:
             completion = {
@@ -294,7 +283,6 @@ class ChoreRepository:
         base_sql += " ORDER BY cc.completed_at DESC"
         return run_sql(base_sql, params)
 
-    # Chore Verification Methods
     def create_verification(self, verified_by_membership_id: int, verification_request: ChoreVerificationCreateRequest):
         """Verify a completed chore"""
         sql = """
@@ -310,7 +298,6 @@ class ChoreRepository:
         ))
         verification_id = result[0][0]
         
-        # Update completion status based on verification
         status = "approved" if verification_request.verification_type == "approved" else "rejected"
         
         update_sql = """
@@ -336,6 +323,34 @@ class ChoreRepository:
             run_sql(chore_update_sql, (verification_request.completion_id, verification_request.completion_id))
         
         return {"verification_id": verification_id}
+
+    def get_verification_by_completion_id(self, completion_id: int):
+        """Get verification details for a specific completion"""
+        sql = """
+            SELECT 
+                cv.verification_id,
+                cv.completion_id,
+                cv.verified_by,
+                cv.verification_type,
+                cv.comment,
+                cv.verified_at
+            FROM chore_verification cv
+            WHERE cv.completion_id = %s
+        """
+        result = run_sql(sql, (completion_id,))
+        
+        if not result:
+            return None
+            
+        verification = result[0]
+        return {
+            "verification_id": verification[0],
+            "completion_id": verification[1],
+            "verified_by": verification[2],
+            "verification_type": verification[3],
+            "comment": verification[4],
+            "verified_at": verification[5]
+        }
 
     def get_chores_with_completion_status(self, room_id: int, user_id: int = None):
         """Get chores with their completion status"""

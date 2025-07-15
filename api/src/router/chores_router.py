@@ -96,13 +96,19 @@ def get_user_completions(user_id: int, room_id: int = Query(None, description="F
 def get_chores_with_completion_status(room_id: int, user_id: int = Query(None, description="Filter by user ID")):
     return repo.get_chores_with_completion_status(room_id, user_id)
 
-# Chore Verification Endpoints
 @router.post("/completions/{completion_id}/verify")
 @error_handler("Error verifying completion")
 def verify_completion(completion_id: int, verification_request: ChoreVerificationCreateRequest, verified_by_membership_id: int = Query(..., description="ID of the member verifying the completion")):
-    # Check if the verifier is an admin
     membership = membership_repo.get_membership_by_id(verified_by_membership_id)
     if not membership or membership.get('role') != 'admin':
         raise HTTPException(status_code=403, detail="Only room admins can verify chore completions")
     
     return repo.create_verification(verified_by_membership_id, verification_request)
+
+@router.get("/completions/{completion_id}/verification")
+@error_handler("Error fetching verification details")
+def get_verification_details(completion_id: int):
+    verification = repo.get_verification_by_completion_id(completion_id)
+    if not verification:
+        raise HTTPException(status_code=404, detail="Verification not found for this completion")
+    return verification
