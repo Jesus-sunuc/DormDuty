@@ -60,9 +60,8 @@ const NotificationsScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      {/* Header */}
-      <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-14 pb-4 border-b border-gray-200 dark:border-neutral-800">
+    <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-16 pb-4 border-b border-gray-200 dark:border-neutral-800">
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -80,7 +79,6 @@ const NotificationsScreen = () => {
         </View>
       </View>
 
-      {/* Notifications Content */}
       <View className="flex-1">
         <RoomNotificationPage
           swapRequests={swapRequests}

@@ -22,6 +22,12 @@ export default function RoomsLayout() {
         }}
       />
       <Stack.Screen
+        name="[roomId]/verifications/[completionId]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="[roomId]/notifications"
         options={{
           headerShown: false,
