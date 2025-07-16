@@ -117,14 +117,14 @@ const ExpensesScreen = () => {
                     onPress={() => setSelectedRoom(room)}
                     className={`mr-3 px-4 py-2 rounded-2xl border ${
                       currentRoom?.roomId === room.roomId
-                        ? "bg-blue-100 dark:bg-blue-900 border-blue-500 dark:border-blue-500"
+                        ? "bg-blue-500 border-blue-500 dark:border-blue-500"
                         : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
                     }`}
                   >
                     <ThemedText
                       className={`font-medium ${
                         currentRoom?.roomId === room.roomId
-                          ? "text-blue-500 dark:text-blue-200"
+                          ? "text-white"
                           : "text-gray-900 dark:text-white"
                       }`}
                     >
@@ -246,14 +246,14 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
           }
           router.push(`/expenses-details/add?roomId=${room.roomId}`);
         }}
-        className="bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-500 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
+        className="bg-blue-500 border-blue-500 dark:border-blue-500 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
       >
         <Ionicons
           name="add"
           size={24}
-          color={colorScheme === "dark" ? "#d1fae5" : "#3b82f6"}
+          color="#ffffff"
         />
-        <ThemedText className="text-blue-500 dark:text-blue-100 font-semibold text-lg ml-2">
+        <ThemedText className="text-white font-semibold text-lg ml-2">
           Add Expense
         </ThemedText>
       </TouchableOpacity>
