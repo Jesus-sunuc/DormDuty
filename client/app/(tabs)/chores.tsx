@@ -5,7 +5,7 @@ import {
   usePendingCompletionsByRoomQuery,
 } from "@/hooks/choreHooks";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
-import { View, Pressable, TouchableOpacity, Alert } from "react-native";
+import { View, Pressable, TouchableOpacity, Alert, useColorScheme } from "react-native";
 import { formatDistance } from "date-fns";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -27,6 +27,7 @@ import { Role } from "@/models/Membership";
 export default function ChoresScreen() {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
+  const colorScheme = useColorScheme();
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -148,9 +149,8 @@ export default function ChoresScreen() {
                               ${
                                 completeChoreeMutation.isPending
                                   ? "bg-emerald-400/50"
-                                  : "bg-emerald-500 dark:bg-emerald-600"
-                              }
-                              active:scale-[0.98] transition-all duration-150`}
+                                  : "bg-emerald-100 dark:bg-emerald-900 border border-emerald-400 dark:border-emerald-500"
+                              }`}
                             >
                               {completeChoreeMutation.isPending ? (
                                 <>
@@ -164,9 +164,13 @@ export default function ChoresScreen() {
                                   <Ionicons
                                     name="checkmark"
                                     size={16}
-                                    color="white"
+                                    color={
+                                      colorScheme === "dark"
+                                        ? "white"
+                                        : "#047857"
+                                    }
                                   />
-                                  <ThemedText className="text-white text-sm font-medium ml-1">
+                                  <ThemedText className="text-emerald-700 dark:text-white text-sm font-medium ml-1">
                                     Mark Done
                                   </ThemedText>
                                 </>

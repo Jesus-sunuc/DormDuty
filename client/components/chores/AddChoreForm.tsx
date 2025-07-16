@@ -131,7 +131,6 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                 onChangeText={setName}
               />
 
-              {/* Member Assignment */}
               <View className="space-y-2">
                 <Text className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   Assign to members
@@ -221,7 +220,6 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
             />
           </View>
 
-          {/* Approval Settings Section */}
           <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-full items-center justify-center mr-4">
@@ -232,8 +230,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
               </Text>
             </View>
 
-            <View className="space-y-4">
-              {/* Approval Required Toggle */}
+            <View className="space-y-4 gap-2">
               <View className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
                 <View className="flex-1 mr-4">
                   <Text className="text-base font-medium text-neutral-900 dark:text-white">
@@ -257,15 +254,15 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                   }`}
                 >
                   <View
-                    className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                      approvalRequired ? "translate-x-5" : "translate-x-0"
+                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                      approvalRequired ? "translate-x-6" : "translate-x-1"
                     }`}
                   />
                 </TouchableOpacity>
               </View>
 
               {approvalRequired && (
-                <View className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                <View className="flex-row items-center justify-between p-4 ml-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
                   <View className="flex-1 mr-4">
                     <Text className="text-base font-medium text-neutral-900 dark:text-white">
                       Photo Proof Required
@@ -284,15 +281,14 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                     }`}
                   >
                     <View
-                      className={`w-5 h-5 rounded-full bg-white  transition-transform ${
-                        photoRequired ? "translate-x-5" : "translate-x-0"
+                      className={`w-4 h-4 mt-1 rounded-full bg-white  transition-transform ${
+                        photoRequired ? "translate-x-6" : "translate-x-1"
                       }`}
                     />
                   </TouchableOpacity>
                 </View>
               )}
 
-              {/* Info text explaining the flow */}
               <View className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <Text className="text-sm text-blue-700 dark:text-blue-300">
                   💡{" "}
