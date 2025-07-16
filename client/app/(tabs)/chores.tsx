@@ -114,8 +114,8 @@ export default function ChoresScreen() {
                         }
                         className="p-4"
                       >
-                        <View className="flex-row items-center justify-between mb-3">
-                          <View className="flex-row items-center flex-1">
+                        <View className="flex-row justify-between items-start mb-2">
+                          <View className="flex-row items-center flex-shrink">
                             <View
                               style={{
                                 backgroundColor: getRoomColor(chore.roomId),
@@ -134,17 +134,18 @@ export default function ChoresScreen() {
                             )}
                           </View>
 
+                          {/* Mark Done Button */}
                           {!isPendingCompletion && (
                             <TouchableOpacity
                               onPress={() => handleCompleteChore(chore)}
                               disabled={completeChoreeMutation.isPending}
-                              className={`px-4 py-2 rounded-full flex-row items-center justify-center 
-    ${
-      completeChoreeMutation.isPending
-        ? "bg-emerald-400/50"
-        : "bg-emerald-500 dark:bg-emerald-600"
-    }
-     active:scale-[0.98] transition-all duration-150`}
+                              className={`px-3 py-[6px] rounded-full flex-row items-center justify-center
+                              ${
+                                completeChoreeMutation.isPending
+                                  ? "bg-emerald-400/50"
+                                  : "bg-emerald-500 dark:bg-emerald-600"
+                              }
+                              active:scale-[0.98] transition-all duration-150`}
                             >
                               {completeChoreeMutation.isPending ? (
                                 <>
