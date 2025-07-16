@@ -141,17 +141,6 @@ export default function ChoresScreen() {
                                   Pending
                                 </ThemedText>
                               </View>
-                            ) : (chore as any).rejectionInfo ? (
-                              <View className="px-4 py-2.5 rounded-xl bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex-row items-center">
-                                <Ionicons
-                                  name="close-circle"
-                                  size={16}
-                                  color="#dc2626"
-                                />
-                                <ThemedText className="text-red-700 dark:text-red-300 text-sm font-medium ml-2">
-                                  Rejected
-                                </ThemedText>
-                              </View>
                             ) : (
                               <TouchableOpacity
                                 onPress={() => handleCompleteChore(chore)}
