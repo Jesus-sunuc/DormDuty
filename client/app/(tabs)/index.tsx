@@ -262,9 +262,9 @@ const HomeScreen = () => {
                 <Ionicons
                   name="enter-outline"
                   size={17}
-                  color={colorScheme === "dark" ? "white" : "#4338ca"}
+                  color={colorScheme === "dark" ? "#c7d2fe" : "#4338ca"}
                 />
-                <ThemedText className="text-indigo-700 dark:text-white font-semibold ml-1 mr-1 text-sm">
+                <ThemedText className="text-indigo-700 dark:text-indigo-200 font-semibold ml-1 mr-1 text-sm">
                   Join
                 </ThemedText>
               </TouchableOpacity>
@@ -287,9 +287,9 @@ const HomeScreen = () => {
                 <Ionicons
                   name="add"
                   size={17}
-                  color={colorScheme === "dark" ? "white" : "#047857"}
+                  color={colorScheme === "dark" ? "#d1fae5" : "#047857"}
                 />
-                <ThemedText className="text-emerald-700 dark:text-white font-semibold text-sm mr-1">
+                <ThemedText className="text-emerald-700 dark:text-emerald-100 font-semibold text-sm mr-1">
                   Create
                 </ThemedText>
               </TouchableOpacity>

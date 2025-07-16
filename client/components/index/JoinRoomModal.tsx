@@ -132,13 +132,13 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 className={`flex-1 py-3 px-4 rounded-lg ${
                   joinRoomMutation.isPending || roomCode.trim().length !== 6
                     ? "bg-gray-400 dark:bg-gray-600"
-                    : "bg-blue-500 dark:bg-blue-600"
+                    : "bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-500" 
                 }`}
                 disabled={
                   joinRoomMutation.isPending || roomCode.trim().length !== 6
                 }
               >
-                <Text className="text-center font-semibold text-white">
+                <Text className="text-center font-semibold text-blue-500 dark:text-blue-200">
                   {joinRoomMutation.isPending ? "Joining..." : "Join Room"}
                 </Text>
               </TouchableOpacity>

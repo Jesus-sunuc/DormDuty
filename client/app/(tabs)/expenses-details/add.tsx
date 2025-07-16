@@ -40,7 +40,7 @@ const AddExpensePage = () => {
   }>();
   const colorScheme = useColorScheme();
   const { user } = useAuth();
-
+  
   const roomIdNum = parseInt(roomId || "0", 10);
   const expenseIdNum = parseInt(expenseId || "0", 10);
   const userId = user?.userId || 0;
@@ -87,7 +87,6 @@ const AddExpensePage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
-  // Populate form with existing expense data when in edit mode
   React.useEffect(() => {
     if (isEditMode && existingExpense && !expenseLoading) {
       setFormData({
@@ -136,7 +135,6 @@ const AddExpensePage = () => {
     }
 
     if (isEditMode) {
-      // Update existing expense
       const expenseUpdate = {
         expenseId: expenseIdNum,
         roomId: roomIdNum,
@@ -158,7 +156,6 @@ const AddExpensePage = () => {
         },
       });
     } else {
-      // Create new expense
       const expense: ExpenseCreateRequest = {
         roomId: roomIdNum,
         payerMembershipId: membership.membershipId,
@@ -465,7 +462,7 @@ const AddExpensePage = () => {
           className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
             isPending || !formData.amount || !formData.description
               ? "bg-neutral-300 dark:bg-neutral-700"
-              : "bg-blue-600"
+              : "bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-500"
           }`}
         >
           {isPending ? (
@@ -492,9 +489,9 @@ const AddExpensePage = () => {
               <Ionicons
                 name={isEditMode ? "checkmark-circle" : "add-circle"}
                 size={24}
-                color="white"
+                color={colorScheme === "dark" ? "#bfdbfe" : "#3b82f6"}
               />
-              <Text className="text-white font-semibold text-lg ml-2">
+              <Text className="text-blue-500 dark:text-blue-200 font-semibold text-lg ml-2">
                 {isEditMode ? "Update Expense" : "Create Expense"}
               </Text>
             </>
