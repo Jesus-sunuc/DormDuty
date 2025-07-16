@@ -12,6 +12,7 @@ import { ChoreCompletion } from "@/models/Chore";
 import { ThemedText } from "@/components/ThemedText";
 import { useVerifyCompletionMutation } from "@/hooks/choreHooks";
 import { toastError, toastSuccess } from "@/components/ToastService";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface CompletionWithChoreInfo extends ChoreCompletion {
@@ -28,7 +29,6 @@ interface ChoreVerificationModalProps {
   isAdmin?: boolean;
 }
 
-// Separate modal for completion details/verification
 interface CompletionDetailsModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -47,6 +47,8 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
   isLoading = false,
 }) => {
   const [verificationComment, setVerificationComment] = useState("");
+  const [showRejectConfirmation, setShowRejectConfirmation] = useState(false);
+
   if (!completion) return null;
 
   return (
@@ -97,7 +99,6 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
             </View>
           </View>
 
-          {/* Notes section */}
           <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
             <Text className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Add Verification Notes
@@ -116,21 +117,7 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
 
           <View className="flex-row gap-4 mb-8">
             <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  "Reject Completion",
-                  "Are you sure you want to reject this completion?",
-                  [
-                    { text: "Cancel", style: "cancel" },
-                    {
-                      text: "Reject",
-                      style: "destructive",
-                      onPress: () =>
-                        onReject(verificationComment.trim() || undefined),
-                    },
-                  ]
-                );
-              }}
+              onPress={() => setShowRejectConfirmation(true)}
               disabled={isLoading}
               className="flex-1 bg-red-50 dark:bg-red-900/20 py-4 rounded-xl flex-row items-center justify-center"
             >
@@ -178,6 +165,21 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
           </View>
         </ScrollView>
       </View>
+
+      <ConfirmationModal
+        visible={showRejectConfirmation}
+        onClose={() => setShowRejectConfirmation(false)}
+        onConfirm={() => {
+          setShowRejectConfirmation(false);
+          onReject(verificationComment.trim() || undefined);
+        }}
+        title="Reject Completion"
+        message="Are you sure you want to reject this completion?"
+        confirmText="Reject"
+        cancelText="Cancel"
+        destructive={true}
+        icon="close-circle"
+      />
     </Modal>
   );
 };
@@ -191,6 +193,10 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
   const [selectedCompletion, setSelectedCompletion] =
     useState<CompletionWithChoreInfo | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showQuickRejectConfirmation, setShowQuickRejectConfirmation] =
+    useState(false);
+  const [completionToReject, setCompletionToReject] =
+    useState<ChoreCompletion | null>(null);
 
   const verifyCompletionMutation = useVerifyCompletionMutation();
 
@@ -259,38 +265,34 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
   };
 
   const handleQuickReject = async (completion: ChoreCompletion) => {
-    Alert.alert(
-      "Reject Completion",
-      "Are you sure you want to reject this completion?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Reject",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await verifyCompletionMutation.mutateAsync({
-                completionId: completion.completionId,
-                membershipId: verifierMembershipId,
-                verificationRequest: {
-                  completionId: completion.completionId,
-                  verificationType: "rejected",
-                  comment: undefined,
-                },
-              });
+    setCompletionToReject(completion);
+    setShowQuickRejectConfirmation(true);
+  };
 
-              toastSuccess("Completion rejected successfully!");
+  const confirmQuickReject = async () => {
+    if (!completionToReject) return;
 
-              if (pendingCompletions.length <= 1) {
-                onClose();
-              }
-            } catch (error) {
-              toastError("Failed to reject completion");
-            }
-          },
+    try {
+      await verifyCompletionMutation.mutateAsync({
+        completionId: completionToReject.completionId,
+        membershipId: verifierMembershipId,
+        verificationRequest: {
+          completionId: completionToReject.completionId,
+          verificationType: "rejected",
+          comment: undefined,
         },
-      ]
-    );
+      });
+
+      toastSuccess("Completion rejected successfully!");
+      setShowQuickRejectConfirmation(false);
+      setCompletionToReject(null);
+
+      if (pendingCompletions.length <= 1) {
+        onClose();
+      }
+    } catch (error) {
+      toastError("Failed to reject completion");
+    }
   };
 
   return (
@@ -391,6 +393,21 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
         onApprove={handleApprove}
         onReject={handleReject}
         isLoading={verifyCompletionMutation.isPending}
+      />
+
+      <ConfirmationModal
+        visible={showQuickRejectConfirmation}
+        onClose={() => {
+          setShowQuickRejectConfirmation(false);
+          setCompletionToReject(null);
+        }}
+        onConfirm={confirmQuickReject}
+        title="Reject Completion"
+        message="Are you sure you want to reject this completion?"
+        confirmText="Reject"
+        cancelText="Cancel"
+        destructive={true}
+        icon="close-circle"
       />
     </>
   );

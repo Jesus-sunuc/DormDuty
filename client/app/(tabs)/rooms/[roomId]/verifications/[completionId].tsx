@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemedText } from "@/components/ThemedText";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import {
   usePendingCompletionsByRoomQuery,
   useVerifyCompletionMutation,
@@ -20,9 +21,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { useAuth } from "@/hooks/user/useAuth";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { Role } from "@/models/Membership";
-import {
-  ChoreCompletion,
-} from "@/models/Chore";
+import { ChoreCompletion } from "@/models/Chore";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { formatDistance } from "date-fns";
 
@@ -37,6 +36,7 @@ const CompletionReviewScreen = () => {
   const colorScheme = useColorScheme();
   const { user } = useAuth();
   const [verificationComment, setVerificationComment] = useState("");
+  const [showRejectConfirmation, setShowRejectConfirmation] = useState(false);
 
   const roomId = Array.isArray(params.roomId)
     ? params.roomId[0]
@@ -89,35 +89,22 @@ const CompletionReviewScreen = () => {
   const handleReject = async () => {
     if (!membership || !completion) return;
 
-    Alert.alert(
-      "Reject Completion",
-      "Are you sure you want to reject this chore completion?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Reject",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await verifyCompletionMutation.mutateAsync({
-                completionId: completion.completionId,
-                membershipId: membership.membershipId,
-                verificationRequest: {
-                  completionId: completion.completionId,
-                  verificationType: "rejected",
-                  comment: verificationComment.trim() || "Completion rejected",
-                },
-              });
-
-              toastSuccess("Chore completion rejected");
-              router.back();
-            } catch (error) {
-              toastError("Failed to reject completion");
-            }
-          },
+    try {
+      await verifyCompletionMutation.mutateAsync({
+        completionId: completion.completionId,
+        membershipId: membership.membershipId,
+        verificationRequest: {
+          completionId: completion.completionId,
+          verificationType: "rejected",
+          comment: verificationComment.trim() || "Completion rejected",
         },
-      ]
-    );
+      });
+
+      toastSuccess("Chore completion rejected");
+      router.back();
+    } catch (error) {
+      toastError("Failed to reject completion");
+    }
   };
 
   if (!roomId || !completionId || !canVerify || !membership || !completion) {
@@ -130,7 +117,6 @@ const CompletionReviewScreen = () => {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      {/* Header */}
       <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-14 pb-4 border-b border-gray-200 dark:border-neutral-800">
         <View className="flex-row items-center">
           <TouchableOpacity
@@ -149,9 +135,7 @@ const CompletionReviewScreen = () => {
         </View>
       </View>
 
-      {/* Content */}
       <ScrollView className="flex-1 px-6 py-6">
-        {/* Completion Details Card */}
         <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
           <View className="flex-row items-center mb-4">
             <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
@@ -170,7 +154,6 @@ const CompletionReviewScreen = () => {
             </View>
           </View>
 
-          {/* Completion Photo Section */}
           <View className="mb-6">
             <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
               Completion Photo:
@@ -198,7 +181,6 @@ const CompletionReviewScreen = () => {
           </View>
         </View>
 
-        {/* Verification Notes Section */}
         <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
           <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
             Add Verification Notes
@@ -217,10 +199,9 @@ const CompletionReviewScreen = () => {
           />
         </View>
 
-        {/* Action Buttons */}
-        <View className="flex-row space-x-4 pb-8">
+        <View className="flex-row space-x-4 pb-8 gap-3">
           <TouchableOpacity
-            onPress={handleReject}
+            onPress={() => setShowRejectConfirmation(true)}
             disabled={verifyCompletionMutation.isPending}
             className="flex-1 bg-red-500 dark:bg-red-600 rounded-2xl py-4 flex-row items-center justify-center shadow-sm"
           >
@@ -242,6 +223,21 @@ const CompletionReviewScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <ConfirmationModal
+        visible={showRejectConfirmation}
+        onClose={() => setShowRejectConfirmation(false)}
+        onConfirm={() => {
+          setShowRejectConfirmation(false);
+          handleReject();
+        }}
+        title="Reject Completion"
+        message="Are you sure you want to reject this chore completion?"
+        confirmText="Reject"
+        cancelText="Cancel"
+        destructive={true}
+        icon="close-circle"
+      />
     </View>
   );
 };
