@@ -125,16 +125,21 @@ export default function ChoresScreen() {
                             <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
                               {chore.name}
                             </ThemedText>
-                            {(chore as any).rejectionInfo && (
+                            {isPendingCompletion ? (
+                              <View className="ml-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded">
+                                <ThemedText className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                                  [Pending]
+                                </ThemedText>
+                              </View>
+                            ) : (chore as any).rejectionInfo ? (
                               <View className="ml-2 px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded">
                                 <ThemedText className="text-xs text-red-600 dark:text-red-400 font-medium">
                                   [Rejected]
                                 </ThemedText>
                               </View>
-                            )}
+                            ) : null}
                           </View>
 
-                          {/* Mark Done Button */}
                           {!isPendingCompletion && (
                             <TouchableOpacity
                               onPress={() => handleCompleteChore(chore)}
