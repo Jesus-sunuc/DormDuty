@@ -1,7 +1,6 @@
 import {
   useChoresAssignedToUserQuery,
   useChoresAssignedWithStatusQuery,
-  useChoresWithCompletionStatusQuery,
   useCompleteChoreMutation,
   usePendingCompletionsByRoomQuery,
 } from "@/hooks/choreHooks";
@@ -19,7 +18,7 @@ import { Header } from "@/components/ui/Header";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useState } from "react";
 import { ChoreVerificationModalWrapper } from "@/components/chores/ChoreVerificationModalWrapper";
-import { Chore, ChoreWithCompletionStatus } from "@/models/Chore";
+import { Chore } from "@/models/Chore";
 import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
 import { ChoreCompletionModal } from "@/components/chores/ChoreCompletionModal";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -40,29 +39,23 @@ export default function ChoresScreen() {
     error,
   } = useChoresAssignedToUserQuery();
 
-  // Get chores with status filtering (approved filtered out, rejections included)
   const {
     data: choreData,
     isLoading: statusLoading,
     error: statusError,
   } = useChoresAssignedWithStatusQuery();
 
-  // Use the filtered data if available, fallback to original
   const chores = choreData?.chores?.length ? choreData.chores : assignedChores;
   const isLoading = assignedLoading || statusLoading;
   const finalError = error || statusError;
 
-  // Get membership for completion and room access
-  // Use room from chores, or fallback to the first available room
   const roomId =
     selectedRoomId || chores[0]?.roomId || assignedChores[0]?.roomId || 0;
   const { data: membership } = useMembershipQuery(user?.userId || 0, roomId);
 
-  // Check permissions for verification access (admin only)
   const { hasPermission } = usePermissions(roomId);
   const canVerify = hasPermission(Role.ADMIN);
 
-  // Get pending completions for verification
   const { data: pendingCompletions = [] } =
     usePendingCompletionsByRoomQuery(roomId);
 
@@ -91,14 +84,6 @@ export default function ChoresScreen() {
         <Header title="My Chores" onMenuPress={openSidebar} />
 
         <ParallaxScrollViewY>
-          {/* Verification Banner */}
-          {canVerify && pendingCompletions.length > 0 && (
-            <PendingVerificationsBanner
-              pendingCount={pendingCompletions.length}
-              onPress={() => setShowVerificationModal(true)}
-            />
-          )}
-
           {chores.length === 0 ? (
             <View className="flex-1 items-center justify-center px-6 py-20">
               <Ionicons
@@ -116,162 +101,163 @@ export default function ChoresScreen() {
           ) : (
             <View className="px-6 pt-6">
               {chores.map((chore) => {
-                // Check if this chore has pending completions in the pending completions list
                 const isPendingCompletion = pendingCompletions.some(
                   (comp) => comp.choreId === chore.choreId
                 );
 
                 return (
                   <View key={chore.choreId} className="mb-4">
-                    <View className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden">
-                      <View className="flex-row items-center">
-                        <View
-                          style={{
-                            backgroundColor: getRoomColor(chore.roomId),
-                          }}
-                          className="w-1 h-20"
-                        />
+                    <Pressable
+                      onPress={() =>
+                        router.push(`/chore-details/${chore.choreId}`)
+                      }
+                      className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden"
+                    >
+                      <View className="p-5 pb-3">
+                        <View className="flex-row items-start justify-between mb-4">
+                          <View className="flex-1 mr-4">
+                            <View className="flex-row items-center mb-2">
+                              <View
+                                style={{
+                                  backgroundColor: getRoomColor(chore.roomId),
+                                }}
+                                className="w-3 h-3 rounded-full mr-3"
+                              />
+                              <ThemedText className="text-xl font-bold text-gray-900 dark:text-white">
+                                {chore.name}
+                              </ThemedText>
+                            </View>
+                          </View>
 
-                        <Pressable
-                          onPress={() =>
-                            router.push(`/chore-details/${chore.choreId}`)
-                          }
-                          className="flex-1 p-5"
-                        >
-                          <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
-                            {chore.name}
-                          </ThemedText>
-
-                          <View className="space-y-2">
-                            <View className="flex-row items-center justify-between">
-                              <View className="flex-row items-center">
-                                <View className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-2">
-                                  <Ionicons
-                                    name="time-outline"
-                                    size={12}
-                                    color="#f59e0b"
-                                  />
-                                </View>
-                                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                                  Last completed:
+                          <View className="ml-2">
+                            {isPendingCompletion ? (
+                              <View className="px-4 py-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 flex-row items-center">
+                                <Ionicons
+                                  name="hourglass"
+                                  size={16}
+                                  color="#f59e0b"
+                                />
+                                <ThemedText className="text-amber-700 dark:text-amber-300 text-sm font-medium ml-2">
+                                  Pending
                                 </ThemedText>
                               </View>
-                              <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            ) : (chore as any).rejectionInfo ? (
+                              <View className="px-4 py-2.5 rounded-xl bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex-row items-center">
+                                <Ionicons
+                                  name="close-circle"
+                                  size={16}
+                                  color="#dc2626"
+                                />
+                                <ThemedText className="text-red-700 dark:text-red-300 text-sm font-medium ml-2">
+                                  Rejected
+                                </ThemedText>
+                              </View>
+                            ) : (
+                              <TouchableOpacity
+                                onPress={() => handleCompleteChore(chore)}
+                                disabled={completeChoreeMutation.isPending}
+                                className={`px-5 py-3 rounded-xl flex-row items-center shadow-sm ${
+                                  completeChoreeMutation.isPending
+                                    ? "bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
+                                    : "bg-emerald-500 dark:bg-emerald-600"
+                                }`}
+                              >
+                                {completeChoreeMutation.isPending ? (
+                                  <>
+                                    <View className="w-4 h-4 border-2 border-gray-300 border-t-emerald-500 rounded-full animate-spin mr-2" />
+                                    <ThemedText className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
+                                      Completing...
+                                    </ThemedText>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Ionicons
+                                      name="checkmark-circle"
+                                      size={18}
+                                      color="white"
+                                    />
+                                    <ThemedText className="text-white text-sm font-semibold ml-2">
+                                      Mark Done
+                                    </ThemedText>
+                                  </>
+                                )}
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        </View>
+
+                        <View className="flex-row items-center space-x-6">
+                          <View className="flex-row items-center flex-1">
+                            <View className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-3">
+                              <Ionicons
+                                name="time-outline"
+                                size={16}
+                                color="#f59e0b"
+                              />
+                            </View>
+                            <View className="flex-1">
+                              <ThemedText className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">
+                                Last completed
+                              </ThemedText>
+                              <ThemedText className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-0.5">
                                 {formatDate(chore.lastCompleted)}
                               </ThemedText>
                             </View>
+                          </View>
 
-                            <View className="flex-row items-center justify-between">
-                              <View className="flex-row items-center">
-                                <View className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-2">
-                                  <Ionicons
-                                    name="alarm-outline"
-                                    size={12}
-                                    color="#3b82f6"
-                                  />
-                                </View>
-                                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
-                                  Due at:
-                                </ThemedText>
-                              </View>
-                              <View className="flex-row items-center">
+                          <View className="flex-row items-center flex-1">
+                            <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+                              <Ionicons
+                                name="alarm-outline"
+                                size={16}
+                                color="#3b82f6"
+                              />
+                            </View>
+                            <View className="flex-1">
+                              <ThemedText className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">
+                                Due at
+                              </ThemedText>
+                              <View className="flex-row items-center mt-0.5">
                                 <View className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
-                                <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                <ThemedText className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                   {chore.timing || "Not set"}
                                 </ThemedText>
                               </View>
                             </View>
-
-                            {/* Show rejection status if chore was recently rejected */}
-                            {(chore as any).rejectionInfo && (
-                              <View className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
-                                <View className="flex-row items-center">
-                                  <Ionicons
-                                    name="close-circle-outline"
-                                    size={14}
-                                    color="#dc2626"
-                                  />
-                                  <ThemedText className="text-xs text-red-700 dark:text-red-300 ml-1 font-medium">
-                                    Completion rejected • Click to view details
-                                  </ThemedText>
-                                </View>
-                              </View>
-                            )}
-
-                            {isPendingCompletion && (
-                              <View className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                                <View className="flex-row items-center">
-                                  <Ionicons
-                                    name="hourglass-outline"
-                                    size={16}
-                                    color="#f59e0b"
-                                  />
-                                  <ThemedText className="text-sm text-yellow-700 dark:text-yellow-300 ml-2">
-                                    Completion pending verification
-                                  </ThemedText>
-                                </View>
-                              </View>
-                            )}
                           </View>
-                        </Pressable>
-
-                        <View className="px-4">
-                          {isPendingCompletion ? (
-                            <View className="px-4 py-2 rounded-full bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 flex-row items-center">
-                              <Ionicons
-                                name="hourglass"
-                                size={16}
-                                color="#f59e0b"
-                              />
-                              <ThemedText className="text-amber-700 dark:text-amber-300 text-sm font-medium ml-2">
-                                Pending
-                              </ThemedText>
-                            </View>
-                          ) : (chore as any).rejectionInfo ? (
-                            <View className="px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex-row items-center">
-                              <Ionicons
-                                name="close-circle"
-                                size={16}
-                                color="#dc2626"
-                              />
-                              <ThemedText className="text-red-700 dark:text-red-300 text-sm font-medium ml-2">
-                                Rejected
-                              </ThemedText>
-                            </View>
-                          ) : (
-                            <TouchableOpacity
-                              onPress={() => handleCompleteChore(chore)}
-                              disabled={completeChoreeMutation.isPending}
-                              className={`px-5 py-3 rounded-full flex-row items-center shadow-sm ${
-                                completeChoreeMutation.isPending
-                                  ? "bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
-                                  : "bg-emerald-500 dark:bg-emerald-600 border border-emerald-600 dark:border-emerald-700"
-                              }`}
-                            >
-                              {completeChoreeMutation.isPending ? (
-                                <>
-                                  <View className="w-4 h-4 border-2 border-gray-300 border-t-emerald-500 rounded-full animate-spin mr-2" />
-                                  <ThemedText className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
-                                    Completing...
-                                  </ThemedText>
-                                </>
-                              ) : (
-                                <>
-                                  <Ionicons
-                                    name="checkmark-circle"
-                                    size={18}
-                                    color="white"
-                                  />
-                                  <ThemedText className="text-white text-sm font-semibold ml-2">
-                                    Mark Done
-                                  </ThemedText>
-                                </>
-                              )}
-                            </TouchableOpacity>
-                          )}
                         </View>
                       </View>
-                    </View>
+
+                      {(chore as any).rejectionInfo && (
+                        <View className="mx-5 mb-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+                          <View className="flex-row items-center">
+                            <Ionicons
+                              name="close-circle-outline"
+                              size={16}
+                              color="#dc2626"
+                            />
+                            <ThemedText className="text-sm text-red-700 dark:text-red-300 ml-2 font-medium">
+                              Completion rejected • Click to view details
+                            </ThemedText>
+                          </View>
+                        </View>
+                      )}
+
+                      {isPendingCompletion && (
+                        <View className="mx-5 mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                          <View className="flex-row items-center">
+                            <Ionicons
+                              name="hourglass-outline"
+                              size={16}
+                              color="#f59e0b"
+                            />
+                            <ThemedText className="text-sm text-yellow-700 dark:text-yellow-300 ml-2 font-medium">
+                              Completion pending verification
+                            </ThemedText>
+                          </View>
+                        </View>
+                      )}
+                    </Pressable>
                   </View>
                 );
               })}
@@ -279,7 +265,6 @@ export default function ChoresScreen() {
           )}
         </ParallaxScrollViewY>
 
-        {/* Verification Modal */}
         {canVerify && membership && (
           <ChoreVerificationModalWrapper
             isVisible={showVerificationModal}
@@ -290,7 +275,6 @@ export default function ChoresScreen() {
           />
         )}
 
-        {/* Completion Modal */}
         {selectedChoreForCompletion && membership && (
           <ChoreCompletionModal
             isVisible={showCompletionModal}
