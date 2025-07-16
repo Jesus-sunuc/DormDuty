@@ -5,6 +5,7 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { formatDistance } from "date-fns";
@@ -23,6 +24,7 @@ interface RoomNotificationPageProps {
   onVerificationAction: () => void;
   isAdmin: boolean;
   currentMembershipId?: number;
+  roomId: string;
 }
 
 export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
@@ -32,8 +34,10 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
   onVerificationAction,
   isAdmin,
   currentMembershipId,
+  roomId,
 }) => {
   const colorScheme = useColorScheme();
+  const router = useRouter();
 
   const relevantSwapRequests = swapRequests.filter(
     (request: ChoreSwapRequest) =>
@@ -115,7 +119,11 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
           {relevantCompletions.map((completion: ExtendedChoreCompletion) => (
             <TouchableOpacity
               key={completion.completionId}
-              onPress={onVerificationAction}
+              onPress={() =>
+                router.push(
+                  `/(tabs)/rooms/${roomId}/verifications/${completion.completionId}`
+                )
+              }
               className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border-l-4 border-orange-500"
             >
               <View className="flex-row items-center mb-3">

@@ -87,6 +87,7 @@ const NotificationsScreen = () => {
           onVerificationAction={handleVerificationAction}
           isAdmin={canVerify}
           currentMembershipId={currentMembershipId}
+          roomId={roomId}
         />
       </View>
     </View>
