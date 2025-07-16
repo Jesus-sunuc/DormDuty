@@ -86,7 +86,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
   const getStatusColor = () => {
     switch (request.status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-400 dark:text-yellow-300";
       case "accepted":
         return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "declined":

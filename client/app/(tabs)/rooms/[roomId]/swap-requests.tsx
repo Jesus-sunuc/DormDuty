@@ -57,8 +57,7 @@ const SwapRequestsScreen = () => {
 
   return (
     <View className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      {/* Header */}
-      <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-14 pb-4 border-b border-gray-200 dark:border-neutral-800">
+      <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-16 pb-4 border-b border-gray-200 dark:border-neutral-800">
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -76,7 +75,6 @@ const SwapRequestsScreen = () => {
         </View>
       </View>
 
-      {/* Content */}
       <ScrollView className="flex-1 px-6 py-6">
         {pendingRequestsForUser.length === 0 ? (
           <View className="flex-1 items-center justify-center py-20">
