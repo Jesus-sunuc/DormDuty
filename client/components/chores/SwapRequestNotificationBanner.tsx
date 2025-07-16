@@ -16,7 +16,7 @@ export const SwapRequestNotificationBanner: React.FC<
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="mx-6 mt-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-4 shadow-sm"
+      className="mx-6 mt-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-2xl p-4 "
       activeOpacity={0.7}
     >
       <View className="flex-row items-center">

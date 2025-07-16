@@ -181,7 +181,7 @@ const Updates = () => {
                 )}
 
                 {membership && (
-                  <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+                  <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
                     <View className="flex-row items-center mb-4">
                       <Ionicons name="add-circle" size={24} color="#3b82f6" />
                       <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
@@ -286,7 +286,7 @@ const Updates = () => {
               );
             }}
             ListEmptyComponent={
-              <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
+              <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center  border border-gray-100 dark:border-neutral-800">
                 <Ionicons
                   name="chatbubbles-outline"
                   size={48}
@@ -357,7 +357,7 @@ function AnnouncementNotificationCard({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`rounded-2xl p-4 mb-3 shadow-sm border ${
+      className={`rounded-2xl p-4 mb-3  border ${
         isUnread
           ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
           : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800"

@@ -87,7 +87,7 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
         </View>
 
         <View className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
             <View className="flex-row items-center mb-4">
               <View className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-4">
                 <Ionicons name="checkmark-circle" size={24} color="#10b981" />

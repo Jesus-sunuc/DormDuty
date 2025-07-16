@@ -10,7 +10,8 @@ import {
 import {
   useRoomMembersQuery,
   useRemoveUserMutation,
- useMembershipQuery } from "@/hooks/membershipHooks";
+  useMembershipQuery,
+} from "@/hooks/membershipHooks";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Role } from "@/models/Membership";
 import { ThemedText } from "@/components/ThemedText";
@@ -154,7 +155,7 @@ const RoomMembersListContent: React.FC<{
 
   if (isLoading) {
     return (
-      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4  border border-gray-100 dark:border-neutral-800">
         <ThemedText className="text-center text-gray-500">
           Loading members...
         </ThemedText>
@@ -164,7 +165,7 @@ const RoomMembersListContent: React.FC<{
 
   if (error) {
     return (
-      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+      <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4  border border-gray-100 dark:border-neutral-800">
         <ThemedText className="text-center text-red-500">
           Error loading members
         </ThemedText>
@@ -250,7 +251,6 @@ const RoomMembersListContent: React.FC<{
                 color={Colors[colorScheme ?? "light"].text}
               />
             </TouchableOpacity>
-
           </View>
         )}
       </View>
@@ -259,7 +259,7 @@ const RoomMembersListContent: React.FC<{
 
   return (
     <View
-      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border-2 border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800`}
+      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border-2 border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl  border border-gray-100 dark:border-neutral-800`}
     >
       <TouchableOpacity
         onPress={handleExpandToggle}

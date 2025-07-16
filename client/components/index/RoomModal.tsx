@@ -39,7 +39,9 @@ export const RoomModal = ({
               {submitLabel} Room
             </ThemedText>
             <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center mt-1">
-              {submitLabel === "Create" ? "Create a new apartment space" : "Update apartment details"}
+              {submitLabel === "Create"
+                ? "Create a new apartment space"
+                : "Update apartment details"}
             </ThemedText>
           </View>
 
@@ -50,7 +52,7 @@ export const RoomModal = ({
             <TextInput
               placeholder="Enter room name"
               placeholderTextColor="#9ca3af"
-              className="bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 text-lg text-black dark:text-white shadow-sm"
+              className="bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-2xl px-4 py-4 text-lg text-black dark:text-white "
               value={name}
               onChangeText={setName}
               autoFocus
@@ -58,8 +60,8 @@ export const RoomModal = ({
           </View>
 
           <View className="flex-row gap-2">
-            <TouchableOpacity 
-              onPress={onClose} 
+            <TouchableOpacity
+              onPress={onClose}
               className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-2xl py-4 border border-gray-200 dark:border-neutral-700"
             >
               <ThemedText className="text-center text-gray-600 dark:text-gray-400 font-medium">
@@ -71,16 +73,16 @@ export const RoomModal = ({
               disabled={isPending || !name.trim()}
               className={`flex-1 rounded-2xl py-4 shadow-md ${
                 isPending || !name.trim()
-                  ? 'bg-gray-300 dark:bg-neutral-700'
-                  : 'bg-green-500'
+                  ? "bg-gray-300 dark:bg-neutral-700"
+                  : "bg-green-500"
               }`}
             >
-              <ThemedText className={`text-center font-medium ${
-                isPending || !name.trim()
-                  ? 'text-gray-500'
-                  : 'text-white'
-              }`}>
-                {isPending ? 'Saving...' : submitLabel}
+              <ThemedText
+                className={`text-center font-medium ${
+                  isPending || !name.trim() ? "text-gray-500" : "text-white"
+                }`}
+              >
+                {isPending ? "Saving..." : submitLabel}
               </ThemedText>
             </TouchableOpacity>
           </View>

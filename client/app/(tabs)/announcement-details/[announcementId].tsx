@@ -273,7 +273,7 @@ export default function AnnouncementDetails() {
               </TouchableOpacity>
             </View>
 
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
               <View className="flex-row items-start mb-4">
                 <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
                   <Ionicons name="person" size={20} color="#3b82f6" />
@@ -474,7 +474,7 @@ function AnnouncementRepliesSection({
   const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
 
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4  border border-gray-100 dark:border-neutral-800">
       <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
         Replies ({replies.length})
       </ThemedText>

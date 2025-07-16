@@ -72,7 +72,7 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
             <TouchableOpacity
               key={request.swapId}
               onPress={onSwapRequestAction}
-              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border-l-4 border-blue-500"
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border-l-4 border-blue-500"
             >
               <View className="flex-row items-center mb-3">
                 <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
@@ -124,7 +124,7 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
                   `/(tabs)/rooms/${roomId}/verifications/${completion.completionId}`
                 )
               }
-              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border-l-4 border-orange-500"
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border-l-4 border-orange-500"
             >
               <View className="flex-row items-center mb-3">
                 <View className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-3">

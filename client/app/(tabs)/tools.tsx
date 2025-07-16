@@ -267,7 +267,7 @@ const ToolsScreen = () => {
                 {rooms.length > 1 && (
                   <View
                     key="room-selection"
-                    className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800"
+                    className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4  border border-gray-100 dark:border-neutral-800"
                   >
                     <ThemedText className="text-lg font-medium text-gray-900 dark:text-white mb-3">
                       Select Room
@@ -303,7 +303,7 @@ const ToolsScreen = () => {
                   </View>
                 )}
 
-                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+                <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-4  border border-gray-100 dark:border-neutral-800">
                   <View className="flex-row items-center justify-between mb-4">
                     <ThemedText className="text-lg font-medium text-gray-900 dark:text-white">
                       Cleaning Tasks

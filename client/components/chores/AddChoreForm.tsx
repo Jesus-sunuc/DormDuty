@@ -247,7 +247,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                   onPress={() => {
                     setApprovalRequired(!approvalRequired);
                     if (!approvalRequired) {
-                      setPhotoRequired(false); // Reset photo requirement if disabling approval
+                      setPhotoRequired(false);
                     }
                   }}
                   className={`w-12 h-7 rounded-full border-2 ${
@@ -257,14 +257,13 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                   }`}
                 >
                   <View
-                    className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+                    className={`w-5 h-5 rounded-full bg-white transition-transform ${
                       approvalRequired ? "translate-x-5" : "translate-x-0"
                     }`}
                   />
                 </TouchableOpacity>
               </View>
 
-              {/* Photo Required Toggle - Only shown if approval is required */}
               {approvalRequired && (
                 <View className="flex-row items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
                   <View className="flex-1 mr-4">
@@ -285,7 +284,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                     }`}
                   >
                     <View
-                      className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+                      className={`w-5 h-5 rounded-full bg-white  transition-transform ${
                         photoRequired ? "translate-x-5" : "translate-x-0"
                       }`}
                     />

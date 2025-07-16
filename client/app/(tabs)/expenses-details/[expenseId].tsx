@@ -3,7 +3,8 @@ import { View, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { useExpenseByIdQuery ,
+import {
+  useExpenseByIdQuery,
   useMarkExpensePaidMutation,
   useDeleteExpenseMutation,
 } from "@/hooks/expenseHooks";
@@ -112,7 +113,7 @@ const ExpenseDetailPage = () => {
 
   return (
     <ScrollView className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      <View className="bg-white dark:bg-neutral-900 px-6 pt-16 pb-6 shadow-sm">
+      <View className="bg-white dark:bg-neutral-900 px-6 pt-16 pb-6 ">
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center">
             <TouchableOpacity
@@ -152,7 +153,7 @@ const ExpenseDetailPage = () => {
       </View>
 
       <View className="px-6 py-6">
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
           <View className="flex-row justify-between items-center mb-4">
             <View className="flex-row items-center">
               {expense.category && (
@@ -212,7 +213,7 @@ const ExpenseDetailPage = () => {
 
         {userSplit &&
           membership?.membershipId !== expense.payerMembershipId && (
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
               <View className="flex-row items-center mb-4">
                 <Ionicons name="person-circle" size={24} color="#3b82f6" />
                 <ThemedText className="text-lg font-bold text-gray-900 dark:text-white ml-2">
@@ -265,7 +266,7 @@ const ExpenseDetailPage = () => {
           )}
 
         {membership?.membershipId === expense.payerMembershipId && (
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
             <View className="flex-row items-center mb-4">
               <Ionicons name="people" size={24} color="#3b82f6" />
               <ThemedText className="text-lg font-bold text-gray-900 dark:text-white ml-2">
@@ -321,7 +322,7 @@ const ExpenseDetailPage = () => {
             <TouchableOpacity
               onPress={handlePayExpense}
               disabled={paymentPending}
-              className={`rounded-2xl p-4 flex-row items-center justify-center shadow-sm ${
+              className={`rounded-2xl p-4 flex-row items-center justify-center  ${
                 paymentPending
                   ? "bg-gray-400 dark:bg-gray-600"
                   : "bg-green-500 dark:bg-green-600"

@@ -195,7 +195,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
   return (
     <View>
       {summary && (
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-neutral-800">
           <ThemedText className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
             Your Balance
           </ThemedText>
@@ -245,7 +245,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
           }
           router.push(`/expenses-details/add?roomId=${room.roomId}`);
         }}
-        className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center shadow-sm"
+        className="bg-blue-500 dark:bg-blue-600 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
       >
         <Ionicons name="add" size={24} color="white" />
         <ThemedText className="text-white font-semibold text-lg ml-2">
@@ -259,7 +259,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
         </ThemedText>
 
         {expenses.length === 0 ? (
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center shadow-sm border border-gray-100 dark:border-neutral-800">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center border border-gray-100 dark:border-neutral-800">
             <Ionicons name="receipt-outline" size={48} color="#9ca3af" />
             <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
               No expenses yet
@@ -307,7 +307,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   return (
     <TouchableOpacity
       onPress={handleExpensePress}
-      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-neutral-800"
+      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-neutral-800"
     >
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">

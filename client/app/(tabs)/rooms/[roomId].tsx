@@ -361,7 +361,7 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
           }
           className="mb-4"
         >
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-neutral-800">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5  border border-gray-100 dark:border-neutral-800">
             <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
               {chore?.name || "Unnamed Chore"}
             </ThemedText>

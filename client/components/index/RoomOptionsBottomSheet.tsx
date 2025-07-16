@@ -125,7 +125,7 @@ const ActionItem = ({ label, icon, onPress }: ActionItemProps) => (
     onPress={onPress}
     className="flex-row items-center bg-gray-50 dark:bg-neutral-800 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-neutral-700 active:bg-gray-100 dark:active:bg-neutral-700"
   >
-    <View className="w-10 h-10 rounded-full bg-white dark:bg-neutral-700 items-center justify-center mr-4 shadow-sm">
+    <View className="w-10 h-10 rounded-full bg-white dark:bg-neutral-700 items-center justify-center mr-4 ">
       {icon}
     </View>
     <ThemedText className="text-base font-medium text-gray-900 dark:text-gray-100 flex-1">

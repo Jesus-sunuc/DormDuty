@@ -114,7 +114,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
   };
 
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border border-gray-100 dark:border-neutral-800">
       <View className="flex-row items-start justify-between mb-3">
         <View className="flex-1">
           <ThemedText className="text-lg font-bold mb-1 text-gray-700 dark:text-gray-300">

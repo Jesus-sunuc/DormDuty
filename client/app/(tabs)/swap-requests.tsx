@@ -94,9 +94,7 @@ const SwapRequestsScreen = () => {
           <TouchableOpacity
             onPress={() => setActiveTab("pending")}
             className={`flex-1 py-2 px-4 rounded-lg ${
-              activeTab === "pending"
-                ? "bg-white dark:bg-neutral-700 shadow-sm"
-                : ""
+              activeTab === "pending" ? "bg-white dark:bg-neutral-700 " : ""
             }`}
           >
             <ThemedText
@@ -112,9 +110,7 @@ const SwapRequestsScreen = () => {
           <TouchableOpacity
             onPress={() => setActiveTab("all")}
             className={`flex-1 py-2 px-4 rounded-lg ${
-              activeTab === "all"
-                ? "bg-white dark:bg-neutral-700 shadow-sm"
-                : ""
+              activeTab === "all" ? "bg-white dark:bg-neutral-700 " : ""
             }`}
           >
             <ThemedText

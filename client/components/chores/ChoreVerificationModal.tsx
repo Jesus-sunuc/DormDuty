@@ -72,7 +72,7 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
             <View className="flex-row items-center mb-4">
               <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
                 <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
@@ -99,7 +99,7 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
             </View>
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
             <Text className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Add Verification Notes
             </Text>
@@ -332,7 +332,7 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
                 {pendingCompletions.map((completion: ChoreCompletion) => (
                   <View
                     key={completion.completionId}
-                    className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 shadow-sm border border-gray-100 dark:border-neutral-800"
+                    className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border border-gray-100 dark:border-neutral-800"
                   >
                     <View className="flex-row items-start justify-between mb-3">
                       <View className="flex-1">

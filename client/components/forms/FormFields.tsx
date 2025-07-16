@@ -52,7 +52,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical={multiline ? "top" : "center"}
-      className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 text-lg text-neutral-900 dark:text-white shadow-sm"
+      className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 text-lg text-neutral-900 dark:text-white "
       style={style}
     />
   </FormField>
@@ -72,7 +72,7 @@ export const PickerField: React.FC<PickerFieldProps> = ({
   items,
 }) => (
   <FormField label={label}>
-    <View className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden shadow-sm">
+    <View className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden ">
       <Picker
         selectedValue={selectedValue}
         onValueChange={onValueChange}
@@ -133,7 +133,7 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     <FormField label={label}>
       <TouchableOpacity
         onPress={() => setShowPicker(true)}
-        className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 shadow-sm"
+        className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 "
       >
         <Text className="text-neutral-700 dark:text-neutral-300 text-lg">
           {value ? String(value) : placeholder}
@@ -197,7 +197,7 @@ export const TimePickerField: React.FC<TimePickerFieldProps> = ({
     <FormField label={label}>
       <TouchableOpacity
         onPress={() => setShowPicker(true)}
-        className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 shadow-sm"
+        className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 "
       >
         <Text className="text-neutral-700 dark:text-neutral-300 text-lg">
           {value ? String(value) : placeholder}

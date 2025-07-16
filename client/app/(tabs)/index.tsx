@@ -56,7 +56,7 @@ const RoomList = ({
         <View key={room.roomId} className="mb-4">
           <TouchableOpacity
             onPress={() => router.push(`/rooms/${room.roomId}`)}
-            className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 overflow-hidden"
+            className="bg-white dark:bg-neutral-900 rounded-2xl  border border-gray-100 dark:border-neutral-800 overflow-hidden"
             activeOpacity={0.8}
           >
             <View className="flex-row items-center">

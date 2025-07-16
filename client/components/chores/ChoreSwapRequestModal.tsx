@@ -143,7 +143,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
             <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Select Member{availableMembers.length > 1 ? "s" : ""}
             </ThemedText>
@@ -246,7 +246,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
             )}
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
             <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Message (Optional)
             </ThemedText>

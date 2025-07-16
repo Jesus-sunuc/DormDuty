@@ -1,10 +1,10 @@
-import React from 'react';
-import { View } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import React from "react";
+import { View } from "react-native";
+import { ThemedText } from "@/components/ThemedText";
+import Ionicons from "@expo/vector-icons/Ionicons";
 // Note: formatDate should be moved to a utils file, but for now we'll import it relatively
-import { formatDate } from '@/app/(tabs)/chores';
-import { daysOfWeekFull } from '@/constants/choreConstants';
+import { formatDate } from "@/app/(tabs)/chores";
+import { daysOfWeekFull } from "@/constants/choreConstants";
 
 interface ChoreInfoCardProps {
   frequency?: string;
@@ -20,11 +20,11 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
   timing,
 }) => {
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 shadow-sm">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
       <ThemedText className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
         Chore Information
       </ThemedText>
-      
+
       <View className="space-y-4">
         <View className="flex-row items-center py-2">
           <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">

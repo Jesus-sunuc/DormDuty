@@ -125,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
               <ParallaxScrollViewY>
                 <View className="px-6 pt-6">
                   <View className="mb-6">
-                    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+                    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6  border border-gray-100 dark:border-neutral-800">
                       <View className="mb-4">
                         <View className="flex-row items-center mb-2">
                           <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
