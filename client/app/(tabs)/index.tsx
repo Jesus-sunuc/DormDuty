@@ -68,7 +68,7 @@ const RoomList = ({
               <View className="flex-1 p-5">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center flex-1">
-                    <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
+                    <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-700/30 items-center justify-center mr-3">
                       <Ionicons name="home" size={20} color="#3b82f6" />
                     </View>
                     <View className="flex-1">
@@ -257,14 +257,14 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-indigo-100 dark:bg-indigo-900 px-2 py-2 rounded-xl border border-indigo-400 dark:border-indigo-500 flex-row items-center"
+                className="bg-indigo-100 dark:bg-indigo-800 border-indigo-200 dark:border-indigo-700 px-2 py-2 rounded-xl border  flex-row items-center"
               >
                 <Ionicons
                   name="enter-outline"
                   size={17}
-                  color={colorScheme === "dark" ? "#c7d2fe" : "#4338ca"}
+                  color={colorScheme === "dark" ? "#e0e7ff" : "#4338ca"}
                 />
-                <ThemedText className="text-indigo-700 dark:text-indigo-200 font-semibold ml-1 mr-1 text-sm">
+                <ThemedText className="text-indigo-700 dark:text-indigo-100 font-semibold ml-1 mr-1 text-sm">
                   Join
                 </ThemedText>
               </TouchableOpacity>
@@ -282,7 +282,7 @@ const HomeScreen = () => {
                   shadowRadius: 4,
                   elevation: 3,
                 }}
-                className="bg-emerald-100 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
+                className="bg-emerald-100 dark:bg-emerald-800 px-2 py-2 rounded-xl border border-emerald-200 dark:border-emerald-700 flex-row items-center"
               >
                 <Ionicons
                   name="add"
