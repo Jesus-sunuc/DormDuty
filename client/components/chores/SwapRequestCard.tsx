@@ -168,20 +168,20 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
           <TouchableOpacity
             onPress={handleDecline}
             disabled={respondMutation.isPending}
-            className="flex-1 bg-red-100 dark:bg-red-900/30 py-3 rounded-xl flex-row items-center justify-center"
+            className="flex-1 bg-red-500 dark:bg-red-600 py-3 rounded-xl flex-row items-center justify-center"
           >
-            <Ionicons name="close" size={18} color="#dc2626" />
-            <Text className="text-red-600 dark:text-red-400 font-medium ml-2">
+            <Ionicons name="close" size={18} color="#fff" />
+            <Text className="text-white font-medium ml-2">
               Not Now
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAccept}
             disabled={respondMutation.isPending}
-            className="flex-1 bg-green-100 dark:bg-green-900/30 py-3 rounded-xl flex-row items-center justify-center"
+            className="flex-1 bg-green-500 dark:bg-green-600 py-3 rounded-xl flex-row items-center justify-center"
           >
-            <Ionicons name="checkmark" size={18} color="#16a34a" />
-            <Text className="text-green-600 dark:text-green-400 font-medium ml-2">
+            <Ionicons name="checkmark" size={18} color="#fff" />
+            <Text className="text-white font-medium ml-2">
               Accept
             </Text>
           </TouchableOpacity>
