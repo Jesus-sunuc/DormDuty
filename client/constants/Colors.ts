@@ -4,7 +4,7 @@ export const Colors = {
     background: "#f5f7f4",
     surface: "#ffffff",
     muted: "#d6e0da",
-    tint: "#059669",
+    tint: "#10b981",
     icon: "#6b9080",
     tabIconDefault: "#6b7280",
     tabIconSelected: "#27ae60",

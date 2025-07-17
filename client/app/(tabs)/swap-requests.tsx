@@ -104,7 +104,7 @@ const SwapRequestsScreen = () => {
                   : "text-gray-600 dark:text-gray-400"
               }`}
             >
-              Pending ({pendingRequests.length})
+              Pendicng ({pendingRequests.length})
             </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
