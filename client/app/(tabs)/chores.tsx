@@ -46,7 +46,7 @@ export default function ChoresScreen() {
     error: statusError,
   } = useChoresAssignedWithStatusQuery();
 
-  const chores = choreData?.chores?.length ? choreData.chores : assignedChores;
+  const chores = choreData?.chores ?? assignedChores;
   const isLoading = assignedLoading || statusLoading;
   const finalError = error || statusError;
 
