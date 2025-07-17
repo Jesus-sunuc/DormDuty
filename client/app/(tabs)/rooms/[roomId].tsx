@@ -126,7 +126,7 @@ const RoomChoresScreen = () => {
                     shadowRadius: 4,
                     elevation: 4,
                   }}
-                  className="bg-emerald-100 dark:bg-emerald-900 px-2 py-2 rounded-xl border border-emerald-400 dark:border-emerald-500 flex-row items-center"
+                  className="bg-green-100 dark:bg-green-600 px-2 py-2 rounded-xl border border-green-200 dark:border-green-700 flex-row items-center"
                 >
                   <Ionicons
                     name="add"

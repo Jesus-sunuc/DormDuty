@@ -74,12 +74,12 @@ export const RoomModal = ({
               className={`flex-1 rounded-2xl py-4 shadow-md ${
                 isPending || !name.trim()
                   ? "bg-gray-300 dark:bg-neutral-700"
-                  : "bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-500"
+                  : "bg-green-100 dark:bg-green-600 border border-green-200 dark:border-green-700"
               }`}
             >
               <ThemedText
-                className={`text-center font-medium ${
-                  isPending || !name.trim() ? "text-gray-500" : "text-green-700 dark:text-green-200"
+                className={`text-center ${
+                  isPending || !name.trim() ? "text-gray-500" : "text-green-700 dark:text-white"
                 }`}
               >
                 {isPending ? "Saving..." : submitLabel}

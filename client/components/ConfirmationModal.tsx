@@ -30,7 +30,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const iconBgColor = destructive
     ? "bg-red-100 dark:bg-red-900/30"
     : "bg-orange-100 dark:bg-orange-900/30";
-  const confirmButtonColor = destructive ? "bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-500" : "bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-500";
+  const confirmButtonColor = destructive ? "bg-red-100 dark:bg-red-600 border border-red-200 dark:border-red-700" : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700";
   const confirmButtonHoverColor = destructive
     ? "active:bg-red-600"
     : "active:bg-blue-600";
@@ -74,7 +74,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               onPress={onConfirm}
               className={`flex-1 ${confirmButtonColor} rounded-xl py-3 px-4 ${confirmButtonHoverColor}`}
             >
-              <ThemedText className="text-center font-semibold text-red-500 dark:text-red-100">
+              <ThemedText className="text-center font-semibold text-red-500 dark:text-white">
                 {confirmText}
               </ThemedText>
             </TouchableOpacity>

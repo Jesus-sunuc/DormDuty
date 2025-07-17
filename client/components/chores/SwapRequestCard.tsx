@@ -55,7 +55,6 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
       },
       {
         onSuccess: () => {
-          toastSuccess("Chore swap declined");
           onRequestUpdate?.();
         },
         onError: () => {
@@ -173,7 +172,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
           >
             <Ionicons name="close" size={18} color="#dc2626" />
             <Text className="text-red-600 dark:text-red-400 font-medium ml-2">
-              Decline
+              Not Now
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
