@@ -34,23 +34,23 @@ export const SwapRequestModal: React.FC<SwapRequestModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
+        <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg border-b-2 border-gray-300 dark:border-neutral-800">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
               onPress={onClose}
-              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+              className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center border border-gray-300 dark:border-neutral-700"
             >
               <Ionicons name="close" size={20} color="#6b7280" />
             </TouchableOpacity>
             <View className="flex-1 mx-4">
-              <ThemedText className="text-lg font-semibold text-center text-gray-700 dark:text-gray-300">
+              <ThemedText className="text-lg font-semibold text-center text-gray-800 dark:text-gray-300">
                 Swap Requests
               </ThemedText>
             </View>
             <View className="w-10" />
           </View>
-          <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          <ThemedText className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {requests.length === 1
               ? "1 pending request"
               : `${requests.length} pending requests`}
@@ -65,10 +65,10 @@ export const SwapRequestModal: React.FC<SwapRequestModalProps> = ({
                 size={64}
                 color="#22c55e"
               />
-              <ThemedText className="text-center text-gray-500 mt-4 text-lg font-medium">
+              <ThemedText className="text-center text-gray-600 mt-4 text-lg font-medium">
                 All caught up!
               </ThemedText>
-              <ThemedText className="text-center text-gray-400 mt-2 text-sm">
+              <ThemedText className="text-center text-gray-500 mt-2 text-sm">
                 You have no pending swap requests
               </ThemedText>
             </View>

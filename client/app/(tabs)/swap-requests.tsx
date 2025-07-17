@@ -64,7 +64,7 @@ const SwapRequestsScreen = () => {
       <LoadingAndErrorHandling>
         <View className="flex-1 items-center justify-center px-6">
           <Ionicons name="person-outline" size={64} color="#9ca3af" />
-          <ThemedText className="text-center text-gray-500 mt-4 text-lg">
+          <ThemedText className="text-center text-gray-600 mt-4 text-lg">
             Please log in to view swap requests
           </ThemedText>
         </View>
@@ -73,8 +73,8 @@ const SwapRequestsScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-black">
-      <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+    <View className="flex-1 bg-gray-100 dark:bg-black">
+      <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg border-b-2 border-gray-300 dark:border-neutral-800">
         <View className="flex-row items-center justify-between mb-4 mt-6">
           <TouchableOpacity
             onPress={() => router.back()}
@@ -94,7 +94,7 @@ const SwapRequestsScreen = () => {
           <TouchableOpacity
             onPress={() => setActiveTab("pending")}
             className={`flex-1 py-2 px-4 rounded-lg ${
-              activeTab === "pending" ? "bg-white dark:bg-neutral-700 " : ""
+              activeTab === "pending" ? "bg-gray-200 dark:bg-neutral-700 " : ""
             }`}
           >
             <ThemedText
@@ -110,7 +110,7 @@ const SwapRequestsScreen = () => {
           <TouchableOpacity
             onPress={() => setActiveTab("all")}
             className={`flex-1 py-2 px-4 rounded-lg ${
-              activeTab === "all" ? "bg-white dark:bg-neutral-700 " : ""
+              activeTab === "all" ? "bg-gray-200 dark:bg-neutral-700 " : ""
             }`}
           >
             <ThemedText
@@ -140,7 +140,7 @@ const SwapRequestsScreen = () => {
                 size={64}
                 color="#9ca3af"
               />
-              <ThemedText className="text-center text-gray-500 mt-4 text-lg font-medium">
+              <ThemedText className="text-center text-gray-600 mt-4 text-lg font-medium">
                 {activeTab === "pending"
                   ? "No pending requests"
                   : "No swap requests yet"}

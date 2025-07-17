@@ -136,7 +136,7 @@ const CompletionReviewScreen = () => {
       </View>
 
       <ScrollView className="flex-1 px-6 py-6">
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
           <View className="flex-row items-center mb-4">
             <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
               <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
@@ -181,7 +181,7 @@ const CompletionReviewScreen = () => {
           </View>
         </View>
 
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
           <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
             Add Verification Notes
           </ThemedText>

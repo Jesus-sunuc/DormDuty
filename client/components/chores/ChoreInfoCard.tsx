@@ -20,7 +20,7 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
   timing,
 }) => {
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
       <ThemedText className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
         Chore Information
       </ThemedText>
@@ -31,10 +31,10 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
             <Ionicons name="repeat" size={16} color="#3b82f6" />
           </View>
           <View className="flex-1">
-            <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+            <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
               Frequency
             </ThemedText>
-            <ThemedText className="text-base font-medium text-gray-900 dark:text-gray-100">
+            <ThemedText className="text-base font-medium text-gray-800 dark:text-gray-100">
               {frequency || "Not set"}
             </ThemedText>
           </View>
@@ -46,10 +46,10 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
               <Ionicons name="calendar" size={16} color="#10b981" />
             </View>
             <View className="flex-1">
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+              <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                 Start Date
               </ThemedText>
-              <ThemedText className="text-base font-medium text-gray-900 dark:text-gray-100">
+              <ThemedText className="text-base font-medium text-gray-800 dark:text-gray-100">
                 {formatDate(startDate)}
               </ThemedText>
             </View>
@@ -62,10 +62,10 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
               <Ionicons name="calendar-outline" size={16} color="#8b5cf6" />
             </View>
             <View className="flex-1">
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+              <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                 Day of Week
               </ThemedText>
-              <ThemedText className="text-base font-medium text-gray-900 dark:text-gray-100">
+              <ThemedText className="text-base font-medium text-gray-800 dark:text-gray-100">
                 {daysOfWeekFull[dayOfWeek] || "Invalid day"}
               </ThemedText>
             </View>
@@ -78,10 +78,10 @@ export const ChoreInfoCard: React.FC<ChoreInfoCardProps> = ({
               <Ionicons name="time-outline" size={16} color="#f59e0b" />
             </View>
             <View className="flex-1">
-              <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+              <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                 Due Time
               </ThemedText>
-              <ThemedText className="text-base font-medium text-gray-900 dark:text-gray-100">
+              <ThemedText className="text-base font-medium text-gray-800 dark:text-gray-100">
                 {timing}
               </ThemedText>
             </View>

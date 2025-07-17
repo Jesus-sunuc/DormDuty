@@ -99,18 +99,18 @@ const RoomChoresScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <LoadingAndErrorHandling>
-        <View className="flex-1 bg-gray-50 dark:bg-black">
+        <View className="flex-1 bg-gray-100 dark:bg-black">
           <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
             <View className="flex-row items-center justify-between mb-4 mt-6">
               <TouchableOpacity
                 onPress={() => router.push("/")}
-                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center"
               >
                 <Ionicons name="arrow-back" size={20} color="#6b7280" />
               </TouchableOpacity>
 
               <View className="flex-1 mx-4">
-                <ThemedText className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                <ThemedText className="text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">
                   Room Chores
                 </ThemedText>
               </View>
@@ -142,7 +142,7 @@ const RoomChoresScreen = () => {
                 onPress={() =>
                   router.push(`/(tabs)/rooms/${roomId}/notifications`)
                 }
-                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-2 relative"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center ml-2 relative"
               >
                 <Ionicons
                   name="notifications-outline"
@@ -162,14 +162,14 @@ const RoomChoresScreen = () => {
             <View className="mt-2">
               <View className="flex-row items-center justify-between">
                 <View className="flex-1">
-                  <ThemedText className="text-2xl font-bold text-gray-900 dark:text-gray-300 mb-1">
+                  <ThemedText className="text-2xl font-bold text-gray-800 dark:text-gray-300 mb-1">
                     {roomLoading
                       ? "Loading..."
                       : room?.name || `Room #${roomId}`}
                   </ThemedText>
                   <View className="flex-row items-center">
                     <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
-                    <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                    <ThemedText className="text-sm text-gray-700 dark:text-gray-400">
                       Manage and track chores
                     </ThemedText>
                   </View>
@@ -304,11 +304,11 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
   if (!chores || !chores.length) {
     return (
       <View className="flex-1 items-center justify-center px-6 py-20">
-        <Ionicons name="clipboard-outline" size={64} color="#9ca3af" />
-        <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+        <Ionicons name="clipboard-outline" size={64} color="#6b7280" />
+        <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-4 text-lg font-medium">
           No chores yet
         </ThemedText>
-        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+        <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
           Add your first chore to get started with room management
         </ThemedText>
       </View>
@@ -361,8 +361,8 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
           }
           className="mb-4"
         >
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5  border border-gray-100 dark:border-neutral-800">
-            <ThemedText className="text-lg font-bold mb-3 text-gray-900 dark:text-gray-300">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-gray-300 dark:border-neutral-800">
+            <ThemedText className="text-lg font-bold mb-3 text-gray-800 dark:text-gray-300">
               {chore?.name || "Unnamed Chore"}
             </ThemedText>
 
@@ -372,11 +372,11 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                   <View className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-2">
                     <Ionicons name="time-outline" size={12} color="#f59e0b" />
                   </View>
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  <ThemedText className="text-sm text-gray-700 dark:text-gray-400">
                     Last completed:
                   </ThemedText>
                 </View>
-                <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <ThemedText className="text-sm font-medium text-gray-800 dark:text-gray-100">
                   {formatDate(chore?.lastCompleted) || "Never"}
                 </ThemedText>
               </View>
@@ -386,13 +386,13 @@ const ChoreList = ({ roomId }: { roomId: string }) => {
                   <View className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-2">
                     <Ionicons name="person-outline" size={12} color="#3b82f6" />
                   </View>
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  <ThemedText className="text-sm text-gray-700 dark:text-gray-400">
                     Assigned to:
                   </ThemedText>
                 </View>
                 <View className="flex-row items-center">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                  <ThemedText className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <ThemedText className="text-sm font-medium text-gray-800 dark:text-gray-100">
                     {getAssignedMemberDisplay(chore)}
                   </ThemedText>
                 </View>

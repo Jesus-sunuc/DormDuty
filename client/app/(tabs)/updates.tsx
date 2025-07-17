@@ -130,7 +130,7 @@ const Updates = () => {
       isLoading={roomsLoading || announcementsLoading || membershipLoading}
       error={roomsError || announcementsError}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header title="Updates" onMenuPress={openSidebar} />
         {selectedRoom ? (
           <FlatList
@@ -148,7 +148,7 @@ const Updates = () => {
               <>
                 {rooms.length > 0 && (
                   <View className="mb-6">
-                    <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+                    <ThemedText className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
                       {rooms.length > 1 ? "Select Room" : "Room"}
                     </ThemedText>
                     <FlatList
@@ -162,14 +162,14 @@ const Updates = () => {
                           className={`mr-3 px-4 py-2 rounded-2xl border ${
                             selectedRoom?.roomId === room.roomId
                               ? "bg-blue-500 border-blue-500"
-                              : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+                              : "bg-gray-100 dark:bg-neutral-800 border-gray-300 dark:border-neutral-700"
                           }`}
                         >
                           <ThemedText
                             className={`font-medium ${
                               selectedRoom?.roomId === room.roomId
                                 ? "text-white"
-                                : "text-gray-900 dark:text-white"
+                                : "text-gray-800 dark:text-white"
                             }`}
                           >
                             {room.name}
@@ -181,10 +181,10 @@ const Updates = () => {
                 )}
 
                 {membership && (
-                  <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
+                  <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
                     <View className="flex-row items-center mb-4">
                       <Ionicons name="add-circle" size={24} color="#3b82f6" />
-                      <ThemedText className="text-lg font-semibold ml-2 text-gray-900 dark:text-white">
+                      <ThemedText className="text-lg font-semibold ml-2 text-gray-800 dark:text-white">
                         Post Update
                       </ThemedText>
                     </View>
@@ -195,8 +195,8 @@ const Updates = () => {
                       placeholder="Share an update with your roommates..."
                       multiline
                       numberOfLines={4}
-                      className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white mb-4 min-h-[100px] text-base"
-                      placeholderTextColor="#9ca3af"
+                      className="bg-gray-200 dark:bg-neutral-800 rounded-xl p-4 text-gray-800 dark:text-white mb-4 min-h-[100px] text-base border border-gray-300 dark:border-neutral-700"
+                      placeholderTextColor="#6b7280"
                     />
 
                     <View className="flex-row items-center mb-4">
@@ -210,10 +210,10 @@ const Updates = () => {
                       </ThemedText>
                       <TouchableOpacity
                         onPress={() => setCanReply((prev) => !prev)}
-                        className={`w-12 h-6 rounded-full border-2 transition-colors ${
+                        className={`w-12 h-6 rounded-full border transition-colors ${
                           canReply
                             ? "bg-blue-500 border-blue-500"
-                            : "bg-gray-200 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
+                            : "bg-gray-300 dark:bg-neutral-700 border-gray-200 dark:border-neutral-600"
                         }`}
                       >
                         <View
@@ -230,8 +230,8 @@ const Updates = () => {
                       disabled={isCreating || !newUpdate.trim()}
                       className={`py-3 px-6 rounded-xl flex-row items-center justify-center ${
                         isCreating || !newUpdate.trim()
-                          ? "bg-gray-300 dark:bg-gray-700"
-                          : "bg-blue-500"
+                          ? "bg-gray-400 dark:bg-gray-700 border-gray-500 dark:border-gray-600"
+                          : "bg-blue-500 border-blue-600"
                       }`}
                     >
                       {isCreating ? (
@@ -254,7 +254,7 @@ const Updates = () => {
                 )}
 
                 <View className="flex-row items-center justify-between mb-4">
-                  <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
                     Recent Updates ({announcements.length})
                   </ThemedText>
                   {unreadAnnouncementIds.length > 0 && (
@@ -286,16 +286,16 @@ const Updates = () => {
               );
             }}
             ListEmptyComponent={
-              <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center  border border-gray-100 dark:border-neutral-800">
+              <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-8 items-center border border-gray-300 dark:border-neutral-800">
                 <Ionicons
                   name="chatbubbles-outline"
                   size={48}
                   color="#9ca3af"
                 />
-                <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
+                <ThemedText className="text-center text-gray-500 mt-3 text-base font-medium">
                   No updates yet
                 </ThemedText>
-                <ThemedText className="text-center text-gray-500 mt-1 text-sm">
+                <ThemedText className="text-center text-gray-600 mt-1 text-sm">
                   Be the first to share an update with your roommates
                 </ThemedText>
               </View>
@@ -357,10 +357,10 @@ function AnnouncementNotificationCard({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`rounded-2xl p-4 mb-3  border ${
+      className={`rounded-2xl p-4 mb-3 border ${
         isUnread
           ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
-          : "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800"
+          : "bg-gray-100 dark:bg-neutral-900 border-gray-300 dark:border-neutral-800"
       }`}
       activeOpacity={0.7}
     >
@@ -370,7 +370,7 @@ function AnnouncementNotificationCard({
             className={`w-10 h-10 rounded-full items-center justify-center ${
               isUnread
                 ? "bg-blue-100 dark:bg-blue-900/30"
-                : "bg-gray-100 dark:bg-neutral-700"
+                : "bg-gray-200 dark:bg-neutral-700"
             }`}
           >
             <Ionicons
@@ -380,7 +380,7 @@ function AnnouncementNotificationCard({
             />
           </View>
           {isUnread && (
-            <View className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-neutral-900" />
+            <View className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border border-white dark:border-neutral-900" />
           )}
         </View>
 
@@ -390,13 +390,13 @@ function AnnouncementNotificationCard({
               <ThemedText
                 className={`font-semibold ${
                   isUnread
-                    ? "text-gray-900 dark:text-white"
-                    : "text-gray-900 dark:text-white"
+                    ? "text-gray-800 dark:text-white"
+                    : "text-gray-800 dark:text-white"
                 }`}
               >
                 {announcement.memberName}
                 {isCurrentUser && (
-                  <ThemedText className="text-sm text-gray-500">
+                  <ThemedText className="text-sm text-gray-600">
                     {" "}
                     (You)
                   </ThemedText>
@@ -404,7 +404,7 @@ function AnnouncementNotificationCard({
               </ThemedText>
             </View>
             <View className="flex-row items-center">
-              <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
+              <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
                 {formatTimeAgo(announcement.createdAt)}
               </ThemedText>
             </View>
@@ -414,7 +414,7 @@ function AnnouncementNotificationCard({
             className={`leading-5 mb-2 text-sm ${
               isUnread
                 ? "text-gray-800 dark:text-gray-200 font-medium"
-                : "text-gray-600 dark:text-gray-400"
+                : "text-gray-700 dark:text-gray-400"
             }`}
           >
             {getPreviewText(announcement.message)}
@@ -425,7 +425,7 @@ function AnnouncementNotificationCard({
               {totalReactions > 0 && (
                 <View className="flex-row items-center">
                   <Ionicons name="heart" size={14} color="#f59e0b" />
-                  <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                  <ThemedText className="text-xs text-gray-600 dark:text-gray-400 ml-1">
                     {totalReactions}
                   </ThemedText>
                 </View>

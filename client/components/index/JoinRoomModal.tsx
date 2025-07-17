@@ -131,7 +131,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 onPress={handleJoinRoom}
                 className={`flex-1 py-3 px-4 rounded-lg ${
                   joinRoomMutation.isPending || roomCode.trim().length !== 6
-                    ? "bg-gray-400 dark:bg-gray-600"
+                    ? "bg-gray-100 dark:bg-gray-600"
                     : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700" 
                 }`}
                 disabled={

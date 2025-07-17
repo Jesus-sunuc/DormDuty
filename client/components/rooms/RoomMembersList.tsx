@@ -42,7 +42,7 @@ export const RoomMembersList: React.FC<RoomMembersListProps> = ({
   ) {
     return (
       <View className="p-4">
-        <ThemedText className="text-center text-gray-500">
+        <ThemedText className="text-center text-gray-700">
           Room ID not available
         </ThemedText>
       </View>
@@ -198,16 +198,16 @@ const RoomMembersListContent: React.FC<{
           </Text>
         </View>
         {isAdmin && (
-          <View className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-neutral-900" />
+          <View className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white dark:border-neutral-900" />
         )}
       </View>
     );
   };
 
   const renderMember = ({ item }: { item: any }) => (
-    <View className="flex-row items-center justify-between p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg mb-2">
+    <View className="flex-row items-center justify-between p-3 bg-gray-100 dark:bg-neutral-800 rounded-lg mb-2">
       <View className="flex-1">
-        <Text className="font-semibold text-gray-900 dark:text-white">
+        <Text className="font-semibold text-gray-800 dark:text-white">
           {item?.name || "Unknown User"}
         </Text>
       </View>
@@ -243,7 +243,7 @@ const RoomMembersListContent: React.FC<{
             )}
             <TouchableOpacity
               onPress={() => handleManageRole(item)}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700"
+              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700"
             >
               <Ionicons
                 name="settings"
@@ -259,7 +259,7 @@ const RoomMembersListContent: React.FC<{
 
   return (
     <View
-      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border-2 border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl  border border-gray-100 dark:border-neutral-800`}
+      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl border border-gray-300 dark:border-neutral-800`}
     >
       <TouchableOpacity
         onPress={handleExpandToggle}
@@ -273,7 +273,7 @@ const RoomMembersListContent: React.FC<{
               size={20}
               color={Colors[colorScheme ?? "light"].text}
             />
-            <ThemedText className="text-lg text-gray-700 dark:text-gray-300 font-semibold ml-2">
+            <ThemedText className="text-lg text-gray-800 dark:text-gray-300 font-semibold ml-2">
               Members ({members.length})
             </ThemedText>
           </View>
@@ -286,8 +286,8 @@ const RoomMembersListContent: React.FC<{
                 .slice(0, 3)
                 .map((member, index) => renderMemberPreview(member, index))}
               {members.length > 3 && (
-                <View className="ml-2 w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-700 items-center justify-center">
-                  <Text className="text-xs font-bold text-gray-600 dark:text-gray-300">
+                <View className="ml-2 w-8 h-8 rounded-full bg-gray-300 dark:bg-neutral-700 items-center justify-center">
+                  <Text className="text-xs font-bold text-gray-800 dark:text-gray-300">
                     +{members.length - 3}
                   </Text>
                 </View>
@@ -311,7 +311,7 @@ const RoomMembersListContent: React.FC<{
 
       {isExpanded && (
         <View className="px-4 pb-4">
-          <View className="border-t border-gray-100 dark:border-neutral-700 pt-4">
+          <View className="border-t border-gray-300 dark:border-neutral-700 pt-4">
             {forceExpanded ? (
               <ScrollView
                 className="max-h-60"

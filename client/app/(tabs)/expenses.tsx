@@ -61,7 +61,7 @@ const ExpensesScreen = () => {
   if (roomsLoading) {
     return (
       <LoadingAndErrorHandling isLoading={true}>
-        <View className="flex-1 bg-gray-50 dark:bg-black">
+        <View className="flex-1 bg-gray-100 dark:bg-black">
           <Header title="Expenses" onMenuPress={openSidebar} />
         </View>
       </LoadingAndErrorHandling>
@@ -71,7 +71,7 @@ const ExpensesScreen = () => {
   if (roomsError) {
     return (
       <LoadingAndErrorHandling error={roomsError}>
-        <View className="flex-1 bg-gray-50 dark:bg-black">
+        <View className="flex-1 bg-gray-100 dark:bg-black">
           <Header title="Expenses" onMenuPress={openSidebar} />
         </View>
       </LoadingAndErrorHandling>
@@ -80,15 +80,15 @@ const ExpensesScreen = () => {
 
   if (rooms.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header title="Expenses" onMenuPress={openSidebar} />
         <ParallaxScrollViewY>
           <View className="flex-1 items-center justify-center px-6 py-20">
-            <Ionicons name="receipt-outline" size={64} color="#9ca3af" />
-            <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+            <Ionicons name="receipt-outline" size={64} color="#6b7280" />
+            <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-4 text-lg font-medium">
               No rooms yet
             </ThemedText>
-            <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+            <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
               Join or create a room to start tracking expenses
             </ThemedText>
           </View>
@@ -98,13 +98,13 @@ const ExpensesScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-black">
+    <View className="flex-1 bg-gray-100 dark:bg-black">
       <Header title="Expenses" onMenuPress={openSidebar} />
       <ParallaxScrollViewY>
         <View className="px-6 pt-6">
           {rooms.length > 0 && (
             <View className="mb-6">
-              <ThemedText className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-300">
+              <ThemedText className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-300">
                 {rooms.length > 1 ? "Select Room" : "Room"}
               </ThemedText>
               <FlatList
@@ -118,14 +118,14 @@ const ExpensesScreen = () => {
                     className={`mr-3 px-4 py-2 rounded-2xl border ${
                       currentRoom?.roomId === room.roomId
                         ? "bg-blue-500 border-blue-500 dark:border-blue-500"
-                        : "bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+                        : "bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-700"
                     }`}
                   >
                     <ThemedText
                       className={`font-medium ${
                         currentRoom?.roomId === room.roomId
                           ? "text-white"
-                          : "text-gray-900 dark:text-white"
+                          : "text-gray-800 dark:text-white"
                       }`}
                     >
                       {room.name}
@@ -184,7 +184,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
         <ThemedText className="text-center text-red-500 mt-4 text-lg font-medium">
           Access Denied
         </ThemedText>
-        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+        <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
           You don't have permission to view expenses for "{room.name}".
           {"\n"}Please select a different room or contact an admin to be added
           to this room.
@@ -196,14 +196,14 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
   return (
     <View>
       {summary && (
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-neutral-800">
-          <ThemedText className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
+          <ThemedText className="text-lg font-bold mb-4 text-gray-800 dark:text-white">
             Your Balance
           </ThemedText>
 
           <View className="space-y-3">
             <View className="flex-row justify-between">
-              <ThemedText className="text-gray-600 dark:text-gray-400">
+              <ThemedText className="text-gray-700 dark:text-gray-400">
                 You owe:
               </ThemedText>
               <ThemedText className="font-semibold text-red-500">
@@ -212,7 +212,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
             </View>
 
             <View className="flex-row justify-between">
-              <ThemedText className="text-gray-600 dark:text-gray-400">
+              <ThemedText className="text-gray-700 dark:text-gray-400">
                 You're owed:
               </ThemedText>
               <ThemedText className="font-semibold text-green-500">
@@ -220,9 +220,9 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
               </ThemedText>
             </View>
 
-            <View className="border-t border-gray-200 dark:border-neutral-700 pt-3">
+            <View className="border-t border-gray-300 dark:border-neutral-700 pt-3">
               <View className="flex-row justify-between">
-                <ThemedText className="font-bold text-gray-900 dark:text-white">
+                <ThemedText className="font-bold text-gray-800 dark:text-white">
                   Net:
                 </ThemedText>
                 <ThemedText
@@ -248,28 +248,24 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
         }}
         className="bg-blue-500 border-blue-500 dark:border-blue-500 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
       >
-        <Ionicons
-          name="add"
-          size={24}
-          color="#ffffff"
-        />
+        <Ionicons name="add" size={24} color="#ffffff" />
         <ThemedText className="text-white font-semibold text-lg ml-2">
           Add Expense
         </ThemedText>
       </TouchableOpacity>
 
       <View>
-        <ThemedText className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+        <ThemedText className="text-lg font-bold mb-4 text-gray-800 dark:text-white">
           Recent Expenses ({expenses.length})
         </ThemedText>
 
         {expenses.length === 0 ? (
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center border border-gray-100 dark:border-neutral-800">
-            <Ionicons name="receipt-outline" size={48} color="#9ca3af" />
-            <ThemedText className="text-center text-gray-400 mt-3 text-base font-medium">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-8 items-center border border-gray-300 dark:border-neutral-800">
+            <Ionicons name="receipt-outline" size={48} color="#6b7280" />
+            <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-3 text-base font-medium">
               No expenses yet
             </ThemedText>
-            <ThemedText className="text-center text-gray-500 mt-1 text-sm">
+            <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-1 text-sm">
               Add your first expense to start tracking
             </ThemedText>
           </View>
@@ -312,11 +308,11 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   return (
     <TouchableOpacity
       onPress={handleExpensePress}
-      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 border border-gray-100 dark:border-neutral-800"
+      className="bg-white dark:bg-neutral-900 rounded-2xl p-4 mb-3 border border-gray-300 dark:border-neutral-800"
     >
       <View className="flex-row justify-between items-start mb-2">
         <View className="flex-1">
-          <ThemedText className="font-semibold text-gray-900 dark:text-white">
+          <ThemedText className="font-semibold text-gray-800 dark:text-white">
             {expense.description}
           </ThemedText>
           {expense.category && (
@@ -325,13 +321,13 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
             </ThemedText>
           )}
         </View>
-        <ThemedText className="font-bold text-lg text-gray-900 dark:text-white">
+        <ThemedText className="font-bold text-lg text-gray-800 dark:text-white">
           ${expense.amount.toFixed(2)}
         </ThemedText>
       </View>
 
       <View className="flex-row justify-between items-center">
-        <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
+        <ThemedText className="text-sm text-gray-700 dark:text-gray-400">
           Paid by {expense.payerName} •{" "}
           {new Date(expense.expenseDate).toLocaleDateString()}
         </ThemedText>

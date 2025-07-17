@@ -30,7 +30,9 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const iconBgColor = destructive
     ? "bg-red-100 dark:bg-red-900/30"
     : "bg-orange-100 dark:bg-orange-900/30";
-  const confirmButtonColor = destructive ? "bg-red-100 dark:bg-red-600 border border-red-200 dark:border-red-700" : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700";
+  const confirmButtonColor = destructive
+    ? "bg-red-100 dark:bg-red-600 border border-red-200 dark:border-red-700"
+    : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700";
   const confirmButtonHoverColor = destructive
     ? "active:bg-red-600"
     : "active:bg-blue-600";
@@ -43,7 +45,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       onRequestClose={onClose}
     >
       <View className="flex-1 bg-black/50 justify-center items-center px-6">
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-300 dark:border-neutral-700">
           <View className="items-center mb-4">
             <View
               className={`w-16 h-16 rounded-full ${iconBgColor} items-center justify-center`}
@@ -52,20 +54,20 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             </View>
           </View>
 
-          <ThemedText className="text-xl font-bold text-gray-900 dark:text-white text-center mb-2">
+          <ThemedText className="text-xl font-bold text-gray-800 dark:text-white text-center mb-2">
             {title}
           </ThemedText>
 
-          <ThemedText className="text-base text-gray-600 dark:text-gray-300 text-center mb-6 leading-relaxed">
+          <ThemedText className="text-base text-gray-700 dark:text-gray-300 text-center mb-6 leading-relaxed">
             {message}
           </ThemedText>
 
           <View className="flex-row space-x-3 gap-3">
             <TouchableOpacity
               onPress={onClose}
-              className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-xl py-3 px-4 active:bg-gray-200 dark:active:bg-neutral-700"
+              className="flex-1 bg-gray-200 dark:bg-neutral-800 rounded-xl py-3 px-4 active:bg-gray-300 dark:active:bg-neutral-700"
             >
-              <ThemedText className="text-center font-semibold text-gray-700 dark:text-gray-200">
+              <ThemedText className="text-center font-semibold text-gray-800 dark:text-gray-200">
                 {cancelText}
               </ThemedText>
             </TouchableOpacity>

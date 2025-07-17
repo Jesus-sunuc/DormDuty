@@ -58,7 +58,7 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
             <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
               <Ionicons name="swap-horizontal" size={16} color="#3b82f6" />
             </View>
-            <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+            <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
               Chore Swap Requests
             </ThemedText>
             <View className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-full">
@@ -72,17 +72,17 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
             <TouchableOpacity
               key={request.swapId}
               onPress={onSwapRequestAction}
-              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border-l-4 border-blue-500"
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 border border-gray-200 dark:border-neutral-800 border-l-4 border-l-blue-500"
             >
               <View className="flex-row items-center mb-3">
                 <View className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
                   <Ionicons name="person" size={18} color="#3b82f6" />
                 </View>
                 <View className="flex-1">
-                  <ThemedText className="text-base font-semibold text-gray-900 dark:text-white">
+                  <ThemedText className="text-base font-semibold text-gray-800 dark:text-white">
                     {request.fromUserName} wants to swap
                   </ThemedText>
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                     {formatDistance(new Date(request.requestedAt), new Date(), {
                       addSuffix: true,
                     })}
@@ -106,7 +106,7 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
             <View className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-3">
               <Ionicons name="checkmark-circle" size={16} color="#f97316" />
             </View>
-            <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+            <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
               Pending Verifications
             </ThemedText>
             <View className="ml-2 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 rounded-full">
@@ -124,19 +124,19 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
                   `/(tabs)/rooms/${roomId}/verifications/${completion.completionId}`
                 )
               }
-              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border-l-4 border-orange-500"
+              className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 border border-gray-200 dark:border-neutral-800 border-l-4 border-l-orange-500"
             >
               <View className="flex-row items-center mb-3">
                 <View className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 items-center justify-center mr-3">
                   <Ionicons name="checkmark" size={18} color="#f97316" />
                 </View>
                 <View className="flex-1">
-                  <ThemedText className="text-base font-semibold text-gray-900 dark:text-white">
+                  <ThemedText className="text-base font-semibold text-gray-800 dark:text-white">
                     {completion.completedBy
                       ? `${completion.completedBy} completed a chore`
                       : "Chore completion pending"}
                   </ThemedText>
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                     {formatDistance(
                       new Date(completion.completedAt),
                       new Date(),
@@ -173,10 +173,10 @@ export const RoomNotificationPage: React.FC<RoomNotificationPageProps> = ({
           <View className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mb-4">
             <Ionicons name="checkmark-circle" size={32} color="#10b981" />
           </View>
-          <ThemedText className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          <ThemedText className="text-lg font-medium text-gray-800 dark:text-white mb-2">
             All caught up!
           </ThemedText>
-          <ThemedText className="text-center text-gray-500 dark:text-gray-400 px-8">
+          <ThemedText className="text-center text-gray-600 dark:text-gray-400 px-8">
             No pending notifications at the moment. Check back later for new
             chore requests and completions.
           </ThemedText>

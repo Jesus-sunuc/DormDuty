@@ -53,12 +53,12 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
 
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
+        <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg border-b-2 border-gray-300 dark:border-neutral-800">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
               onPress={onClose}
-              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+              className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center border border-gray-300 dark:border-neutral-700"
             >
               <Ionicons name="arrow-back" size={20} color="#6b7280" />
             </TouchableOpacity>
@@ -72,16 +72,16 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+          <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
             <View className="flex-row items-center mb-4">
               <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
                 <Ionicons name="checkmark-circle" size={24} color="#3b82f6" />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-semibold text-gray-900 dark:text-white">
+                <Text className="text-lg font-semibold text-gray-800 dark:text-white">
                   {completion.choreName || "Chore"}
                 </Text>
-                <Text className="text-sm text-gray-500 dark:text-gray-400">
+                <Text className="text-sm text-gray-600 dark:text-gray-400">
                   Completed by {completion.completedBy || "User"} • Just now
                 </Text>
               </View>
@@ -91,15 +91,15 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
               <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Completion Photo:
               </Text>
-              <View className="w-full h-48 rounded-xl bg-gray-200 dark:bg-neutral-700 flex items-center justify-center">
-                <Text className="text-gray-500 dark:text-gray-400">
+              <View className="w-full h-48 rounded-xl bg-gray-300 dark:bg-neutral-700 flex items-center justify-center border border-gray-400 dark:border-neutral-600">
+                <Text className="text-gray-600 dark:text-gray-400">
                   📷 Photo will be displayed here
                 </Text>
               </View>
             </View>
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+          <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
             <Text className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
               Add Verification Notes
             </Text>
@@ -107,10 +107,10 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
               value={verificationComment}
               onChangeText={setVerificationComment}
               placeholder="Optional comments about this completion..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor="#6b7280"
               multiline
               numberOfLines={4}
-              className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white min-h-[100px]"
+              className="bg-gray-200 dark:bg-neutral-800 rounded-xl p-4 text-gray-800 dark:text-white min-h-[100px] border border-gray-300 dark:border-neutral-700"
               style={{ textAlignVertical: "top" }}
             />
           </View>
@@ -119,10 +119,10 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
             <TouchableOpacity
               onPress={() => setShowRejectConfirmation(true)}
               disabled={isLoading}
-              className="flex-1 bg-red-50 dark:bg-red-900/20 py-4 rounded-xl flex-row items-center justify-center"
+              className="flex-1 bg-red-50 dark:bg-red-900/20 py-4 rounded-xl flex-row items-center justify-center border border-red-200 dark:border-red-800"
             >
               {isLoading ? (
-                <View className="w-5 h-5 border-2 border-red-300 border-t-red-600 rounded-full animate-spin" />
+                <View className="w-5 h-5 border border-red-300 border-t-red-600 rounded-full animate-spin" />
               ) : (
                 <>
                   <Ionicons name="close-circle" size={20} color="#ef4444" />
@@ -149,10 +149,10 @@ const CompletionDetailsModal: React.FC<CompletionDetailsModalProps> = ({
                 );
               }}
               disabled={isLoading}
-              className="flex-1 bg-green-50 dark:bg-green-900/20 py-4 rounded-xl flex-row items-center justify-center"
+              className="flex-1 bg-green-50 dark:bg-green-900/20 py-4 rounded-xl flex-row items-center justify-center border border-green-200 dark:border-green-800"
             >
               {isLoading ? (
-                <View className="w-5 h-5 border-2 border-green-300 border-t-green-600 rounded-full animate-spin" />
+                <View className="w-5 h-5 border border-green-300 border-t-green-600 rounded-full animate-spin" />
               ) : (
                 <>
                   <Ionicons name="checkmark-circle" size={20} color="#10b981" />
@@ -298,12 +298,12 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
   return (
     <>
       <Modal visible={isVisible} animationType="slide" onRequestClose={onClose}>
-        <View className="flex-1 bg-gray-50 dark:bg-black">
-          <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+        <View className="flex-1 bg-gray-100 dark:bg-black">
+          <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg border-b-2 border-gray-300 dark:border-neutral-800">
             <View className="flex-row items-center justify-between mb-4">
               <TouchableOpacity
                 onPress={onClose}
-                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center border border-gray-300 dark:border-neutral-700"
               >
                 <Ionicons name="close" size={20} color="#6b7280" />
               </TouchableOpacity>
@@ -320,10 +320,10 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
             {pendingCompletions.length === 0 ? (
               <View className="flex-1 items-center justify-center py-12">
                 <Ionicons name="checkmark-done" size={64} color="#10b981" />
-                <Text className="text-lg font-medium text-gray-600 dark:text-gray-400 mt-4">
+                <Text className="text-lg font-medium text-gray-700 dark:text-gray-400 mt-4">
                   No pending completions
                 </Text>
-                <Text className="text-sm text-gray-500 dark:text-gray-500 mt-2 text-center">
+                <Text className="text-sm text-gray-600 dark:text-gray-500 mt-2 text-center">
                   All chore completions have been reviewed.
                 </Text>
               </View>
@@ -332,7 +332,7 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
                 {pendingCompletions.map((completion: ChoreCompletion) => (
                   <View
                     key={completion.completionId}
-                    className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border border-gray-100 dark:border-neutral-800"
+                    className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-5 mb-4 border border-gray-300 dark:border-neutral-800"
                   >
                     <View className="flex-row items-start justify-between mb-3">
                       <View className="flex-1">
@@ -341,7 +341,7 @@ export const ChoreVerificationModal: React.FC<ChoreVerificationModalProps> = ({
                         </ThemedText>
                         <View className="flex-row items-center">
                           <Ionicons name="time" size={16} color="#6b7280" />
-                          <ThemedText className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                          <ThemedText className="text-sm text-gray-600 dark:text-gray-400 ml-2">
                             Completed recently
                           </ThemedText>
                         </View>

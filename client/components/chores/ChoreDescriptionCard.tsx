@@ -10,7 +10,7 @@ export const ChoreDescriptionCard: React.FC<ChoreDescriptionCardProps> = ({
   description,
 }) => {
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+    <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
       <ThemedText className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
         Description
       </ThemedText>

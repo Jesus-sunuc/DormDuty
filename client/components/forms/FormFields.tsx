@@ -17,7 +17,7 @@ interface FormFieldProps {
 
 export const FormField: React.FC<FormFieldProps> = ({ label, children }) => (
   <View className="mb-6">
-    <ThemedText className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+    <ThemedText className="text-sm font-medium text-gray-700 dark:text-neutral-400 mb-3">
       {label}
     </ThemedText>
     {children}
@@ -52,7 +52,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical={multiline ? "top" : "center"}
-      className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl px-4 py-4 text-lg text-neutral-900 dark:text-white "
+      className="bg-white dark:bg-black border border-gray-300 dark:border-neutral-600 rounded-2xl px-4 py-4 text-lg text-gray-800 dark:text-white "
       style={style}
     />
   </FormField>
@@ -72,7 +72,7 @@ export const PickerField: React.FC<PickerFieldProps> = ({
   items,
 }) => (
   <FormField label={label}>
-    <View className="bg-neutral-50 dark:bg-black border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden ">
+    <View className="bg-white dark:bg-black border border-gray-300 dark:border-neutral-600 rounded-2xl overflow-hidden ">
       <Picker
         selectedValue={selectedValue}
         onValueChange={onValueChange}

@@ -114,8 +114,8 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-white dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
+        <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-12 pb-6 shadow-lg border-b-2 border-gray-300 dark:border-neutral-800">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
               onPress={handleClose}
@@ -124,13 +124,13 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
               <Ionicons name="close" size={20} color="#6b7280" />
             </TouchableOpacity>
             <View className="flex-1 mx-4">
-              <ThemedText className="text-lg font-semibold text-center text-gray-200 dark:text-gray-300">
+              <ThemedText className="text-lg font-semibold text-center text-gray-600 dark:text-gray-300">
                 Request Chore Swap
               </ThemedText>
             </View>
             <View className="w-10" />
           </View>
-          <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          <ThemedText className="text-sm text-gray-600 dark:text-gray-400 text-center">
             Ask another member to take over "{choreName}"
             {selectedMemberIds.length > 0 && (
               <Text className="text-blue-600 dark:text-blue-400">
@@ -143,15 +143,15 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
         </View>
 
         <ScrollView className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
-            <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
+          <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
+            <ThemedText className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-300">
               Select Member{availableMembers.length > 1 ? "s" : ""}
             </ThemedText>
 
             {availableMembers.length === 0 ? (
               <View className="py-8 items-center">
                 <Ionicons name="people-outline" size={48} color="#9ca3af" />
-                <ThemedText className="text-gray-500 dark:text-gray-400 mt-2 text-center">
+                <ThemedText className="text-gray-600 dark:text-gray-400 mt-2 text-center">
                   No other members available
                 </ThemedText>
               </View>
@@ -162,16 +162,16 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
                   <>
                     <TouchableOpacity
                       onPress={toggleSelectAll}
-                      className={`flex-row items-center p-4 rounded-xl border-2 mb-3 ${
+                      className={`flex-row items-center p-4 rounded-xl border mb-3 ${
                         isAllSelected
                           ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                           : isPartiallySelected
                             ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
-                            : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
+                            : "border-gray-300 dark:border-neutral-700 bg-gray-200 dark:bg-neutral-800"
                       }`}
                     >
                       <View
-                        className={`w-4 h-4 rounded border-2 mr-3 items-center justify-center ${
+                        className={`w-4 h-4 rounded border mr-3 items-center justify-center ${
                           isAllSelected
                             ? "border-blue-500 bg-blue-500"
                             : isPartiallySelected
@@ -190,7 +190,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
                         <ThemedText className="font-semibold">
                           {isAllSelected ? "Deselect All" : "Select All"}
                         </ThemedText>
-                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                        <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                           {isAllSelected
                             ? "Remove all members from selection"
                             : isPartiallySelected
@@ -214,14 +214,14 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
                     <TouchableOpacity
                       key={member.membershipId}
                       onPress={() => toggleMemberSelection(member.membershipId)}
-                      className={`flex-row items-center p-4 rounded-xl border-2 mb-2 ${
+                      className={`flex-row items-center p-4 rounded-xl border mb-2 ${
                         isSelected
                           ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                          : "border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800"
+                          : "border-gray-300 dark:border-neutral-700 bg-gray-200 dark:bg-neutral-800"
                       }`}
                     >
                       <View
-                        className={`w-4 h-4 rounded border-2 mr-3 items-center justify-center ${
+                        className={`w-4 h-4 rounded border mr-3 items-center justify-center ${
                           isSelected
                             ? "border-green-500 bg-green-500"
                             : "border-gray-300 dark:border-neutral-600"
@@ -235,7 +235,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
                         <ThemedText className="font-medium">
                           {member.name}
                         </ThemedText>
-                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+                        <ThemedText className="text-sm text-gray-600 dark:text-gray-400 capitalize">
                           {member.role}
                         </ThemedText>
                       </View>
@@ -246,8 +246,8 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
             )}
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
-            <ThemedText className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
+          <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
+            <ThemedText className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-300">
               Message (Optional)
             </ThemedText>
             <TextInput
@@ -257,13 +257,13 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
               placeholderTextColor="#9ca3af"
               multiline
               numberOfLines={4}
-              className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-4 text-gray-900 dark:text-white min-h-[100px]"
+              className="bg-gray-200 dark:bg-neutral-800 rounded-xl p-4 text-gray-800 dark:text-white min-h-[100px] border border-gray-300 dark:border-neutral-700"
               style={{ textAlignVertical: "top" }}
             />
           </View>
         </ScrollView>
 
-        <View className="p-6 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
+        <View className="p-6 bg-gray-100 dark:bg-neutral-900 border-t-2 border-gray-300 dark:border-neutral-700">
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={
@@ -279,7 +279,7 @@ export const ChoreSwapRequestModal: React.FC<ChoreSwapRequestModalProps> = ({
           >
             {createSwapRequestMutation.isPending ? (
               <>
-                <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+                <View className="w-5 h-5 border border-white/30 border-t-white rounded-full animate-spin mr-3" />
                 <Text className="text-white font-semibold">
                   Sending{selectedMemberIds.length > 1 ? " Requests" : ""}...
                 </Text>

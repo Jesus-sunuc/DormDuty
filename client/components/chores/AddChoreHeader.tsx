@@ -21,11 +21,11 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
   const colors = Colors[colorScheme ?? "light"];
 
   return (
-    <View className="bg-white/80 dark:bg-neutral-900/80 pt-16 pb-6 px-6 ">
+    <View className="bg-gray-100/80 dark:bg-neutral-900/80 pt-16 pb-6 px-6 border-b-2 border-gray-300 dark:border-neutral-800">
       <View className="flex-row items-center justify-between">
         <TouchableOpacity
           onPress={onBack}
-          className="w-10 h-10 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+          className="w-10 h-10 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700"
         >
           <Ionicons
             name="arrow-back"
@@ -34,10 +34,10 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
           />
         </TouchableOpacity>
         <View className="flex-1 items-center">
-          <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
+          <ThemedText className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             {isEdit ? "Edit Chore" : "New Chore"}
           </ThemedText>
-          <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+          <ThemedText className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
             {isEdit ? `Editing "${choreName}"` : "Create a task for your room"}
           </ThemedText>
         </View>

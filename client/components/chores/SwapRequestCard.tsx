@@ -113,15 +113,15 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
   };
 
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4  border border-gray-100 dark:border-neutral-800">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-5 mb-4 border border-gray-200 dark:border-neutral-800">
       <View className="flex-row items-start justify-between mb-3">
         <View className="flex-1">
-          <ThemedText className="text-lg font-bold mb-1 text-gray-700 dark:text-gray-300">
+          <ThemedText className="text-lg font-bold mb-1 text-gray-800 dark:text-gray-300">
             {request.choreName}
           </ThemedText>
           <View className="flex-row items-center">
             <Ionicons name="swap-horizontal" size={16} color="#6b7280" />
-            <ThemedText className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+            <ThemedText className="text-sm text-gray-700 dark:text-gray-400 ml-2">
               {isRequester
                 ? `You → ${request.toUserName}`
                 : `${request.fromUserName} → You`}
@@ -139,8 +139,8 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
       </View>
 
       {request.message && (
-        <View className="bg-gray-50 dark:bg-neutral-800 rounded-xl p-3 mb-3">
-          <ThemedText className="text-sm text-gray-700 dark:text-gray-300">
+        <View className="bg-gray-200 dark:bg-neutral-800 rounded-xl p-3 mb-3 border border-gray-300 dark:border-neutral-700">
+          <ThemedText className="text-sm text-gray-800 dark:text-gray-300">
             "{request.message}"
           </ThemedText>
         </View>
@@ -149,14 +149,14 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
           <Ionicons name="calendar-outline" size={14} color="#9ca3af" />
-          <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+          <ThemedText className="text-xs text-gray-600 dark:text-gray-400 ml-1">
             Requested {formatDate(request.requestedAt)}
           </ThemedText>
         </View>
         {request.respondedAt && (
           <View className="flex-row items-center">
             <Ionicons name="checkmark-outline" size={14} color="#9ca3af" />
-            <ThemedText className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+            <ThemedText className="text-xs text-gray-600 dark:text-gray-400 ml-1">
               Responded {formatDate(request.respondedAt)}
             </ThemedText>
           </View>
@@ -171,9 +171,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
             className="flex-1 bg-red-500 dark:bg-red-600 py-3 rounded-xl flex-row items-center justify-center"
           >
             <Ionicons name="close" size={18} color="#fff" />
-            <Text className="text-white font-medium ml-2">
-              Not Now
-            </Text>
+            <Text className="text-white font-medium ml-2">Not Now</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAccept}
@@ -181,9 +179,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
             className="flex-1 bg-green-500 dark:bg-green-600 py-3 rounded-xl flex-row items-center justify-center"
           >
             <Ionicons name="checkmark" size={18} color="#fff" />
-            <Text className="text-white font-medium ml-2">
-              Accept
-            </Text>
+            <Text className="text-white font-medium ml-2">Accept</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -192,7 +188,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
         <TouchableOpacity
           onPress={handleCancel}
           disabled={cancelMutation.isPending}
-          className="bg-gray-100 dark:bg-neutral-800 py-3 rounded-xl flex-row items-center justify-center"
+          className="bg-gray-200 dark:bg-neutral-800 py-3 rounded-xl flex-row items-center justify-center border border-gray-300 dark:border-neutral-700"
         >
           <Ionicons name="trash-outline" size={18} color="#6b7280" />
           <Text className="text-gray-600 dark:text-gray-400 font-medium ml-2">
@@ -203,7 +199,7 @@ export const SwapRequestCard: React.FC<SwapRequestCardProps> = ({
 
       {(respondMutation.isPending || cancelMutation.isPending) && (
         <View className="absolute inset-0 bg-white/80 dark:bg-neutral-900/80 rounded-2xl flex items-center justify-center">
-          <View className="w-8 h-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+          <View className="w-8 h-8 border border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
         </View>
       )}
     </View>

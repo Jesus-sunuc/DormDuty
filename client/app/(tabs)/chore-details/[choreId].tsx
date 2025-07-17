@@ -196,7 +196,7 @@ const ChoreDetailsScreen = () => {
   const assignedMemberName = getAssignedMemberNames();
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-black">
+    <View className="flex-1 bg-gray-100 dark:bg-black">
       <ChoreDetailsHeader
         choreName={chore?.name}
         assignedMemberName={assignedMemberName}

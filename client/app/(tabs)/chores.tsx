@@ -5,7 +5,13 @@ import {
   usePendingCompletionsByRoomQuery,
 } from "@/hooks/choreHooks";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
-import { View, Pressable, TouchableOpacity, Alert, useColorScheme } from "react-native";
+import {
+  View,
+  Pressable,
+  TouchableOpacity,
+  Alert,
+  useColorScheme,
+} from "react-native";
 import { formatDistance } from "date-fns";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -81,7 +87,7 @@ export default function ChoresScreen() {
       error={finalError}
       loadingText="Loading your chores..."
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header title="My Chores" onMenuPress={openSidebar} />
 
         <ParallaxScrollViewY>
@@ -90,12 +96,12 @@ export default function ChoresScreen() {
               <Ionicons
                 name="checkmark-circle-outline"
                 size={64}
-                color="#9ca3af"
+                color="#6b7280"
               />
-              <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+              <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-4 text-lg font-medium">
                 No chores assigned yet
               </ThemedText>
-              <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+              <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
                 You're all caught up! New chores will appear here when assigned.
               </ThemedText>
             </View>
@@ -108,7 +114,7 @@ export default function ChoresScreen() {
 
                 return (
                   <View key={chore.choreId} className="mb-3">
-                    <View className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-neutral-800 overflow-hidden">
+                    <View className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
                       <Pressable
                         onPress={() =>
                           router.push(`/chore-details/${chore.choreId}`)
@@ -123,7 +129,7 @@ export default function ChoresScreen() {
                               }}
                               className="w-2 h-2 rounded-full mr-2"
                             />
-                            <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+                            <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
                               {chore.name}
                             </ThemedText>
                             {isPendingCompletion ? (
@@ -154,7 +160,7 @@ export default function ChoresScreen() {
                             >
                               {completeChoreeMutation.isPending ? (
                                 <>
-                                  <View className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                  <View className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin mr-2" />
                                   <ThemedText className="text-white text-sm font-medium">
                                     Completing...
                                   </ThemedText>
@@ -182,7 +188,7 @@ export default function ChoresScreen() {
                         <View>
                           <View className="flex-row items-center">
                             <Ionicons name="time" size={16} color="#f59e0b" />
-                            <ThemedText className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                            <ThemedText className="text-sm text-gray-700 dark:text-gray-400 ml-1">
                               Due: {chore.timing || "Not set"}
                             </ThemedText>
                           </View>
@@ -193,7 +199,7 @@ export default function ChoresScreen() {
                               size={16}
                               color="#6b7280"
                             />
-                            <ThemedText className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                            <ThemedText className="text-sm text-gray-700 dark:text-gray-400 ml-1">
                               Last: {formatDate(chore.lastCompleted)}
                             </ThemedText>
                           </View>

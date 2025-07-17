@@ -97,7 +97,7 @@ export const RoleManagement: React.FC<RoleManagementProps> = ({
             <TouchableOpacity
               key={role}
               onPress={() => setSelectedRole(role)}
-              className={`p-4 rounded-lg mb-2 border-2 ${
+              className={`p-4 rounded-lg mb-2 border ${
                 selectedRole === role
                   ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                   : "border-gray-200 dark:border-gray-700"

@@ -63,12 +63,12 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
-        <View className="bg-gray-50 dark:bg-neutral-950 px-6 pt-4 pb-4 border-b border-gray-200 dark:border-neutral-800 shadow-lg">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
+        <View className="bg-gray-100 dark:bg-neutral-950 px-6 pt-4 pb-4 border-b-2 border-gray-300 dark:border-neutral-800 shadow-lg">
           <View className="flex-row items-center ">
             <TouchableOpacity
               onPress={onClose}
-              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center"
+              className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center border border-gray-300 dark:border-neutral-700"
             >
               <Ionicons name="close" size={20} color="#6b7280" />
             </TouchableOpacity>
@@ -79,7 +79,7 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
             </View>
             <View className="w-10" />
           </View>
-          <ThemedText className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          <ThemedText className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {chore.approvalRequired
               ? `Mark "${chore.name}" as completed for admin review`
               : `Mark "${chore.name}" as completed`}
@@ -87,16 +87,16 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
         </View>
 
         <View className="flex-1 px-6 py-6">
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 ">
+          <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-300 dark:border-neutral-800">
             <View className="flex-row items-center mb-4">
               <View className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-4">
                 <Ionicons name="checkmark-circle" size={24} color="#10b981" />
               </View>
               <View className="flex-1">
-                <ThemedText className="text-lg font-semibold text-gray-900 dark:text-white">
+                <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white">
                   {chore.name}
                 </ThemedText>
-                <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                   {chore.approvalRequired
                     ? "Requires admin approval"
                     : "Ready to complete"}
@@ -109,7 +109,7 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
               <View className="mb-4">
                 <View className="flex-row items-center mb-3">
                   <Ionicons name="camera" size={20} color="#f97316" />
-                  <ThemedText className="text-base font-medium text-gray-900 dark:text-white ml-2">
+                  <ThemedText className="text-base font-medium text-gray-800 dark:text-white ml-2">
                     Photo Proof Required
                   </ThemedText>
                 </View>
@@ -142,13 +142,13 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
                       // For now, just set a placeholder
                       setPhotoUrl("https://placeholder.photo.url");
                     }}
-                    className="border-2 border-dashed border-orange-300 dark:border-orange-700 rounded-xl p-6 items-center"
+                    className="border border-dashed border-orange-300 dark:border-orange-700 rounded-xl p-6 items-center"
                   >
                     <Ionicons name="camera-outline" size={32} color="#f97316" />
                     <ThemedText className="text-orange-600 dark:text-orange-400 font-medium mt-2">
                       Add Photo Proof
                     </ThemedText>
-                    <ThemedText className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                    <ThemedText className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                       Tap to upload a photo of your completed work
                     </ThemedText>
                   </TouchableOpacity>
@@ -199,19 +199,19 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
           </View>
         </View>
 
-        <View className="p-6 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
+        <View className="p-6 bg-gray-100 dark:bg-neutral-900 border-t-2 border-gray-300 dark:border-neutral-700">
           <TouchableOpacity
             onPress={handleComplete}
             disabled={completeChoreeMutation.isPending}
-            className={`py-4 rounded-2xl flex-row items-center justify-center ${
+            className={`py-4 rounded-2xl flex-row items-center justify-center border ${
               completeChoreeMutation.isPending
-                ? "bg-gray-300 dark:bg-neutral-700"
-                : "bg-green-600"
+                ? "bg-gray-400 dark:bg-neutral-700 border-gray-500 dark:border-neutral-600"
+                : "bg-green-600 border-green-700"
             }`}
           >
             {completeChoreeMutation.isPending ? (
               <>
-                <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+                <View className="w-5 h-5 border border-white/30 border-t-white rounded-full animate-spin mr-3" />
                 <Text className="text-white font-semibold">Completing...</Text>
               </>
             ) : (

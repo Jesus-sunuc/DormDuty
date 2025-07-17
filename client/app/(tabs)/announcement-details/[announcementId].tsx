@@ -63,8 +63,8 @@ const EmojiPicker = ({
         activeOpacity={1}
       >
         <View className="flex-1 justify-center items-center">
-          <View className="bg-white dark:bg-neutral-800 rounded-2xl p-4 mx-8 shadow-lg">
-            <ThemedText className="text-center text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          <View className="bg-gray-100 dark:bg-neutral-800 rounded-2xl p-4 mx-8 shadow-lg border border-gray-300 dark:border-neutral-700">
+            <ThemedText className="text-center text-lg font-semibold mb-4 text-gray-800 dark:text-white">
               React with an emoji
             </ThemedText>
             <View className="flex-row justify-around">
@@ -75,7 +75,7 @@ const EmojiPicker = ({
                     onEmojiSelect(emoji);
                     onClose();
                   }}
-                  className="w-12 h-12 mr-1 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-700"
+                  className="w-12 h-12 mr-1 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-700 border border-gray-300 dark:border-neutral-600"
                 >
                   <ThemedText className="text-2xl">{emoji}</ThemedText>
                 </TouchableOpacity>
@@ -265,7 +265,7 @@ export default function AnnouncementDetails() {
               >
                 <Ionicons name="arrow-back" size={24} color="#6b7280" />
               </TouchableOpacity>
-              <ThemedText className="text-xl font-bold text-gray-900 dark:text-white flex-1">
+              <ThemedText className="text-xl font-bold text-gray-800 dark:text-white flex-1">
                 Announcement
               </ThemedText>
               <TouchableOpacity onPress={() => setShowActionsModal(true)}>
@@ -273,22 +273,22 @@ export default function AnnouncementDetails() {
               </TouchableOpacity>
             </View>
 
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
+            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
               <View className="flex-row items-start mb-4">
                 <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-4">
                   <Ionicons name="person" size={20} color="#3b82f6" />
                 </View>
                 <View className="flex-1">
-                  <ThemedText className="font-semibold text-gray-900 dark:text-white text-lg">
+                  <ThemedText className="font-semibold text-gray-800 dark:text-white text-lg">
                     {announcement.memberName}
                     {isCurrentUser && (
-                      <ThemedText className="text-sm text-gray-500">
+                      <ThemedText className="text-sm text-gray-600">
                         {" "}
                         (You)
                       </ThemedText>
                     )}
                   </ThemedText>
-                  <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                  <ThemedText className="text-sm text-gray-600 dark:text-gray-400">
                     {formatTimeAgo(announcement.createdAt)}
                   </ThemedText>
                 </View>
@@ -316,31 +316,30 @@ export default function AnnouncementDetails() {
           </View>
         </ScrollView>
 
-        {/* Fixed reply input at bottom */}
         {announcement?.canReply && (
-          <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700 p-4">
+          <View className="absolute bottom-0 left-0 right-0 bg-gray-100 dark:bg-neutral-900 border-t-2 border-gray-300 dark:border-neutral-700 p-4">
             <View className="flex-row items-center">
               <TextInput
                 value={replyText}
                 onChangeText={setReplyText}
                 placeholder="Write a reply..."
                 multiline
-                className="flex-1 bg-gray-100 dark:bg-neutral-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white max-h-24"
-                placeholderTextColor="#9ca3af"
+                className="flex-1 bg-white dark:bg-neutral-800 rounded-xl px-4 py-3 text-gray-800 dark:text-white max-h-24 border border-gray-300 dark:border-neutral-700"
+                placeholderTextColor="#6b7280"
               />
               <TouchableOpacity
                 onPress={handleSendReply}
                 disabled={!replyText.trim()}
                 className={`ml-3 px-4 py-3 rounded-xl ${
                   replyText.trim()
-                    ? "bg-blue-500"
-                    : "bg-gray-300 dark:bg-gray-700"
+                    ? "bg-blue-500 border-blue-600"
+                    : "bg-gray-300 dark:bg-gray-700 border-gray-500 dark:border-gray-600"
                 }`}
               >
                 <Ionicons
                   name="send"
                   size={16}
-                  color={replyText.trim() ? "white" : "#9ca3af"}
+                  color={replyText.trim() ? "white" : "#6b7280"}
                 />
               </TouchableOpacity>
             </View>
@@ -426,10 +425,10 @@ function AnnouncementReactionsSection({
             <TouchableOpacity
               key={emoji}
               onPress={() => handleReactionPress(emoji, reacted)}
-              className={`flex-row items-center px-3 py-1 rounded-full mr-2 ${
+              className={`flex-row items-center px-3 py-1 rounded-full mr-2 border ${
                 reacted
-                  ? "bg-blue-100 dark:bg-blue-900"
-                  : "bg-gray-100 dark:bg-neutral-800"
+                  ? "bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-700"
+                  : "bg-gray-200 dark:bg-neutral-800 border-gray-300 dark:border-neutral-700"
               }`}
             >
               <ThemedText
@@ -440,7 +439,7 @@ function AnnouncementReactionsSection({
                 {emoji}
               </ThemedText>
               {count > 0 && (
-                <ThemedText className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                <ThemedText className="ml-2 text-sm text-gray-700 dark:text-gray-400">
                   {count}
                 </ThemedText>
               )}
@@ -451,10 +450,10 @@ function AnnouncementReactionsSection({
 
       <TouchableOpacity
         onPress={onAddReaction}
-        className="flex-row items-center py-2 px-3 rounded-full bg-gray-100 dark:bg-neutral-800 self-start"
+        className="flex-row items-center py-2 px-3 rounded-full bg-gray-200 dark:bg-neutral-800 self-start border border-gray-300 dark:border-neutral-700"
       >
         <Ionicons name="add" size={16} color="#6b7280" />
-        <ThemedText className="ml-1 text-sm text-gray-600 dark:text-gray-400">
+        <ThemedText className="ml-1 text-sm text-gray-700 dark:text-gray-400">
           React
         </ThemedText>
       </TouchableOpacity>
@@ -474,14 +473,14 @@ function AnnouncementRepliesSection({
   const deleteReplyMutation = useDeleteAnnouncementReplyMutation();
 
   return (
-    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4  border border-gray-100 dark:border-neutral-800">
-      <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-4 border border-gray-300 dark:border-neutral-800">
+      <ThemedText className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
         Replies ({replies.length})
       </ThemedText>
 
       <View>
         {replies.length === 0 && !isLoading ? (
-          <ThemedText className="text-center text-gray-400 py-6">
+          <ThemedText className="text-center text-gray-500 py-6">
             No replies yet. Be the first to reply!
           </ThemedText>
         ) : (
@@ -526,14 +525,14 @@ function ReplyItem({
 
   return (
     <>
-      <View className="mb-3 p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg">
+      <View className="mb-3 p-3 bg-gray-200 dark:bg-neutral-800 rounded-lg border border-gray-300 dark:border-neutral-700">
         <View className="flex-row items-start justify-between mb-1">
           <View className="flex-1">
             <View className="flex-row items-center mb-1">
-              <ThemedText className="font-medium text-gray-900 dark:text-white text-sm">
+              <ThemedText className="font-medium text-gray-800 dark:text-white text-sm">
                 {reply.memberName}
                 {membership?.membershipId === reply.membershipId && (
-                  <ThemedText className="text-xs text-gray-500">
+                  <ThemedText className="text-xs text-gray-600">
                     {" "}
                     (You)
                   </ThemedText>
@@ -644,10 +643,10 @@ function ReplyReactionsSection({
         <TouchableOpacity
           key={emoji}
           onPress={() => handleReactionPress(emoji, reacted)}
-          className={`flex-row items-center px-2 py-1 rounded-full mr-1 mb-1 ${
+          className={`flex-row items-center px-2 py-1 rounded-full mr-1 mb-1 border ${
             reacted
-              ? "bg-blue-100 dark:bg-blue-900"
-              : "bg-gray-100 dark:bg-neutral-800"
+              ? "bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-700"
+              : "bg-gray-200 dark:bg-neutral-800 border-gray-300 dark:border-neutral-700"
           }`}
         >
           <ThemedText
@@ -677,7 +676,7 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
   }
 
   return (
-    <View className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-700">
+    <View className="mt-4 pt-4 border-t-2 border-gray-300 dark:border-neutral-700">
       <View className="flex-row items-center mb-2">
         <Ionicons name="checkmark-done" size={16} color="#10b981" />
         <ThemedText className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -689,12 +688,12 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
         {readers.slice(0, 5).map((reader, index) => (
           <View
             key={`reader-${reader.membershipId}-${index}`}
-            className="flex-row items-center bg-gray-50 dark:bg-neutral-800 rounded-full px-2 py-1 mr-2 mb-1"
+            className="flex-row items-center bg-gray-200 dark:bg-neutral-800 rounded-full px-2 py-1 mr-2 mb-1 border border-gray-300 dark:border-neutral-700"
           >
             <View className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mr-1">
               <Ionicons name="checkmark" size={10} color="#10b981" />
             </View>
-            <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
+            <ThemedText className="text-xs text-gray-700 dark:text-gray-400">
               {reader.memberName}
             </ThemedText>
           </View>
@@ -703,9 +702,9 @@ function ReadersSection({ announcementId }: { announcementId: number }) {
         {readers.length > 5 && (
           <View
             key="more-readers"
-            className="flex-row items-center bg-gray-100 dark:bg-neutral-700 rounded-full px-2 py-1"
+            className="flex-row items-center bg-gray-300 dark:bg-neutral-700 rounded-full px-2 py-1 border border-gray-400 dark:border-neutral-600"
           >
-            <ThemedText className="text-xs text-gray-500 dark:text-gray-400">
+            <ThemedText className="text-xs text-gray-600 dark:text-gray-400">
               +{readers.length - 5} more
             </ThemedText>
           </View>

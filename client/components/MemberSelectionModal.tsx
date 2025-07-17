@@ -92,7 +92,7 @@ export const MemberSelectionModal: React.FC<MemberSelectionModalProps> = ({
                   }`}
                 >
                   <View
-                    className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 ${
+                    className={`w-5 h-5 rounded border items-center justify-center mr-3 ${
                       isSelected
                         ? "bg-blue-500 border-blue-500"
                         : "border-gray-300 dark:border-neutral-600"

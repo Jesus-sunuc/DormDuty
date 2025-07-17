@@ -40,7 +40,7 @@ const AddExpensePage = () => {
   }>();
   const colorScheme = useColorScheme();
   const { user } = useAuth();
-  
+
   const roomIdNum = parseInt(roomId || "0", 10);
   const expenseIdNum = parseInt(expenseId || "0", 10);
   const userId = user?.userId || 0;
@@ -206,12 +206,12 @@ const AddExpensePage = () => {
 
   if (membershipError || (!membership && !membershipLoading)) {
     return (
-      <View className="flex-1 bg-neutral-50 dark:bg-black items-center justify-center p-6">
+      <View className="flex-1 bg-gray-100 dark:bg-black items-center justify-center p-6">
         <Ionicons name="warning-outline" size={64} color="#ef4444" />
         <ThemedText className="text-red-500 text-center mb-4 text-lg font-semibold">
           Access Denied
         </ThemedText>
-        <ThemedText className="text-gray-500 text-center text-sm mb-4">
+        <ThemedText className="text-gray-700 dark:text-gray-500 text-center text-sm mb-4">
           You are not a member of this room or there was an error loading your
           membership.
         </ThemedText>
@@ -228,12 +228,12 @@ const AddExpensePage = () => {
   }
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-black">
+    <View className="flex-1 bg-gray-100 dark:bg-black">
       <View className="bg-white/80 dark:bg-neutral-900 pt-16 pb-6 px-6 ">
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
             onPress={() => router.replace("/(tabs)/expenses")}
-            className="w-10 h-10 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800"
+            className="w-10 h-10 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
           >
             <Ionicons
               name="arrow-back"
@@ -242,10 +242,10 @@ const AddExpensePage = () => {
             />
           </TouchableOpacity>
           <View className="flex-1 items-center">
-            <ThemedText className="text-2xl font-bold text-neutral-900 dark:text-gray-200">
+            <ThemedText className="text-2xl font-bold text-gray-800 dark:text-gray-200">
               {isEditMode ? "Edit Expense" : "New Expense"}
             </ThemedText>
-            <ThemedText className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            <ThemedText className="text-sm text-gray-700 dark:text-neutral-400 mt-1">
               {isEditMode
                 ? "Update expense details"
                 : "Split costs with your roommates"}
@@ -257,18 +257,18 @@ const AddExpensePage = () => {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
-          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-gray-200 dark:border-neutral-700">
             <View className="items-center mb-6">
               <View className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full items-center justify-center mb-4">
                 <Ionicons name="cash" size={32} color="#22c55e" />
               </View>
-              <Text className="text-lg font-semibold text-neutral-900 dark:text-gray-300 mb-2">
+              <Text className="text-lg font-semibold text-gray-800 dark:text-gray-300 mb-2">
                 How much did you spend?
               </Text>
             </View>
 
             <View className="relative">
-              <Text className="text-4xl font-light text-neutral-400 dark:text-neutral-500 absolute left-4 top-4">
+              <Text className="text-4xl font-light text-gray-500 dark:text-neutral-500 absolute left-4 top-4">
                 $
               </Text>
               <TextInput
@@ -278,7 +278,7 @@ const AddExpensePage = () => {
                 }
                 placeholder="0.00"
                 keyboardType="decimal-pad"
-                className="text-4xl font-light text-neutral-900 dark:text-white text-center py-4 bg-neutral-50 dark:bg-black rounded-2xl"
+                className="text-4xl font-light text-gray-800 dark:text-white text-center py-4 bg-gray-100 dark:bg-black rounded-2xl"
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "40"
                 }
@@ -286,18 +286,18 @@ const AddExpensePage = () => {
             </View>
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-6 shadow-lg border border-gray-200 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="document-text" size={24} color="#3b82f6" />
               </View>
-              <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
+              <Text className="text-lg font-semibold text-gray-800 dark:text-white">
                 Expense Details
               </Text>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+              <Text className="text-sm font-medium text-gray-700 dark:text-neutral-400 mb-3">
                 Description *
               </Text>
               <TextInput
@@ -308,7 +308,7 @@ const AddExpensePage = () => {
                 placeholder="What was this expense for?"
                 multiline
                 numberOfLines={3}
-                className="bg-neutral-50 dark:bg-black rounded-2xl p-4 text-neutral-900 dark:text-white min-h-[100px] text-base"
+                className="bg-gray-100 dark:bg-black rounded-2xl p-4 text-gray-800 dark:text-white min-h-[100px] text-base"
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "60"
                 }
@@ -317,14 +317,14 @@ const AddExpensePage = () => {
 
             <View className="flex-row space-x-4 mb-4 gap-3">
               <View className="flex-1">
-                <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+                <Text className="text-sm font-medium text-gray-700 dark:text-neutral-400 mb-3">
                   Category
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowCategoryPicker(!showCategoryPicker)}
-                  className="bg-neutral-50 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
+                  className="bg-gray-100 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
                 >
-                  <Text className="text-neutral-900 dark:text-white flex-1">
+                  <Text className="text-gray-800 dark:text-white flex-1">
                     {formData.category || "Select"}
                   </Text>
                   <Ionicons
@@ -336,14 +336,14 @@ const AddExpensePage = () => {
               </View>
 
               <View className="flex-1">
-                <Text className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-3">
+                <Text className="text-sm font-medium text-gray-700 dark:text-neutral-400 mb-3">
                   Date
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowDatePicker(true)}
-                  className="bg-neutral-50 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
+                  className="bg-gray-100 dark:bg-black rounded-2xl p-4 flex-row items-center justify-between"
                 >
-                  <Text className="text-neutral-900 dark:text-white flex-1">
+                  <Text className="text-gray-800 dark:text-white flex-1">
                     {formData.expenseDate.toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -359,7 +359,7 @@ const AddExpensePage = () => {
             </View>
 
             {showCategoryPicker && (
-              <View className="bg-neutral-50 dark:bg-neutral-700 rounded-2xl mt-2 overflow-hidden">
+              <View className="bg-gray-100 dark:bg-neutral-700 rounded-2xl mt-2 overflow-hidden border border-gray-200 dark:border-neutral-600">
                 {EXPENSE_CATEGORIES.map((category, index) => (
                   <TouchableOpacity
                     key={category}
@@ -369,11 +369,11 @@ const AddExpensePage = () => {
                     }}
                     className={`p-4 ${
                       index < EXPENSE_CATEGORIES.length - 1
-                        ? "border-b border-neutral-200 dark:border-neutral-600"
+                        ? "border-b border-gray-200 dark:border-neutral-600"
                         : ""
                     }`}
                   >
-                    <Text className="text-neutral-900 dark:text-white">
+                    <Text className="text-gray-800 dark:text-white">
                       {category}
                     </Text>
                   </TouchableOpacity>
@@ -382,16 +382,16 @@ const AddExpensePage = () => {
             )}
           </View>
 
-          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-8 shadow-lg border border-neutral-100 dark:border-neutral-700">
+          <View className="bg-white dark:bg-neutral-900 rounded-3xl p-6 mb-8 shadow-lg border border-gray-200 dark:border-neutral-700">
             <View className="flex-row items-center mb-6">
               <View className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full items-center justify-center mr-4">
                 <Ionicons name="people" size={24} color="#8b5cf6" />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-semibold text-neutral-900 dark:text-white">
+                <Text className="text-lg font-semibold text-gray-800 dark:text-white">
                   Split With
                 </Text>
-                <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+                <Text className="text-sm text-gray-600 dark:text-neutral-400">
                   Select who to split this expense with
                 </Text>
               </View>
@@ -406,10 +406,10 @@ const AddExpensePage = () => {
                   <TouchableOpacity
                     key={member.membershipId}
                     onPress={() => toggleMemberSelection(member.membershipId)}
-                    className={`p-4 mb-2 rounded-2xl border-2 transition-all ${
+                    className={`p-4 mb-2 rounded-2xl border transition-all ${
                       isSelected
                         ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
-                        : "bg-neutral-50 dark:bg-black border-neutral-200 dark:border-neutral-600"
+                        : "bg-gray-100 dark:bg-black border-gray-200 dark:border-neutral-600"
                     }`}
                   >
                     <View className="flex-row items-center">
@@ -423,12 +423,12 @@ const AddExpensePage = () => {
                           className={`font-medium ${
                             isSelected
                               ? "text-blue-900 dark:text-blue-200"
-                              : "text-neutral-900 dark:text-white"
+                              : "text-gray-800 dark:text-white"
                           }`}
                         >
                           {member.name}
                           {member.membershipId === membership?.membershipId && (
-                            <Text className="text-sm text-neutral-500">
+                            <Text className="text-sm text-gray-600">
                               {" "}
                               (You)
                             </Text>
@@ -436,10 +436,10 @@ const AddExpensePage = () => {
                         </Text>
                       </View>
                       <View
-                        className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                        className={`w-6 h-6 rounded-full border items-center justify-center ${
                           isSelected
                             ? "bg-blue-500 border-blue-500"
-                            : "border-neutral-300 dark:border-neutral-500"
+                            : "border-gray-400 dark:border-neutral-500"
                         }`}
                       >
                         {isSelected && (
@@ -455,20 +455,20 @@ const AddExpensePage = () => {
         </View>
       </ScrollView>
 
-      <View className="p-6">
+      <View className="p-6 bg-gray-100 dark:bg-neutral-800">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending || !formData.amount || !formData.description}
-          className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
+          className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg border ${
             isPending || !formData.amount || !formData.description
-              ? "bg-neutral-300 dark:bg-neutral-700"
-              : "bg-blue-100 dark:bg-blue-900 border border-blue-400 dark:border-blue-500"
+              ? "bg-gray-300 dark:bg-neutral-700 border-gray-400 dark:border-neutral-600"
+              : "bg-blue-100 dark:bg-blue-900 border-blue-400 dark:border-blue-500"
           }`}
         >
           {isPending ? (
             <>
               <Animated.View
-                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full mr-3"
+                className="w-5 h-5 border border-white/30 border-t-white rounded-full mr-3"
                 style={{
                   transform: [
                     {

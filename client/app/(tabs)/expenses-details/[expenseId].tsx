@@ -112,17 +112,17 @@ const ExpenseDetailPage = () => {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 dark:bg-neutral-950">
-      <View className="bg-white dark:bg-neutral-900 px-6 pt-16 pb-6 ">
+    <ScrollView className="flex-1 bg-gray-100 dark:bg-neutral-950">
+      <View className="bg-gray-100 dark:bg-neutral-900 px-6 pt-16 pb-6 ">
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => router.push("/expenses")}
-              className="mr-4 p-2 rounded-full bg-gray-100 dark:bg-neutral-800"
+              className="mr-4 p-2 rounded-full bg-gray-200 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
             >
-              <Ionicons name="arrow-back" size={24} color="#6b7280" />
+              <Ionicons name="arrow-back" size={24} color="#4b5563" />
             </TouchableOpacity>
-            <ThemedText className="text-2xl font-bold text-gray-900 dark:text-white">
+            <ThemedText className="text-2xl font-bold text-gray-800 dark:text-white">
               Expense Details
             </ThemedText>
           </View>
@@ -153,7 +153,7 @@ const ExpenseDetailPage = () => {
       </View>
 
       <View className="px-6 py-6">
-        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
+        <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
           <View className="flex-row justify-between items-center mb-4">
             <View className="flex-row items-center">
               {expense.category && (
@@ -167,7 +167,7 @@ const ExpenseDetailPage = () => {
             </View>
             <View className="flex-row items-center">
               <Ionicons name="card" size={24} color="#10b981" />
-              <ThemedText className="text-3xl font-bold text-gray-900 dark:text-white ml-2">
+              <ThemedText className="text-3xl font-bold text-gray-800 dark:text-white ml-2">
                 ${expense.amount.toFixed(2)}
               </ThemedText>
             </View>
@@ -176,7 +176,7 @@ const ExpenseDetailPage = () => {
           <View className="mb-4">
             <View className="flex-row items-center mb-2">
               <Ionicons name="document-text" size={20} color="#6b7280" />
-              <ThemedText className="text-lg font-bold text-gray-900 dark:text-white ml-2">
+              <ThemedText className="text-lg font-bold text-gray-800 dark:text-white ml-2">
                 Description
               </ThemedText>
             </View>
@@ -189,22 +189,22 @@ const ExpenseDetailPage = () => {
             <View className="flex-row justify-between mb-2">
               <View className="flex-row items-center">
                 <Ionicons name="person" size={16} color="#6b7280" />
-                <ThemedText className="text-gray-600 dark:text-gray-400 ml-2">
+                <ThemedText className="text-gray-700 dark:text-gray-400 ml-2">
                   Paid by:
                 </ThemedText>
               </View>
-              <ThemedText className="font-semibold text-gray-900 dark:text-white">
+              <ThemedText className="font-semibold text-gray-800 dark:text-white">
                 {expense.payerName}
               </ThemedText>
             </View>
             <View className="flex-row justify-between">
               <View className="flex-row items-center">
                 <Ionicons name="calendar" size={16} color="#6b7280" />
-                <ThemedText className="text-gray-600 dark:text-gray-400 ml-2">
+                <ThemedText className="text-gray-700 dark:text-gray-400 ml-2">
                   Date:
                 </ThemedText>
               </View>
-              <ThemedText className="font-semibold text-gray-900 dark:text-white">
+              <ThemedText className="font-semibold text-gray-800 dark:text-white">
                 {new Date(expense.expenseDate).toLocaleDateString()}
               </ThemedText>
             </View>
@@ -213,10 +213,10 @@ const ExpenseDetailPage = () => {
 
         {userSplit &&
           membership?.membershipId !== expense.payerMembershipId && (
-            <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
+            <View className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
               <View className="flex-row items-center mb-4">
                 <Ionicons name="person-circle" size={24} color="#3b82f6" />
-                <ThemedText className="text-lg font-bold text-gray-900 dark:text-white ml-2">
+                <ThemedText className="text-lg font-bold text-gray-800 dark:text-white ml-2">
                   Your Share
                 </ThemedText>
               </View>
@@ -224,7 +224,7 @@ const ExpenseDetailPage = () => {
               <View className="flex-row justify-between items-center mb-4">
                 <View className="flex-row items-center">
                   <Ionicons name="cash" size={18} color="#6b7280" />
-                  <ThemedText className="text-gray-600 dark:text-gray-400 ml-2">
+                  <ThemedText className="text-gray-700 dark:text-gray-400 ml-2">
                     Amount owed:
                   </ThemedText>
                 </View>
@@ -240,7 +240,7 @@ const ExpenseDetailPage = () => {
                     size={18}
                     color="#6b7280"
                   />
-                  <ThemedText className="text-gray-600 dark:text-gray-400 ml-2">
+                  <ThemedText className="text-gray-700 dark:text-gray-400 ml-2">
                     Status:
                   </ThemedText>
                 </View>
@@ -266,10 +266,10 @@ const ExpenseDetailPage = () => {
           )}
 
         {membership?.membershipId === expense.payerMembershipId && (
-          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6  border border-gray-100 dark:border-neutral-800">
+          <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 mb-6 border border-gray-200 dark:border-neutral-800">
             <View className="flex-row items-center mb-4">
               <Ionicons name="people" size={24} color="#3b82f6" />
-              <ThemedText className="text-lg font-bold text-gray-900 dark:text-white ml-2">
+              <ThemedText className="text-lg font-bold text-gray-800 dark:text-white ml-2">
                 Split Details
               </ThemedText>
             </View>
@@ -285,12 +285,12 @@ const ExpenseDetailPage = () => {
                     size={20}
                     color="#6b7280"
                   />
-                  <ThemedText className="text-gray-900 dark:text-white ml-2">
+                  <ThemedText className="text-gray-800 dark:text-white ml-2">
                     {split.memberName}
                   </ThemedText>
                 </View>
                 <View className="flex-row items-center">
-                  <ThemedText className="text-gray-900 dark:text-white mr-2">
+                  <ThemedText className="text-gray-800 dark:text-white mr-2">
                     ${split.amountOwed.toFixed(2)}
                   </ThemedText>
                   <View
@@ -322,10 +322,10 @@ const ExpenseDetailPage = () => {
             <TouchableOpacity
               onPress={handlePayExpense}
               disabled={paymentPending}
-              className={`rounded-2xl p-4 flex-row items-center justify-center  ${
+              className={`rounded-2xl p-4 flex-row items-center justify-center border ${
                 paymentPending
-                  ? "bg-gray-400 dark:bg-gray-600"
-                  : "bg-green-500 dark:bg-green-600"
+                  ? "bg-gray-400 dark:bg-gray-600 border-gray-500 dark:border-gray-500"
+                  : "bg-green-500 dark:bg-green-600 border-green-600 dark:border-green-500"
               }`}
             >
               {paymentPending ? (
@@ -344,7 +344,7 @@ const ExpenseDetailPage = () => {
         {userSplit &&
           userSplit.isPaid &&
           membership?.membershipId !== expense.payerMembershipId && (
-            <View className="bg-green-100 dark:bg-green-900 rounded-2xl p-4 flex-row items-center justify-center">
+            <View className="bg-green-100 dark:bg-green-900 rounded-2xl p-4 flex-row items-center justify-center border border-green-300 dark:border-green-700">
               <Ionicons name="checkmark-circle" size={24} color="#10b981" />
               <ThemedText className="text-green-800 dark:text-green-200 font-semibold text-lg ml-2">
                 Already Paid

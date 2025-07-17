@@ -247,7 +247,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                       setPhotoRequired(false);
                     }
                   }}
-                  className={`w-12 h-7 rounded-full border-2 ${
+                  className={`w-12 h-7 rounded-full border ${
                     approvalRequired
                       ? "bg-blue-600 border-blue-600"
                       : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
@@ -274,7 +274,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                   </View>
                   <TouchableOpacity
                     onPress={() => setPhotoRequired(!photoRequired)}
-                    className={`w-12 h-7 rounded-full border-2 ${
+                    className={`w-12 h-7 rounded-full border ${
                       photoRequired
                         ? "bg-blue-600 border-blue-600"
                         : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
@@ -316,7 +316,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
         >
           {isPending ? (
             <>
-              <View className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3" />
+              <View className="w-5 h-5 border border-white/30 border-t-white rounded-full animate-spin mr-3" />
               <Text className="text-white font-semibold text-lg">
                 {isEdit ? "Updating..." : "Creating..."}
               </Text>

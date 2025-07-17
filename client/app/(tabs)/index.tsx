@@ -39,11 +39,11 @@ const RoomList = ({
   if (!rooms.length) {
     return (
       <View className="flex-1 items-center justify-center px-6 py-20">
-        <Ionicons name="home-outline" size={64} color="#9ca3af" />
-        <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
+        <Ionicons name="home-outline" size={64} color="#6b7280" />
+        <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-4 text-lg font-medium">
           No apartments yet
         </ThemedText>
-        <ThemedText className="text-center text-gray-500 mt-2 text-sm">
+        <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
           Create your first apartment to start organizing chores
         </ThemedText>
       </View>
@@ -56,7 +56,7 @@ const RoomList = ({
         <View key={room.roomId} className="mb-4">
           <TouchableOpacity
             onPress={() => router.push(`/rooms/${room.roomId}`)}
-            className="bg-white dark:bg-neutral-900 rounded-2xl  border border-gray-100 dark:border-neutral-800 overflow-hidden"
+            className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden"
             activeOpacity={0.8}
           >
             <View className="flex-row items-center">
@@ -72,12 +72,12 @@ const RoomList = ({
                       <Ionicons name="home" size={20} color="#3b82f6" />
                     </View>
                     <View className="flex-1">
-                      <ThemedText className="text-lg font-bold text-gray-900 dark:text-gray-300 mb-1">
+                      <ThemedText className="text-lg font-bold text-gray-800 dark:text-gray-300 mb-1">
                         {room.name}
                       </ThemedText>
                       <View className="flex-row items-center">
                         <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                        <ThemedText className="text-sm text-gray-500 dark:text-gray-400">
+                        <ThemedText className="text-sm text-gray-700 dark:text-gray-400">
                           Active apartment
                         </ThemedText>
                       </View>
@@ -86,7 +86,7 @@ const RoomList = ({
 
                   <TouchableOpacity
                     onPress={() => onOptionsPress(room)}
-                    className="w-8 h-8 rounded-full bg-gray-100 dark:bg-neutral-800 items-center justify-center ml-3"
+                    className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 items-center justify-center ml-3"
                   >
                     <Entypo
                       name="dots-three-vertical"
@@ -241,7 +241,7 @@ const HomeScreen = () => {
       error={error}
       loadingText="Loading apartments..."
     >
-      <View className="flex-1 bg-gray-50 dark:bg-black">
+      <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header
           title="Your Apartments"
           onMenuPress={openSidebar}
