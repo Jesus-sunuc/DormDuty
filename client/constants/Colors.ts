@@ -4,14 +4,10 @@ export const Colors = {
     background: "#f5f7f4",
     surface: "#ffffff",
     muted: "#d6e0da",
-    tint: "#27ae60",
+    tint: "#059669",
     icon: "#6b9080",
-    tabIconDefault: "#a3bcc9ad",
+    tabIconDefault: "#6b7280",
     tabIconSelected: "#27ae60",
-    // Gradient colors for buttons and interactive elements
-    gradientPrimary: ["#22c55e", "#16a34a", "#15803d"] as const,
-    gradientSecondary: ["#6b9080", "#5a7d6e", "#4a6b5c"] as const,
-    // Shadow and accent colors
     shadowColor: "#27ae60",
     borderAccent: "rgba(39, 174, 96, 0.3)",
   },
@@ -24,10 +20,6 @@ export const Colors = {
     icon: "#6ee7b7",
     tabIconDefault: "#a3bcc9ad",
     tabIconSelected: "#34d399",
-    // Gradient colors for buttons and interactive elements
-    gradientPrimary: ["#20573e", "#132d21", "#132d21"] as const,
-    gradientSecondary: ["#6ee7b7", "#4ade80", "#22c55e"] as const,
-    // Shadow and accent colors
     shadowColor: "#34d399",
     borderAccent: "rgba(52, 211, 153, 0.3)",
   },

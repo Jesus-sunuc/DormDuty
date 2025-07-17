@@ -15,7 +15,7 @@ import {
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { LogBox , View } from "react-native";
+import { View } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getQueryClient } from "@/services/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
