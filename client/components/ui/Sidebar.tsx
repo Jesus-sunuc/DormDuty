@@ -7,11 +7,11 @@ import {
   Animated,
   Dimensions,
   StatusBar,
+  ScrollView,
 } from "react-native";
 import { useAuth } from "@/hooks/user/useAuth";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 
 interface SidebarProps {
   isVisible: boolean;
@@ -121,8 +121,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
               </View>
             </View>
 
-            <View className="flex-1 bg-gray-50 dark:bg-black">
-              <ParallaxScrollViewY>
+            <View className="flex-1 bg-gray-100 dark:bg-black">
+              <ScrollView
+                className="flex-1"
+                showsVerticalScrollIndicator={false}
+              >
                 <View className="px-6 pt-6">
                   <View className="mb-6">
                     <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6  border border-gray-100 dark:border-neutral-800">
@@ -183,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
                     </View>
                   </View>
                 </View>
-              </ParallaxScrollViewY>
+              </ScrollView>
             </View>
           </View>
         </Animated.View>
