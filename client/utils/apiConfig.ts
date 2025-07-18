@@ -1,5 +1,4 @@
 import { Platform } from "react-native";
-import Constants from "expo-constants";
 
 /**
  * Get the appropriate API URL based on the platform and environment
