@@ -49,10 +49,10 @@ from typing import List, Optional, TypeVar, Type
 T = TypeVar("T")
 
 # Check if DATABASE_URL is set (for Railway)
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_PUBLIC_URL = os.getenv("DATABASE_PUBLIC_URL")
 
-if DATABASE_URL:
-    pool = ConnectionPool(DATABASE_URL, open=True, check=ConnectionPool.check_connection)
+if DATABASE_PUBLIC_URL:
+    pool = ConnectionPool(DATABASE_PUBLIC_URL, open=True, check=ConnectionPool.check_connection)
 else:
     # Local fallback for Docker/dev
     pg_user = os.getenv("POSTGRES_USER")
