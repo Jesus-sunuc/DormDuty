@@ -259,7 +259,7 @@ const RoomMembersListContent: React.FC<{
 
   return (
     <View
-      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl border border-gray-300 dark:border-neutral-800`}
+      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl border border-gray-300 dark:border-neutral-800 mb-24`}
     >
       <TouchableOpacity
         onPress={handleExpandToggle}
