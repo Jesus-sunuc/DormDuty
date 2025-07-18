@@ -3,8 +3,10 @@ import {
   useChoreByIdQuery,
   useDeleteChoreMutation,
   useChoreVerificationDetailsQuery,
+  useCompleteChoreMutation,
+  usePendingCompletionsByRoomQuery,
 } from "@/hooks/choreHooks";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import { useRoomMembersQuery } from "@/hooks/membershipHooks";
 import ParallaxScrollView from "@/components/ParallaxScrollViewY";
@@ -17,10 +19,12 @@ import { ChoreOptionsModal } from "@/components/chores/ChoreOptionsModal";
 import { ChoreSwapRequestModal } from "@/components/chores/ChoreSwapRequestModal";
 import { ChoreNotFound } from "@/components/chores/ChoreNotFound";
 import { ChoreVerificationCard } from "@/components/chores/ChoreVerificationCard";
+import { ChoreCompletionModal } from "@/components/chores/ChoreCompletionModal";
 import { toastError, toastSuccess } from "@/components/ToastService";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useAuth } from "@/hooks/user/useAuth";
 import { Role } from "@/models/Membership";
+import { Chore } from "@/models/Chore";
 
 const ChoreDetailsScreen = () => {
   const params = useLocalSearchParams();
@@ -29,6 +33,9 @@ const ChoreDetailsScreen = () => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showSwapRequestModal, setShowSwapRequestModal] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [selectedChoreForCompletion, setSelectedChoreForCompletion] =
+    useState<Chore | null>(null);
 
   const choreId = Array.isArray(params.choreId)
     ? params.choreId[0]
@@ -51,6 +58,12 @@ const ChoreDetailsScreen = () => {
 
   const { data: verificationDetails, isLoading: verificationLoading } =
     useChoreVerificationDetailsQuery(choreIdNumber, user?.userId || 0);
+
+  const { data: pendingCompletions = [] } = usePendingCompletionsByRoomQuery(
+    chore?.roomId || 0
+  );
+
+  const completeChoreeMutation = useCompleteChoreMutation();
 
   const {
     mutate: deleteChore,
@@ -137,6 +150,22 @@ const ChoreDetailsScreen = () => {
 
   const canRequestSwap = isAssignedToChore() && members.length > 1;
 
+  const isPendingCompletion = pendingCompletions.some(
+    (comp) => comp.choreId === choreIdNumber
+  );
+
+  const handleCompleteChore = async () => {
+    if (!currentMembershipId) {
+      Alert.alert("Error", "Unable to complete chore. Please try again.");
+      return;
+    }
+
+    if (chore) {
+      setSelectedChoreForCompletion(chore);
+      setShowCompletionModal(true);
+    }
+  };
+
   const handleBack = () => {
     if (roomId) {
       router.push(`/rooms/${roomId}`);
@@ -203,6 +232,10 @@ const ChoreDetailsScreen = () => {
         onBack={handleBack}
         onOptions={() => setShowOptionsModal(true)}
         showOptions={isAdmin || canRequestSwap}
+        onMarkDone={handleCompleteChore}
+        showMarkDone={isAssignedToChore()}
+        isMarkingDone={completeChoreeMutation.isPending}
+        isPendingCompletion={isPendingCompletion}
       />
 
       <ParallaxScrollView>
@@ -247,6 +280,18 @@ const ChoreDetailsScreen = () => {
           choreName={chore.name}
           currentMembershipId={currentMembershipId}
           members={members}
+        />
+      )}
+
+      {selectedChoreForCompletion && currentMembershipId && (
+        <ChoreCompletionModal
+          isVisible={showCompletionModal}
+          onClose={() => {
+            setShowCompletionModal(false);
+            setSelectedChoreForCompletion(null);
+          }}
+          chore={selectedChoreForCompletion}
+          membershipId={currentMembershipId}
         />
       )}
 
