@@ -243,7 +243,7 @@ const HomeScreen = () => {
     >
       <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header
-          title="Your Apartments"
+          title="Your Rooms"
           onMenuPress={openSidebar}
           rightComponent={
             <View className="flex-row space-x-3 gap-2">

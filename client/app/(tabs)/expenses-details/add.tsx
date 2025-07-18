@@ -455,13 +455,13 @@ const AddExpensePage = () => {
         </View>
       </ScrollView>
 
-      <View className="pb-28 bg-gray-100 dark:bg-neutral-800 ps-5 pe-5">
+      <View className="pb-28 mt-2 ps-5 pe-5">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending || !formData.amount || !formData.description}
           className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg border ${
             isPending || !formData.amount || !formData.description
-              ? "bg-gray-300 dark:bg-neutral-700 border-gray-400 dark:border-neutral-600"
+              ? "bg-gray-300 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
               : "bg-blue-500 dark:bg-blue-500 border-blue-500"
           }`}
         >

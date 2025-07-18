@@ -249,12 +249,12 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                   }}
                   className={`w-12 h-7 rounded-full border ${
                     approvalRequired
-                      ? "bg-blue-600 border-blue-600"
+                      ? "bg-blue-500 border-blue-500"
                       : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
                   }`}
                 >
                   <View
-                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`w-4 h-4 mt-1 rounded-full bg-white transition-transform ${
                       approvalRequired ? "translate-x-6" : "translate-x-1"
                     }`}
                   />
@@ -276,7 +276,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
                     onPress={() => setPhotoRequired(!photoRequired)}
                     className={`w-12 h-7 rounded-full border ${
                       photoRequired
-                        ? "bg-blue-600 border-blue-600"
+                        ? "bg-blue-500 border-blue-500"
                         : "bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600"
                     }`}
                   >
@@ -304,14 +304,14 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
         </View>
       </ScrollView>
 
-      <View className="pb-28">
+      <View className="pb-28 mt-2 ps-5 pe-5">
         <TouchableOpacity
           onPress={onSave}
           disabled={isPending || !name.trim()}
           className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
             isPending || !name.trim()
               ? "bg-neutral-300 dark:bg-neutral-700"
-              : "bg-blue-600"
+              : "bg-blue-500"
           }`}
         >
           {isPending ? (
