@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, ScrollView, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   TextInputField,
   PickerField,
@@ -68,6 +75,12 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   isEdit = false,
 }) => {
   const [showMemberSelection, setShowMemberSelection] = useState(false);
+  
+  const insets = useSafeAreaInsets();
+  const bottomMargin =
+    Platform.OS === "ios"
+      ? Math.max(insets.bottom + 20, 96) // 96px = mb-24 equivalent, ensure minimum spacing
+      : Math.max(insets.bottom + 10, 8); // 8px = mb-2 equivalent for Android
 
   const safeMembers = Array.isArray(members)
     ? members.filter((member) => member != null)
@@ -304,7 +317,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
         </View>
       </ScrollView>
 
-      <View className="pb-28 mt-2 ps-5 pe-5">
+      <View className="mt-2 ps-5 pe-5" style={{ marginBottom: bottomMargin }}>
         <TouchableOpacity
           onPress={onSave}
           disabled={isPending || !name.trim()}

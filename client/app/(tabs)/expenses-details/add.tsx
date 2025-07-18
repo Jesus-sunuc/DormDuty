@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
+  Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -22,7 +23,6 @@ import {
 } from "@/hooks/membershipHooks";
 import {
   ExpenseCreateRequest,
-  ExpenseUpdateRequest,
   EXPENSE_CATEGORIES,
 } from "@/models/Expense";
 import { toastSuccess, toastError } from "@/components/ToastService";
@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/user/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AddExpensePage = () => {
   const router = useRouter();
@@ -188,6 +189,11 @@ const AddExpensePage = () => {
         : [...prev.splitWith, membershipId],
     }));
   };
+  const insets = useSafeAreaInsets();
+  const bottomMargin =
+    Platform.OS === "ios"
+      ? Math.max(insets.bottom + 20, 96) // 96px = mb-24 equivalent, ensure minimum spacing
+      : Math.max(insets.bottom + 10, 8); // 8px = mb-2 equivalent for Android
 
   if (
     !roomId ||
@@ -455,7 +461,7 @@ const AddExpensePage = () => {
         </View>
       </ScrollView>
 
-      <View className="pb-28 mt-2 ps-5 pe-5">
+      <View className="mt-2 ps-5 pe-5" style={{ marginBottom: bottomMargin }}>
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending || !formData.amount || !formData.description}

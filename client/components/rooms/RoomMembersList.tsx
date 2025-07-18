@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import {
   useRoomMembersQuery,
@@ -21,6 +22,7 @@ import { RoleManagement } from "./RoleManagement";
 import { toastSuccess, toastError } from "@/components/ToastService";
 import { useAuth } from "@/hooks/user/useAuth";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface RoomMembersListProps {
   roomId: string | undefined;
@@ -88,6 +90,12 @@ const RoomMembersListContent: React.FC<{
     setIsExpanded(newExpanded);
     onExpandChange?.(newExpanded);
   };
+
+  const insets = useSafeAreaInsets();
+  const bottomMargin =
+    Platform.OS === "ios"
+      ? Math.max(insets.bottom + 20, 80) // 80px = mb-20 equivalent, ensure minimum spacing
+      : Math.max(insets.bottom + 10, 4); // 4px = mb-1 equivalent for Android
 
   useEffect(() => {
     setIsExpanded(forceExpanded);
@@ -259,7 +267,8 @@ const RoomMembersListContent: React.FC<{
 
   return (
     <View
-      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl border border-gray-300 dark:border-neutral-800 mb-24`}
+      className={`${forceExpanded ? "bg-white dark:bg-neutral-900 border border-blue-200 dark:border-blue-800" : "bg-white dark:bg-neutral-900"} rounded-2xl border border-gray-300 dark:border-neutral-800`}
+      style={{ marginBottom: bottomMargin }}
     >
       <TouchableOpacity
         onPress={handleExpandToggle}
@@ -271,6 +280,7 @@ const RoomMembersListContent: React.FC<{
             <Ionicons
               name="people-outline"
               size={20}
+              mb-24
               color={Colors[colorScheme ?? "light"].text}
             />
             <ThemedText className="text-lg text-gray-800 dark:text-gray-300 font-semibold ml-2">
