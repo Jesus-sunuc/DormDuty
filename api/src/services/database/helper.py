@@ -52,7 +52,7 @@ T = TypeVar("T")
 DATABASE_PUBLIC_URL = os.getenv("DATABASE_PUBLIC_URL")
 
 if DATABASE_PUBLIC_URL:
-    pool = ConnectionPool(DATABASE_PUBLIC_URL, open=True, check=ConnectionPool.check_connection)
+    pool = ConnectionPool(DATABASE_PUBLIC_URL, open=True)
 else:
     # Local fallback for Docker/dev
     pg_user = os.getenv("POSTGRES_USER")
