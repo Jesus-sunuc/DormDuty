@@ -52,7 +52,7 @@ export const ChoreDetailsHeader: React.FC<ChoreDetailsHeaderProps> = ({
                 ${
                   isMarkingDone
                     ? "bg-emerald-400/50"
-                    : "bg-emerald-100 dark:bg-emerald-900/50 border border-emerald-400 dark:border-emerald-900"
+                    : "bg-emerald-100 dark:bg-emerald-600 border border-emerald-400 dark:border-emerald-700"
                 }`}
             >
               {isMarkingDone ? (
@@ -70,7 +70,7 @@ export const ChoreDetailsHeader: React.FC<ChoreDetailsHeaderProps> = ({
                     color={colorScheme === "dark" ? "white" : "#047857"}
                   />
                   <ThemedText className="text-emerald-700 dark:text-white text-xs font-medium ml-1">
-                    Mark Done
+                    Done
                   </ThemedText>
                 </>
               )}

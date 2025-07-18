@@ -5,17 +5,10 @@ import {
   usePendingCompletionsByRoomQuery,
 } from "@/hooks/choreHooks";
 import { useMembershipQuery } from "@/hooks/membershipHooks";
-import {
-  View,
-  Pressable,
-  TouchableOpacity,
-  Alert,
-  useColorScheme,
-} from "react-native";
+import { View, Alert } from "react-native";
 import { formatDistance } from "date-fns";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { getRoomColor } from "@/utils/colorUtils";
 import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import ParallaxScrollViewY from "@/components/ParallaxScrollViewY";
 import { useRouter } from "expo-router";
@@ -25,15 +18,14 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { useState } from "react";
 import { ChoreVerificationModalWrapper } from "@/components/chores/ChoreVerificationModalWrapper";
 import { Chore } from "@/models/Chore";
-import { PendingVerificationsBanner } from "@/components/chores/PendingVerificationsBanner";
 import { ChoreCompletionModal } from "@/components/chores/ChoreCompletionModal";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Role } from "@/models/Membership";
+import { SwipeableChoreCard } from "@/components/chores/SwipeableChoreCard";
 
 export default function ChoresScreen() {
   const { user } = useAuth();
   const { openSidebar } = useSidebar();
-  const colorScheme = useColorScheme();
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -113,68 +105,17 @@ export default function ChoresScreen() {
                 );
 
                 return (
-                  <View key={chore.choreId} className="mb-3">
-                    <View className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden">
-                      <Pressable
-                        onPress={() =>
-                          router.push(`/chore-details/${chore.choreId}`)
-                        }
-                        className="p-4"
-                      >
-                        <View className="flex-row items-center mb-3">
-                          <View
-                            style={{
-                              backgroundColor: getRoomColor(chore.roomId),
-                            }}
-                            className="w-2 h-2 rounded-full mr-2"
-                          />
-                          <Ionicons
-                            name="home-outline"
-                            size={18}
-                            color={
-                              colorScheme === "dark" ? "#9ca3af" : "#6b7280"
-                            }
-                            style={{ marginRight: 6 }}
-                          />
-                          <ThemedText className="text-lg font-semibold text-gray-800 dark:text-white flex-1">
-                            {chore.name}
-                          </ThemedText>
-                          {isPendingCompletion ? (
-                            <View className="ml-2 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded">
-                              <ThemedText className="text-xs text-amber-700 dark:text-amber-300 font-medium">
-                                [Pending]
-                              </ThemedText>
-                            </View>
-                          ) : (chore as any).rejectionInfo ? (
-                            <View className="ml-2 px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded">
-                              <ThemedText className="text-xs text-red-600 dark:text-red-400 font-medium">
-                                [Rejected]
-                              </ThemedText>
-                            </View>
-                          ) : null}
-                        </View>
-
-                        <View className="flex-row justify-between items-center">
-                          <View className="flex-row items-center flex-1">
-                            <Ionicons name="time" size={16} color="#f59e0b" />
-                            <ThemedText className="text-sm text-gray-700 dark:text-gray-400 ml-1">
-                              Due: {chore.timing || "Not set"}
-                            </ThemedText>
-                          </View>
-                          <View className="flex-row items-center flex-1 justify-end">
-                            <Ionicons
-                              name="time-outline"
-                              size={16}
-                              color="#6b7280"
-                            />
-                            <ThemedText className="text-sm text-gray-700 dark:text-gray-400 ml-1">
-                              Last: {formatDate(chore.lastCompleted)}
-                            </ThemedText>
-                          </View>
-                        </View>
-                      </Pressable>
-                    </View>
-                  </View>
+                  <SwipeableChoreCard
+                    key={chore.choreId}
+                    chore={chore}
+                    isPendingCompletion={isPendingCompletion}
+                    isMarkingDone={completeChoreeMutation.isPending}
+                    onPress={() =>
+                      router.push(`/chore-details/${chore.choreId}`)
+                    }
+                    onMarkDone={() => handleCompleteChore(chore)}
+                    formatDate={formatDate}
+                  />
                 );
               })}
             </View>
