@@ -246,7 +246,7 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
           }
           router.push(`/expenses-details/add?roomId=${room.roomId}`);
         }}
-        className="bg-blue-500 border-blue-500 dark:border-blue-500 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
+        className="bg-blue-500 border-blue-500 rounded-2xl p-4 mb-6 flex-row items-center justify-center"
       >
         <Ionicons name="add" size={24} color="#ffffff" />
         <ThemedText className="text-white font-semibold text-lg ml-2">
