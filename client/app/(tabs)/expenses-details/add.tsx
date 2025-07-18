@@ -455,7 +455,7 @@ const AddExpensePage = () => {
         </View>
       </ScrollView>
 
-      <View className="p-6 bg-gray-100 dark:bg-neutral-800">
+      <View className="pb-28 bg-gray-100 dark:bg-neutral-800">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending || !formData.amount || !formData.description}

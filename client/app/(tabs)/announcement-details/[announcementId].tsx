@@ -317,8 +317,8 @@ export default function AnnouncementDetails() {
         </ScrollView>
 
         {announcement?.canReply && (
-          <View className="absolute bottom-0 left-0 right-0 bg-gray-100 dark:bg-neutral-900 border-t-2 border-gray-300 dark:border-neutral-700 p-4">
-            <View className="flex-row items-center">
+          <View className="absolute bottom-0 left-0 right-0 bg-gray-100 dark:bg-neutral-900 border-t-2 border-gray-300 dark:border-neutral-700 pb-28">
+            <View className="flex-row items-center mt-2">
               <TextInput
                 value={replyText}
                 onChangeText={setReplyText}

@@ -304,7 +304,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
         </View>
       </ScrollView>
 
-      <View className="p-6">
+      <View className="pb-28">
         <TouchableOpacity
           onPress={onSave}
           disabled={isPending || !name.trim()}
