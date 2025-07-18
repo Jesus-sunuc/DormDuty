@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  Alert,
   Platform,
 } from "react-native";
 import {
@@ -19,6 +18,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { RoleManagement } from "./RoleManagement";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { toastSuccess, toastError } from "@/components/ToastService";
 import { useAuth } from "@/hooks/user/useAuth";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -83,6 +83,8 @@ const RoomMembersListContent: React.FC<{
     role: Role;
   } | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showRemoveConfirmation, setShowRemoveConfirmation] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<any>(null);
   const [isExpanded, setIsExpanded] = useState(forceExpanded);
 
   const handleExpandToggle = () => {
@@ -122,42 +124,38 @@ const RoomMembersListContent: React.FC<{
       return;
     }
 
-    Alert.alert(
-      "Remove User",
-      `Are you sure you want to remove "${member.name}" from this room? This action cannot be undone.`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    setMemberToRemove(member);
+    setShowRemoveConfirmation(true);
+  };
+
+  const confirmRemoveUser = () => {
+    if (!memberToRemove || !currentUserMembership?.membershipId) return;
+
+    removeUser(
+      {
+        adminMembershipId: currentUserMembership.membershipId,
+        targetMembershipId: memberToRemove.membershipId,
+        roomId: roomIdNum,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            toastSuccess(data.message);
+            if (data.roomDeleted) {
+              // Handle room deletion if needed
+            }
+          } else {
+            toastError(data.message);
+          }
+          setShowRemoveConfirmation(false);
+          setMemberToRemove(null);
         },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: () => {
-            removeUser(
-              {
-                adminMembershipId: currentUserMembership.membershipId,
-                targetMembershipId: member.membershipId,
-                roomId: roomIdNum,
-              },
-              {
-                onSuccess: (data) => {
-                  if (data.success) {
-                    toastSuccess(data.message);
-                    if (data.roomDeleted) {
-                    }
-                  } else {
-                    toastError(data.message);
-                  }
-                },
-                onError: () => {
-                  toastError("Failed to remove user");
-                },
-              }
-            );
-          },
+        onError: () => {
+          toastError("Failed to remove user");
+          setShowRemoveConfirmation(false);
+          setMemberToRemove(null);
         },
-      ]
+      }
     );
   };
 
@@ -376,6 +374,21 @@ const RoomMembersListContent: React.FC<{
           </View>
         </View>
       </Modal>
+
+      <ConfirmationModal
+        visible={showRemoveConfirmation}
+        onClose={() => {
+          setShowRemoveConfirmation(false);
+          setMemberToRemove(null);
+        }}
+        onConfirm={confirmRemoveUser}
+        title="Remove User"
+        message={`Are you sure you want to remove "${memberToRemove?.name}" from this room? This action cannot be undone.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        destructive={true}
+        icon="person-remove-outline"
+      />
     </View>
   );
 };
