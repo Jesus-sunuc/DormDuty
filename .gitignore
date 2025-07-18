@@ -7,3 +7,4 @@ api/venv/
 
 # Ignore env files
 api/.env.dev
+api/.env.production
