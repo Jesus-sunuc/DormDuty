@@ -5,18 +5,24 @@ from typing import List, Optional, TypeVar, Type
 
 T = TypeVar("T")
 
-# Load credentials from .env
-pg_user = os.getenv("POSTGRES_USER")
-pg_password = os.getenv("POSTGRES_PASSWORD")
-pg_host = os.getenv("POSTGRES_HOST")
-pg_db = os.getenv("POSTGRES_DB")
+# Load full DATABASE_URL if present (used by Railway)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Initialize connection pool
-pool = ConnectionPool(
-    f"password={pg_password} user={pg_user} host={pg_host} dbname={pg_db}",
-    open=True,
-    check=ConnectionPool.check_connection,
-)
+if DATABASE_URL:
+    pool = ConnectionPool(DATABASE_URL, open=True, check=ConnectionPool.check_connection)
+else:
+    # Fallback to local dev mode
+    pg_user = os.getenv("POSTGRES_USER")
+    pg_password = os.getenv("POSTGRES_PASSWORD")
+    pg_host = os.getenv("POSTGRES_HOST")
+    pg_db = os.getenv("POSTGRES_DB")
+
+    pool = ConnectionPool(
+        f"password={pg_password} user={pg_user} host={pg_host} dbname={pg_db}",
+        open=True,
+        check=ConnectionPool.check_connection,
+    )
+    
 pool.wait(timeout=6.0)
 
 # Generic query runner

@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 
+from src.features.settings import IS_DEV
 from src.router import announcement_reaction_router, announcement_reply_router, announcement_reply_reaction_router, announcement_read_router
 from src.router import users_router
 from src.router import rooms_router
@@ -10,8 +11,8 @@ from src.router import expense_router
 from src.router import announcement_router
 from src.router import cleaning_router
 
-
-load_dotenv()
+if IS_DEV:
+    load_dotenv(".env.dev")
 
 import logging
 from fastapi import FastAPI, APIRouter
