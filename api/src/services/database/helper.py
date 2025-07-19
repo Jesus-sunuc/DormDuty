@@ -11,7 +11,6 @@ DATABASE_PUBLIC_URL = os.getenv("DATABASE_PUBLIC_URL")
 if DATABASE_PUBLIC_URL:
     pool = ConnectionPool(DATABASE_PUBLIC_URL, open=True)
 else:
-    # Local fallback for Docker/dev
     pg_user = os.getenv("POSTGRES_USER")
     pg_password = os.getenv("POSTGRES_PASSWORD")
     pg_host = os.getenv("POSTGRES_HOST")
