@@ -75,7 +75,7 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   isEdit = false,
 }) => {
   const [showMemberSelection, setShowMemberSelection] = useState(false);
-  
+
   const insets = useSafeAreaInsets();
   const bottomMargin =
     Platform.OS === "ios"

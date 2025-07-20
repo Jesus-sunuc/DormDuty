@@ -23,7 +23,6 @@ export const ChoreCompletionModal: React.FC<ChoreCompletionModalProps> = ({
   const completeChoreeMutation = useCompleteChoreMutation();
 
   const handleComplete = async () => {
-    // Check if photo is required but not provided
     if (chore.photoRequired && !photoUrl) {
       Alert.alert(
         "Photo Required",
