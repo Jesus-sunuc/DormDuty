@@ -127,7 +127,6 @@ const ExpenseDetailPage = () => {
             </ThemedText>
           </View>
 
-          {/* Show edit and delete buttons only for expense creator */}
           {membership?.membershipId === expense.payerMembershipId && (
             <View className="flex-row items-center">
               <TouchableOpacity
