@@ -6,10 +6,10 @@ from typing import List, Optional, TypeVar, Type
 T = TypeVar("T")
 
 # Check if DATABASE_URL is set (for Railway)
-DATABASE_PUBLIC_URL = os.getenv("DATABASE_PUBLIC_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_PUBLIC_URL:
-    pool = ConnectionPool(DATABASE_PUBLIC_URL, open=True)
+if DATABASE_URL:
+    pool = ConnectionPool(DATABASE_URL, open=True)
 else:
     pg_user = os.getenv("POSTGRES_USER")
     pg_password = os.getenv("POSTGRES_PASSWORD")
