@@ -1,6 +1,6 @@
+import os
 from dotenv import load_dotenv
 
-from src.features.settings import IS_DEV
 from src.router import announcement_reaction_router, announcement_reply_router, announcement_reply_reaction_router, announcement_read_router
 from src.router import users_router
 from src.router import rooms_router
@@ -11,8 +11,14 @@ from src.router import expense_router
 from src.router import announcement_router
 from src.router import cleaning_router
 
-if IS_DEV:
+env = os.getenv("ENVIRONMENT", "development")
+
+if env == "development":
     load_dotenv(".env.dev")
+elif env == "preview":
+    load_dotenv(".env.prev")
+elif env == "production":
+    load_dotenv(".env.prod")
 
 import logging
 from fastapi import FastAPI, APIRouter
