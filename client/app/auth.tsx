@@ -4,12 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { useFirebaseAuth } from "@/contexts/AuthContext";
-import { router } from "expo-router";
+import { toastError } from "@/components/ToastService";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,22 +19,23 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const colorScheme = useColorScheme();
 
   const { signIn, signUp } = useFirebaseAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      toastError("Please fill in all fields");
       return;
     }
 
     if (!isLogin && !name) {
-      Alert.alert("Error", "Please enter your name");
+      toastError("Please enter your name");
       return;
     }
 
     if (!isLogin && password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      toastError("Passwords do not match");
       return;
     }
 
@@ -45,7 +47,7 @@ export default function AuthScreen() {
         await signUp(email, password, name);
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      toastError(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -54,18 +56,52 @@ export default function AuthScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-gray-50 dark:bg-gray-900"
+      className="flex-1"
+      style={{
+        backgroundColor: colorScheme === "dark" ? "#1c1c1e" : "#f5f7f4",
+      }}
     >
       <View className="flex-1 justify-center px-8">
-        <View className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-          <Text className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">
+        <View className="items-center mb-8">
+          <Image
+            source={require("@/assets/images/banner.png")}
+            style={{
+              width: "70%",
+              height: 70,
+            }}
+            resizeMode="contain"
+          />
+        </View>
+
+        <View
+          className="rounded-2xl p-8 shadow-lg"
+          style={{
+            backgroundColor: colorScheme === "dark" ? "#262626" : "#ffffff",
+            shadowColor: colorScheme === "dark" ? "#000000" : "#000000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+        >
+          <Text
+            className="text-3xl font-bold text-center mb-8"
+            style={{
+              color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+            }}
+          >
             {isLogin ? "Welcome Back" : "Create Account"}
           </Text>
 
           <View className="space-y-4">
             {!isLogin && (
               <View>
-                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Text
+                  className="text-sm font-medium mb-1"
+                  style={{
+                    color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                  }}
+                >
                   Name
                 </Text>
                 <TextInput
@@ -73,14 +109,26 @@ export default function AuthScreen() {
                   onChangeText={setName}
                   placeholder="Enter your full name"
                   autoCapitalize="words"
-                  className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white"
-                  placeholderTextColor="#9CA3AF"
+                  className="rounded-lg px-4 py-3"
+                  style={{
+                    backgroundColor:
+                      colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                    color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                  }}
+                  placeholderTextColor={
+                    colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280"
+                  }
                 />
               </View>
             )}
 
             <View>
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Text
+                className="text-sm font-medium mb-1 mt-2"
+                style={{
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+              >
                 Email
               </Text>
               <TextInput
@@ -89,13 +137,25 @@ export default function AuthScreen() {
                 placeholder="Enter your email"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white"
-                placeholderTextColor="#9CA3AF"
+                className="rounded-lg px-4 py-3"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+                placeholderTextColor={
+                  colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280"
+                }
               />
             </View>
 
             <View>
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Text
+                className="text-sm font-medium mb-1 mt-2"
+                style={{
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+              >
                 Password
               </Text>
               <TextInput
@@ -103,14 +163,26 @@ export default function AuthScreen() {
                 onChangeText={setPassword}
                 placeholder="Enter your password"
                 secureTextEntry
-                className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white"
-                placeholderTextColor="#9CA3AF"
+                className="rounded-lg px-4 py-3"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+                placeholderTextColor={
+                  colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280"
+                }
               />
             </View>
 
             {!isLogin && (
               <View>
-                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Text
+                  className="text-sm font-medium mb-1 mt-2"
+                  style={{
+                    color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                  }}
+                >
                   Confirm Password
                 </Text>
                 <TextInput
@@ -118,8 +190,15 @@ export default function AuthScreen() {
                   onChangeText={setConfirmPassword}
                   placeholder="Confirm your password"
                   secureTextEntry
-                  className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 text-gray-800 dark:text-white"
-                  placeholderTextColor="#9CA3AF"
+                  className="rounded-lg px-4 py-3"
+                  style={{
+                    backgroundColor:
+                      colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                    color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                  }}
+                  placeholderTextColor={
+                    colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280"
+                  }
                 />
               </View>
             )}
@@ -128,11 +207,16 @@ export default function AuthScreen() {
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={loading}
-            className={`mt-8 py-4 rounded-lg ${
-              loading
-                ? "bg-gray-400 dark:bg-gray-600"
-                : "bg-blue-600 dark:bg-blue-500"
-            }`}
+            className="mt-8 py-4 rounded-lg"
+            style={{
+              backgroundColor: loading
+                ? colorScheme === "dark"
+                  ? "#3a3a3a"
+                  : "#d6e0da"
+                : colorScheme === "dark"
+                  ? "#34d399"
+                  : "#10b981",
+            }}
           >
             <Text className="text-white text-center font-semibold text-lg">
               {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
@@ -140,13 +224,22 @@ export default function AuthScreen() {
           </TouchableOpacity>
 
           <View className="flex-row justify-center mt-6">
-            <Text className="text-gray-600 dark:text-gray-400">
+            <Text
+              style={{
+                color: colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280",
+              }}
+            >
               {isLogin
                 ? "Don't have an account? "
                 : "Already have an account? "}
             </Text>
             <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-              <Text className="text-blue-600 dark:text-blue-400 font-semibold">
+              <Text
+                className="font-semibold"
+                style={{
+                  color: colorScheme === "dark" ? "#34d399" : "#10b981",
+                }}
+              >
                 {isLogin ? "Sign Up" : "Sign In"}
               </Text>
             </TouchableOpacity>
