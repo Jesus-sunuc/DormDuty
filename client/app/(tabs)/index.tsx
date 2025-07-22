@@ -106,7 +106,6 @@ const RoomList = ({
 
 const HomeScreen = () => {
   const { user } = useFirebaseAuth();
-  const { logout } = useFirebaseAuth();
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { data: rooms, isLoading, error } = useRoomsByUserQuery();
@@ -292,28 +291,6 @@ const HomeScreen = () => {
                 />
                 <ThemedText className="text-emerald-700 dark:text-white font-semibold text-sm mr-1">
                   Create
-                </ThemedText>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={logout}
-                activeOpacity={0.7}
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
-                }}
-                className="bg-red-100 dark:bg-red-600 px-2 py-2 rounded-xl border border-red-200 dark:border-red-700 flex-row items-center"
-              >
-                <Ionicons
-                  name="log-out-outline"
-                  size={17}
-                  color={colorScheme === "dark" ? "#fecaca" : "#dc2626"}
-                />
-                <ThemedText className="text-red-700 dark:text-white font-semibold text-sm mr-1">
-                  Logout
                 </ThemedText>
               </TouchableOpacity>
             </View>
