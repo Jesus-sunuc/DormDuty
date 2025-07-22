@@ -1,3 +1,7 @@
+// LEGACY: This is the old user switching system for testing/development
+// TODO: Replace with Firebase authentication context throughout the app
+// Currently still used by various components that haven't been migrated yet
+
 import {
   createContext,
   useContext,
@@ -8,6 +12,7 @@ import {
 import { User } from "@/models/User";
 import { axiosClient } from "@/utils/axiosClient";
 import { useQueryClient } from "@tanstack/react-query";
+import { useFirebaseAuth } from "@/contexts/AuthContext";
 
 type AuthContextType = {
   user: User | null;
@@ -24,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = (props: { children: ReactNode }) => {
   const children = props?.children;
   const queryClient = useQueryClient();
+  const { user: firebaseUser } = useFirebaseAuth(); // Get current Firebase user
 
   const usersState = useState<User[]>([]);
   const users = usersState[0];
@@ -38,14 +44,23 @@ export const AuthProvider = (props: { children: ReactNode }) => {
       try {
         const res = await axiosClient.get<User[]>("/api/users/all");
         setUsers(res.data);
-        setUser(res.data[0] ?? null);
+
+        // If Firebase user exists, find them in the user list and set as current user
+        if (firebaseUser) {
+          const currentUser = res.data.find(
+            (u) => u.fbUid === firebaseUser.fbUid
+          );
+          setUser(currentUser || res.data[0] || null);
+        } else {
+          setUser(res.data[0] ?? null);
+        }
       } catch (error) {
         console.error("Failed to load users:", error);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [firebaseUser]); // Re-fetch when Firebase user changes
 
   const switchUser = (userId: number) => {
     const selected = users.find((u) => u.userId === userId);

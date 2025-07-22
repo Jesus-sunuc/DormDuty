@@ -25,13 +25,14 @@ import { LoadingAndErrorHandling } from "@/components/LoadingAndErrorHandling";
 import "@/global.css";
 import { useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { AuthProvider } from "@/hooks/user/useAuth";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider as LegacyAuthProvider } from "@/hooks/user/useAuth";
 import { toastConfig } from "@/components/ToastService";
 
 if (__DEV__) {
   require("react-native-reanimated").configureReanimatedLogger({
-    strict: false, // Turn off strict mode to reduce warnings
-    level: "warn", // Only show warnings and errors
+    strict: false,
+    level: "warn",
   });
 }
 
@@ -71,20 +72,26 @@ export default function RootLayout() {
         <View className={colorScheme === "dark" ? "dark flex-1" : "flex-1"}>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <ThemeProvider
-                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-              >
-                <LoadingAndErrorHandling>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                  </Stack>
-                  <Toast config={toastConfig} />
-                  <StatusBar style="auto" />
-                </LoadingAndErrorHandling>
-              </ThemeProvider>
+              <LegacyAuthProvider>
+                <ThemeProvider
+                  value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+                >
+                  <LoadingAndErrorHandling>
+                    <Stack>
+                      <Stack.Screen
+                        name="auth"
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="(tabs)"
+                        options={{ headerShown: false }}
+                      />
+                    </Stack>
+                    <Toast config={toastConfig} />
+                    <StatusBar style="auto" />
+                  </LoadingAndErrorHandling>
+                </ThemeProvider>
+              </LegacyAuthProvider>
             </AuthProvider>
           </QueryClientProvider>
         </View>
