@@ -9,7 +9,7 @@ import {
   StatusBar,
   ScrollView,
 } from "react-native";
-import { useAuth } from "@/hooks/user/useAuth";
+import { useFirebaseAuth } from "@/contexts/AuthContext";
 import { ThemedText } from "@/components/ThemedText";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -22,9 +22,18 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const SIDEBAR_WIDTH = Math.min(screenWidth * 0.85, 350);
 
 export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
-  const { user, users, switchUser } = useAuth();
+  const { user, logout } = useFirebaseAuth();
   const slideAnim = React.useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
   const opacityAnim = React.useRef(new Animated.Value(0)).current;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onClose();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   React.useEffect(() => {
     if (isVisible) {
@@ -128,61 +137,47 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
               >
                 <View className="px-6 pt-6">
                   <View className="mb-6">
-                    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6  border border-gray-100 dark:border-neutral-800">
+                    <View className="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-gray-100 dark:border-neutral-800">
                       <View className="mb-4">
                         <View className="flex-row items-center mb-2">
                           <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
-                            <Ionicons name="people" size={16} color="#3b82f6" />
+                            <Ionicons name="person" size={16} color="#3b82f6" />
                           </View>
                           <ThemedText className="text-base font-semibold text-gray-900 dark:text-white">
-                            Switch User
+                            User Profile
                           </ThemedText>
                         </View>
                         <ThemedText className="text-sm text-gray-500 dark:text-gray-400 ml-11">
-                          Select a different user for testing
+                          Your account information
                         </ThemedText>
                       </View>
 
-                      <View className="space-y-3">
-                        {users.map((u) => (
-                          <Pressable
-                            key={u.userId}
-                            onPress={() => {
-                              switchUser(u.userId);
-                            }}
-                            className={`flex-row items-center justify-between p-4 rounded-xl border ${
-                              u.userId === user?.userId
-                                ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                                : "bg-gray-50 dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 active:bg-gray-100 dark:active:bg-neutral-700"
-                            }`}
-                          >
-                            <View className="flex-1">
-                              <Text
-                                className={`text-base font-medium ${
-                                  u.userId === user?.userId
-                                    ? "text-green-700 dark:text-green-300"
-                                    : "text-gray-900 dark:text-gray-100"
-                                }`}
-                              >
-                                {u.name}
-                              </Text>
-                              <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                {u.email}
-                              </Text>
-                            </View>
+                      {user && (
+                        <View className="space-y-4">
+                          <View className="p-4 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700">
+                            <Text className="text-base font-medium text-gray-900 dark:text-gray-100">
+                              {user.name}
+                            </Text>
+                            <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                              {user.email}
+                            </Text>
+                          </View>
 
-                            {u.userId === user?.userId && (
-                              <View className="w-6 h-6 rounded-full bg-green-500 items-center justify-center ml-3">
-                                <Ionicons
-                                  name="checkmark"
-                                  size={14}
-                                  color="white"
-                                />
-                              </View>
-                            )}
+                          <Pressable
+                            onPress={handleLogout}
+                            className="flex-row items-center justify-center p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 active:bg-red-100 dark:active:bg-red-900/30"
+                          >
+                            <Ionicons
+                              name="log-out-outline"
+                              size={16}
+                              color="#ef4444"
+                            />
+                            <Text className="text-base font-medium text-red-600 dark:text-red-400 ml-2">
+                              Logout
+                            </Text>
                           </Pressable>
-                        ))}
-                      </View>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </View>
