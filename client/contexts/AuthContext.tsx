@@ -75,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (emailError: any) {
           if (emailError.response?.status === 404) {
             try {
-              // Prioritize providedName (from signup form) over Firebase displayName
               const userName =
                 providedName && providedName.trim()
                   ? providedName.trim()
@@ -100,7 +99,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   setUser(retryResponse.data);
                 } catch (retryError) {
                   console.error("Retry fetch also failed:", retryError);
-                  // Use the same name prioritization logic
                   const userName =
                     providedName && providedName.trim()
                       ? providedName.trim()
@@ -121,7 +119,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   setUser(tempUser);
                 }
               } else {
-                // Use the same name prioritization logic
                 const userName =
                   providedName && providedName.trim()
                     ? providedName.trim()
@@ -144,7 +141,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           } else {
             console.error("Error fetching user by email:", emailError);
-            // Use the same name prioritization logic
             const userName =
               providedName && providedName.trim()
                 ? providedName.trim()
@@ -166,7 +162,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } else {
         console.error("Failed to fetch user from database:", error);
-        // Use the same name prioritization logic
         const userName =
           providedName && providedName.trim()
             ? providedName.trim()
@@ -241,7 +236,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
-      // Set pending name BEFORE creating the user account
       setPendingUserName(name);
 
       const userCredential = await createUserWithEmailAndPassword(
@@ -250,15 +244,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password
       );
 
-      // Update the Firebase profile with the provided name
       await updateProfile(userCredential.user, {
         displayName: name,
       });
 
-      // Reload the user to ensure the profile update is reflected
       await reload(userCredential.user);
 
-      // Manually call fetchOrCreateUser with the correct name to ensure it's created properly
       await fetchOrCreateUser(userCredential.user, name);
 
       try {

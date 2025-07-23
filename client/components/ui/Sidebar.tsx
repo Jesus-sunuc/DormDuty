@@ -243,30 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
                           </View>
                         </View>
 
-                        <View className="pt-4 border-t border-gray-100 dark:border-neutral-800">
-                          <Pressable className="flex-row items-center p-3 rounded-xl bg-gray-50 dark:bg-neutral-800 active:bg-gray-100 dark:active:bg-neutral-700">
-                            <View className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mr-3">
-                              <Ionicons
-                                name="person"
-                                size={16}
-                                color="#3b82f6"
-                              />
-                            </View>
-                            <View className="flex-1">
-                              <Text className="text-base font-medium text-gray-900 dark:text-white">
-                                Edit Profile
-                              </Text>
-                              <Text className="text-sm text-gray-500 dark:text-gray-400">
-                                Update your personal information
-                              </Text>
-                            </View>
-                            <Ionicons
-                              name="chevron-forward"
-                              size={16}
-                              color="#9ca3af"
-                            />
-                          </Pressable>
-                        </View>
+                       
                       </View>
                     </View>
 
@@ -424,9 +401,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
                     <View className="items-center py-4">
                       <Text className="text-xs text-gray-400 dark:text-gray-600 mb-1">
                         DormDuty v1.1.1
-                      </Text>
-                      <Text className="text-xs text-gray-400 dark:text-gray-600">
-                        Made with ❤️ for dormmates
                       </Text>
                     </View>
                   </View>
