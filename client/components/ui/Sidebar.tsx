@@ -27,9 +27,9 @@ const SIDEBAR_WIDTH = Math.min(screenWidth * 0.85, 350);
 // FAQ data for DormDuty app
 const FAQ_DATA = [
   {
-    question: "How do I join a room?",
+    question: "How do I join an apartment?",
     answer:
-      "To join a room, tap the 'Join Room' button on the home page, then enter the room code provided by your dormmate or room administrator.",
+      "To join an apartment, tap the 'Join Apartment' button on the home page, then enter the apartment code provided by your roommate or apartment administrator.",
   },
   {
     question: "How do I create chores and assign them?",
@@ -54,12 +54,12 @@ const FAQ_DATA = [
   {
     question: "Can I get notifications for chores and expenses?",
     answer:
-      "Yes! Enable push notifications in your device settings. You'll receive reminders for upcoming chores, expense requests, and room announcements.",
+      "Yes! Enable push notifications in your device settings. You'll receive reminders for upcoming chores, expense requests, and apartment announcements.",
   },
   {
-    question: "How do I leave a room?",
+    question: "How do I leave an apartment?",
     answer:
-      "Go to the Rooms tab, select your room, and tap 'Leave Room'. Note that you'll lose access to all room data including chores and expenses.",
+      "Go to the Apartments tab, select your apartment, and tap 'Leave Apartment'. Note that you'll lose access to all apartment data including chores and expenses.",
   },
   {
     question: "What if I forgot to mark a chore as complete?",
@@ -242,8 +242,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
                             </Text>
                           </View>
                         </View>
-
-                       
                       </View>
                     </View>
 

@@ -150,7 +150,7 @@ const HomeScreen = () => {
 
   const handleAddRoom = (name: string) => {
     if (userId === undefined) {
-      toastError("You must be logged in to create a room.");
+      toastError("You must be logged in to create an apartment.");
       return;
     }
 
@@ -164,7 +164,7 @@ const HomeScreen = () => {
           setModalVisible(false);
         },
         onError: (error) => {
-          toastError("Failed to create room");
+          toastError("Failed to create apartment");
         },
       }
     );
@@ -179,7 +179,7 @@ const HomeScreen = () => {
         setModalVisible(false);
       },
       onError: (error) => {
-        toastError("Failed to update room");
+        toastError("Failed to update apartment");
       },
     });
   };
@@ -194,10 +194,13 @@ const HomeScreen = () => {
 
   const confirmLeaveRoom = () => {
     if (!roomToLeave || !membershipData) {
-      console.warn("Leave room failed: missing room or membership data", {
-        roomToLeave: !!roomToLeave,
-        membershipData: !!membershipData,
-      });
+      console.warn(
+        "Leave apartment failed: missing apartment or membership data",
+        {
+          roomToLeave: !!roomToLeave,
+          membershipData: !!membershipData,
+        }
+      );
       toastError("Couldn't confirm your membership");
       setShowLeaveConfirmation(false);
       setRoomToLeave(null);
@@ -214,16 +217,16 @@ const HomeScreen = () => {
         onSuccess: (data) => {
           if (data.roomDeleted) {
             toastSuccess(
-              `Left room "${roomToLeave.name}" - Room was deleted as you were the last member`
+              `Left apartment "${roomToLeave.name}" - Apartment was deleted as you were the last member`
             );
           } else {
-            toastSuccess(`Left room "${roomToLeave.name}" successfully`);
+            toastSuccess(`Left apartment "${roomToLeave.name}" successfully`);
           }
           setShowLeaveConfirmation(false);
           setRoomToLeave(null);
         },
         onError: (error: any) => {
-          toastError("Failed to leave room");
+          toastError("Failed to leave apartment");
           setShowLeaveConfirmation(false);
           setRoomToLeave(null);
         },
@@ -243,7 +246,7 @@ const HomeScreen = () => {
     >
       <View className="flex-1 bg-gray-100 dark:bg-black">
         <Header
-          title="Your Rooms"
+          title="Your Apartment"
           onMenuPress={openSidebar}
           rightComponent={
             <View className="flex-row space-x-3 gap-2">
@@ -321,7 +324,7 @@ const HomeScreen = () => {
             setModalVisible(true);
           }}
           onShareCode={() =>
-            toastSuccess(`Duplicated room "${optionsRoom?.name}"`)
+            toastSuccess(`Duplicated apartment "${optionsRoom?.name}"`)
           }
           onDelete={handleLeaveRoom}
           room={optionsRoom}
@@ -334,8 +337,8 @@ const HomeScreen = () => {
             setRoomToLeave(null);
           }}
           onConfirm={confirmLeaveRoom}
-          title="Leave Room"
-          message={`Are you sure you want to leave "${roomToLeave?.name}"? If you are the last member, the room and all its data will be permanently deleted.`}
+          title="Leave Apartment"
+          message={`Are you sure you want to leave "${roomToLeave?.name}"? If you are the last member, the apartment and all its data will be permanently deleted.`}
           confirmText="Leave"
           cancelText="Cancel"
           destructive={true}
