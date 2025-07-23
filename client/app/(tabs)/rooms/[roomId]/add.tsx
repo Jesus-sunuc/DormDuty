@@ -144,6 +144,7 @@ const AddChoreScreen = () => {
           roomId={roomId || ""}
           isPending={isPending}
           onBack={() => router.back()}
+          onSave={handleSubmit}
         />
 
         <AddChoreForm
@@ -166,7 +167,6 @@ const AddChoreScreen = () => {
           photoRequired={photoRequired}
           setPhotoRequired={setPhotoRequired}
           members={formattedMembers}
-          onSave={handleSubmit}
           isPending={isPending}
         />
       </View>

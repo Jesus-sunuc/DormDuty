@@ -21,10 +21,7 @@ import {
   useRoomMembersQuery,
   useMembershipQuery,
 } from "@/hooks/membershipHooks";
-import {
-  ExpenseCreateRequest,
-  EXPENSE_CATEGORIES,
-} from "@/models/Expense";
+import { ExpenseCreateRequest, EXPENSE_CATEGORIES } from "@/models/Expense";
 import { toastSuccess, toastError } from "@/components/ToastService";
 import { useAuth } from "@/hooks/user/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
@@ -257,7 +254,35 @@ const AddExpensePage = () => {
                 : "Split costs with your roommates"}
             </ThemedText>
           </View>
-          <View className="w-10" />
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={isPending || !formData.amount || !formData.description}
+            className="w-20 h-10 items-center justify-center rounded-xl border border-blue-500 dark:border-blue-400"
+            style={{
+              backgroundColor:
+                isPending || !formData.amount || !formData.description
+                  ? colorScheme === "dark"
+                    ? "#374151"
+                    : "#e5e7eb"
+                  : colorScheme === "dark"
+                    ? "#1e40af"
+                    : "#3b82f6",
+            }}
+          >
+            <ThemedText
+              className="text-sm font-semibold"
+              style={{
+                color:
+                  isPending || !formData.amount || !formData.description
+                    ? colorScheme === "dark"
+                      ? "#6b7280"
+                      : "#9ca3af"
+                    : "#ffffff",
+              }}
+            >
+              {isPending ? "..." : isEditMode ? "Update" : "Create"}
+            </ThemedText>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -460,50 +485,6 @@ const AddExpensePage = () => {
           </View>
         </View>
       </ScrollView>
-
-      <View className="mt-2 ps-5 pe-5" style={{ marginBottom: bottomMargin }}>
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={isPending || !formData.amount || !formData.description}
-          className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg border ${
-            isPending || !formData.amount || !formData.description
-              ? "bg-gray-300 dark:bg-neutral-700 border-gray-300 dark:border-neutral-600"
-              : "bg-blue-500 dark:bg-blue-500 border-blue-500"
-          }`}
-        >
-          {isPending ? (
-            <>
-              <Animated.View
-                className="w-5 h-5 border border-white/30 border-t-white rounded-full mr-3"
-                style={{
-                  transform: [
-                    {
-                      rotate: spinValue.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ["0deg", "360deg"],
-                      }),
-                    },
-                  ],
-                }}
-              />
-              <Text className="text-white font-semibold text-lg">
-                Creating...
-              </Text>
-            </>
-          ) : (
-            <>
-              <Ionicons
-                name={isEditMode ? "checkmark-circle" : "add-circle"}
-                size={24}
-                color="#fff"
-              />
-              <Text className="text-white font-semibold text-lg ml-2">
-                {isEditMode ? "Update Expense" : "Create Expense"}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </View>
 
       {showDatePicker && (
         <DateTimePicker

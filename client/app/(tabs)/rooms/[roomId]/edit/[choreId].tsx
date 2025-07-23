@@ -282,6 +282,7 @@ const EditChoreScreen = () => {
           roomId={roomId || ""}
           isPending={isPending}
           onBack={() => router.back()}
+          onSave={handleSubmit}
           isEdit={true}
           choreName={chore.name}
         />
@@ -306,7 +307,6 @@ const EditChoreScreen = () => {
           photoRequired={photoRequired}
           setPhotoRequired={setPhotoRequired}
           members={formattedMembers}
-          onSave={handleSubmit}
           isPending={isPending}
           isEdit={true}
         />

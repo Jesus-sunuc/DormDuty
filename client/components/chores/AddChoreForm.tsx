@@ -45,7 +45,6 @@ interface AddChoreFormProps {
   photoRequired: boolean;
   setPhotoRequired: (required: boolean) => void;
   members: Member[];
-  onSave: () => void;
   isPending: boolean;
   isEdit?: boolean;
 }
@@ -70,7 +69,6 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
   photoRequired,
   setPhotoRequired,
   members,
-  onSave,
   isPending,
   isEdit = false,
 }) => {
@@ -316,38 +314,6 @@ export const AddChoreForm: React.FC<AddChoreFormProps> = ({
           </View>
         </View>
       </ScrollView>
-
-      <View className="mt-2 ps-5 pe-5" style={{ marginBottom: bottomMargin }}>
-        <TouchableOpacity
-          onPress={onSave}
-          disabled={isPending || !name.trim()}
-          className={`py-4 rounded-2xl flex-row items-center justify-center shadow-lg ${
-            isPending || !name.trim()
-              ? "bg-neutral-300 dark:bg-neutral-700"
-              : "bg-blue-500"
-          }`}
-        >
-          {isPending ? (
-            <>
-              <View className="w-5 h-5 border border-white/30 border-t-white rounded-full animate-spin mr-3" />
-              <Text className="text-white font-semibold text-lg">
-                {isEdit ? "Updating..." : "Creating..."}
-              </Text>
-            </>
-          ) : (
-            <>
-              <Ionicons
-                name={isEdit ? "checkmark-circle" : "add-circle"}
-                size={24}
-                color="white"
-              />
-              <Text className="text-white font-semibold text-lg ml-2">
-                {isEdit ? "Update Chore" : "Create Chore"}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </View>
 
       <MemberSelectionModal
         isVisible={showMemberSelection}
