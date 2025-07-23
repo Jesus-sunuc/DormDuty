@@ -7,9 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Modal,
 } from "react-native";
 import { useFirebaseAuth } from "@/contexts/AuthContext";
-import { toastError } from "@/components/ToastService";
+import { toastError, toastSuccess } from "@/components/ToastService";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function AuthScreen() {
@@ -19,9 +20,10 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const colorScheme = useColorScheme();
 
-  const { signIn, signUp } = useFirebaseAuth();
+  const { signIn, signUp, sendPasswordReset } = useFirebaseAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -48,6 +50,24 @@ export default function AuthScreen() {
       }
     } catch (error: any) {
       toastError(error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toastError("Please enter your email address");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await sendPasswordReset(email);
+      toastSuccess("Password reset email sent! Check your inbox.");
+      setShowForgotPassword(false);
+    } catch (error: any) {
+      toastError(error.message || "Failed to send password reset email");
     } finally {
       setLoading(false);
     }
@@ -223,6 +243,22 @@ export default function AuthScreen() {
             </Text>
           </TouchableOpacity>
 
+          {isLogin && (
+            <TouchableOpacity
+              onPress={() => setShowForgotPassword(true)}
+              className="mt-4"
+            >
+              <Text
+                className="text-center text-sm"
+                style={{
+                  color: colorScheme === "dark" ? "#34d399" : "#10b981",
+                }}
+              >
+                Forgot your password?
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <View className="flex-row justify-center mt-6">
             <Text
               style={{
@@ -246,6 +282,112 @@ export default function AuthScreen() {
           </View>
         </View>
       </View>
+
+      {/* Forgot Password Modal */}
+      <Modal
+        visible={showForgotPassword}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowForgotPassword(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            className="mx-8 p-6 rounded-2xl"
+            style={{
+              backgroundColor: colorScheme === "dark" ? "#262626" : "#ffffff",
+              width: "90%",
+              maxWidth: 400,
+            }}
+          >
+            <Text
+              className="text-xl font-bold text-center mb-4"
+              style={{
+                color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+              }}
+            >
+              Reset Password
+            </Text>
+
+            <Text
+              className="text-sm text-center mb-6"
+              style={{
+                color: colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280",
+              }}
+            >
+              Enter your email address and we'll send you a link to reset your
+              password.
+            </Text>
+
+            <View className="mb-4">
+              <Text
+                className="text-sm font-medium mb-2"
+                style={{
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+              >
+                Email
+              </Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="rounded-lg px-4 py-3"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                  color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                }}
+                placeholderTextColor={
+                  colorScheme === "dark" ? "#a3bcc9ad" : "#6b7280"
+                }
+              />
+            </View>
+
+            <View className="flex-row space-x-3">
+              <TouchableOpacity
+                onPress={() => setShowForgotPassword(false)}
+                className="flex-1 py-3 rounded-lg mr-2"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark" ? "#3a3a3a" : "#d6e0da",
+                }}
+              >
+                <Text
+                  className="text-center font-medium"
+                  style={{
+                    color: colorScheme === "dark" ? "#f1f5f9" : "#1b1f22",
+                  }}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleForgotPassword}
+                disabled={loading}
+                className="flex-1 py-3 rounded-lg ml-2"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark" ? "#34d399" : "#10b981",
+                }}
+              >
+                <Text className="text-white text-center font-medium">
+                  {loading ? "Sending..." : "Send Reset Email"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }

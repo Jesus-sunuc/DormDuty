@@ -10,6 +10,9 @@ router = APIRouter(
     responses={404: {"description": "Users endpoint not found"}},
 )
 
+class UpdateFirebaseUidRequest(BaseModel):
+    fb_uid: str
+
 class CreateUserRequest(BaseModel):
     fb_uid: str
     email: str
@@ -29,6 +32,22 @@ def get_all_users():
 @error_handler("Error fetching user by Firebase UID")
 def get_user_by_firebase_uid(fb_uid: str):
     user = repo.get_user_by_firebase_uid(fb_uid)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.get("/email/{email}")
+@error_handler("Error fetching user by email")
+def get_user_by_email(email: str):
+    user = repo.get_user_by_email(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.put("/firebase-uid/{user_id}")
+@error_handler("Error updating Firebase UID")
+def update_user_firebase_uid(user_id: int, request: UpdateFirebaseUidRequest):
+    user = repo.update_user_firebase_uid(user_id, request.fb_uid)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

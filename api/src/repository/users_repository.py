@@ -12,6 +12,21 @@ class UserRepository:
         result = run_sql(sql, (fb_uid,), output_class=User)
         return result[0] if result else None
     
+    def get_user_by_email(self, email: str):
+        sql = "SELECT * FROM \"user\" WHERE email = %s"
+        result = run_sql(sql, (email,), output_class=User)
+        return result[0] if result else None
+    
+    def update_user_firebase_uid(self, user_id: int, new_fb_uid: str):
+        sql = """
+        UPDATE "user" 
+        SET fb_uid = %s, updated_at = NOW()
+        WHERE user_id = %s
+        RETURNING *
+        """
+        result = run_sql(sql, (new_fb_uid, user_id), output_class=User)
+        return result[0] if result else None
+    
     def create_user(self, fb_uid: str, email: str, name: str, avatar_url: str = None):
         sql = """
         INSERT INTO "user" (fb_uid, email, name, avatar_url, created_at, updated_at)
