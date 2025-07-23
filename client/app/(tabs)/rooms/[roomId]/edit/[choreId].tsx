@@ -153,6 +153,14 @@ const EditChoreScreen = () => {
   const description = descriptionState[0];
   const setDescription = descriptionState[1];
 
+  const approvalRequiredState = useState(false);
+  const approvalRequired = approvalRequiredState[0];
+  const setApprovalRequired = approvalRequiredState[1];
+
+  const photoRequiredState = useState(false);
+  const photoRequired = photoRequiredState[0];
+  const setPhotoRequired = photoRequiredState[1];
+
   useEffect(() => {
     if (chore) {
       setName(chore.name || "");
@@ -174,6 +182,8 @@ const EditChoreScreen = () => {
 
       setStartDate(toISODateString(chore.startDate as any));
       setDescription(chore.description);
+      setApprovalRequired(chore.approvalRequired || false);
+      setPhotoRequired(chore.photoRequired || false);
     }
   }, [chore]);
 
@@ -199,6 +209,8 @@ const EditChoreScreen = () => {
       startDate,
       assignedMemberIds:
         assignedTo && assignedTo.length > 0 ? assignedTo : undefined,
+      approvalRequired,
+      photoRequired,
       isActive: chore?.isActive ?? true,
     };
 
@@ -289,6 +301,10 @@ const EditChoreScreen = () => {
           setTimingInput={setTimingInput}
           description={description}
           setDescription={setDescription}
+          approvalRequired={approvalRequired}
+          setApprovalRequired={setApprovalRequired}
+          photoRequired={photoRequired}
+          setPhotoRequired={setPhotoRequired}
           members={formattedMembers}
           onSave={handleSubmit}
           isPending={isPending}
