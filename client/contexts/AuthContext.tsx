@@ -56,72 +56,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setIsProcessing(true);
     try {
-      console.log("Fetching user by Firebase UID:", firebaseUser.uid);
       const response = await axiosClient.get(
         `/api/users/firebase/${firebaseUser.uid}`
       );
-      console.log("User found in database:", response.data);
       setUser(response.data);
     } catch (error: any) {
       if (error.response?.status === 404) {
-        // User not found by Firebase UID, try to find by email
         try {
-          console.log(
-            "User not found by UID, trying by email:",
-            firebaseUser.email
-          );
           const emailResponse = await axiosClient.get(
             `/api/users/email/${encodeURIComponent(firebaseUser.email || "")}`
           );
-          console.log("User found by email, updating Firebase UID");
 
-          // Update the Firebase UID for this user
           const updateResponse = await axiosClient.put(
             `/api/users/firebase-uid/${emailResponse.data.user_id}`,
             { fb_uid: firebaseUser.uid }
           );
-          console.log("Firebase UID updated successfully");
           setUser(updateResponse.data);
         } catch (emailError: any) {
           if (emailError.response?.status === 404) {
-            // User doesn't exist by email either, create new user
             try {
-              console.log("User doesn't exist, creating new user");
+              // Prioritize providedName (from signup form) over Firebase displayName
+              const userName =
+                providedName && providedName.trim()
+                  ? providedName.trim()
+                  : firebaseUser.displayName && firebaseUser.displayName.trim()
+                    ? firebaseUser.displayName.trim()
+                    : firebaseUser.email?.split("@")[0] || "User";
+
               const createResponse = await axiosClient.post("/api/users", {
                 fb_uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                name:
-                  providedName ||
-                  firebaseUser.displayName ||
-                  firebaseUser.email?.split("@")[0] ||
-                  "User",
+                name: userName,
               });
               setUser(createResponse.data);
-              console.log("New user created successfully");
             } catch (createError: any) {
               console.error("Failed to create user in database:", createError);
 
-              // If creation failed due to user already existing, try to fetch again
               if (createError.response?.status === 500) {
                 try {
-                  console.log("User might already exist, retrying fetch...");
                   const retryResponse = await axiosClient.get(
                     `/api/users/firebase/${firebaseUser.uid}`
                   );
                   setUser(retryResponse.data);
-                  console.log("Successfully fetched existing user");
                 } catch (retryError) {
                   console.error("Retry fetch also failed:", retryError);
-                  // Create a temporary user as fallback
+                  // Use the same name prioritization logic
+                  const userName =
+                    providedName && providedName.trim()
+                      ? providedName.trim()
+                      : firebaseUser.displayName &&
+                          firebaseUser.displayName.trim()
+                        ? firebaseUser.displayName.trim()
+                        : firebaseUser.email?.split("@")[0] || "User";
+
                   const tempUser = {
                     userId: 0,
                     fbUid: firebaseUser.uid,
                     email: firebaseUser.email || "",
-                    name:
-                      providedName ||
-                      firebaseUser.displayName ||
-                      firebaseUser.email?.split("@")[0] ||
-                      "User",
+                    name: userName,
                     avatarUrl: undefined,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
@@ -129,16 +121,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                   setUser(tempUser);
                 }
               } else {
-                // For other errors, create temporary user
+                // Use the same name prioritization logic
+                const userName =
+                  providedName && providedName.trim()
+                    ? providedName.trim()
+                    : firebaseUser.displayName &&
+                        firebaseUser.displayName.trim()
+                      ? firebaseUser.displayName.trim()
+                      : firebaseUser.email?.split("@")[0] || "User";
+
                 const tempUser = {
                   userId: 0,
                   fbUid: firebaseUser.uid,
                   email: firebaseUser.email || "",
-                  name:
-                    providedName ||
-                    firebaseUser.displayName ||
-                    firebaseUser.email?.split("@")[0] ||
-                    "User",
+                  name: userName,
                   avatarUrl: undefined,
                   createdAt: new Date().toISOString(),
                   updatedAt: new Date().toISOString(),
@@ -148,16 +144,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
           } else {
             console.error("Error fetching user by email:", emailError);
-            // Create temporary user as fallback
+            // Use the same name prioritization logic
+            const userName =
+              providedName && providedName.trim()
+                ? providedName.trim()
+                : firebaseUser.displayName && firebaseUser.displayName.trim()
+                  ? firebaseUser.displayName.trim()
+                  : firebaseUser.email?.split("@")[0] || "User";
+
             const tempUser = {
               userId: 0,
               fbUid: firebaseUser.uid,
               email: firebaseUser.email || "",
-              name:
-                providedName ||
-                firebaseUser.displayName ||
-                firebaseUser.email?.split("@")[0] ||
-                "User",
+              name: userName,
               avatarUrl: undefined,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
@@ -167,15 +166,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       } else {
         console.error("Failed to fetch user from database:", error);
+        // Use the same name prioritization logic
+        const userName =
+          providedName && providedName.trim()
+            ? providedName.trim()
+            : firebaseUser.displayName && firebaseUser.displayName.trim()
+              ? firebaseUser.displayName.trim()
+              : firebaseUser.email?.split("@")[0] || "User";
+
         const tempUser = {
           userId: 0,
           fbUid: firebaseUser.uid,
           email: firebaseUser.email || "",
-          name:
-            providedName ||
-            firebaseUser.displayName ||
-            firebaseUser.email?.split("@")[0] ||
-            "User",
+          name: userName,
           avatarUrl: undefined,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -216,7 +219,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!loading) {
       if (user && firebaseUser) {
-        // Check if email is verified
         if (firebaseUser.emailVerified) {
           router.replace("/(tabs)");
         } else {
@@ -239,6 +241,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
+      // Set pending name BEFORE creating the user account
       setPendingUserName(name);
 
       const userCredential = await createUserWithEmailAndPassword(
@@ -247,22 +250,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password
       );
 
+      // Update the Firebase profile with the provided name
       await updateProfile(userCredential.user, {
         displayName: name,
       });
 
-      // Automatically send verification email without custom URL
+      // Reload the user to ensure the profile update is reflected
+      await reload(userCredential.user);
+
+      // Manually call fetchOrCreateUser with the correct name to ensure it's created properly
+      await fetchOrCreateUser(userCredential.user, name);
+
       try {
         await sendEmailVerification(userCredential.user);
-        console.log("Verification email sent successfully");
       } catch (emailError) {
         console.error("Failed to send verification email:", emailError);
-        // Don't throw the error, just log it since account creation was successful
       }
     } catch (error) {
       setPendingUserName(null);
       setLoading(false);
-      console.error("SignUp error:", error);
       throw error;
     }
   };
@@ -287,18 +293,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      console.log("Sending verification email to:", firebaseUser.email);
-
-      // Send email verification without custom URL to avoid unauthorized-continue-uri error
       await sendEmailVerification(firebaseUser);
-
-      console.log("Verification email sent successfully");
     } catch (error: any) {
       console.error("Error sending verification email:", error);
-      console.error("Error code:", error?.code);
-      console.error("Error message:", error?.message);
 
-      // Re-throw with more specific error messages
       if (error.code === "auth/too-many-requests") {
         throw new Error(
           "Too many verification emails sent. Please wait a few minutes before trying again."
@@ -330,7 +328,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       await reload(firebaseUser);
-      // Force a re-evaluation of the auth state
       const currentUser = auth.currentUser;
       if (currentUser) {
         setFirebaseUser(currentUser);

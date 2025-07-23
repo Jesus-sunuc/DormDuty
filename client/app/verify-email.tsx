@@ -16,28 +16,18 @@ export default function VerifyEmailScreen() {
     useFirebaseAuth();
 
   useEffect(() => {
-    // If user is already verified, redirect to home
     if (firebaseUser?.emailVerified) {
       router.replace("/(tabs)");
     }
-
-    // Debug: Log current user state
-    console.log("Current Firebase User:", {
-      uid: firebaseUser?.uid,
-      email: firebaseUser?.email,
-      emailVerified: firebaseUser?.emailVerified,
-      displayName: firebaseUser?.displayName,
-    });
   }, [firebaseUser]);
 
-  // Cooldown timer effect
   useEffect(() => {
     let interval: any;
 
     if (lastSentTime && cooldownTime > 0) {
       interval = setInterval(() => {
         const elapsed = Date.now() - lastSentTime;
-        const remaining = Math.max(0, 60000 - elapsed); // 60 second cooldown
+        const remaining = Math.max(0, 60000 - elapsed); 
         setCooldownTime(Math.ceil(remaining / 1000));
 
         if (remaining <= 0) {
@@ -52,7 +42,6 @@ export default function VerifyEmailScreen() {
   }, [lastSentTime, cooldownTime]);
 
   const handleSendVerification = async () => {
-    // Check if we're in cooldown period
     if (lastSentTime && Date.now() - lastSentTime < 60000) {
       const remaining = Math.ceil((60000 - (Date.now() - lastSentTime)) / 1000);
       toastError(
@@ -63,11 +52,8 @@ export default function VerifyEmailScreen() {
 
     setLoading(true);
     try {
-      console.log("Attempting to send verification email...");
       await sendEmailVerification();
-      console.log("Verification email sent successfully");
 
-      // Set the last sent time and start cooldown
       const now = Date.now();
       setLastSentTime(now);
       setCooldownTime(60);
@@ -78,7 +64,6 @@ export default function VerifyEmailScreen() {
     } catch (error: any) {
       console.error("Error sending verification email:", error);
 
-      // Handle specific Firebase errors
       if (error.code === "auth/too-many-requests") {
         toastError(
           "Too many email requests. Please wait a few minutes before trying again."
@@ -98,25 +83,15 @@ export default function VerifyEmailScreen() {
   const handleCheckVerification = async () => {
     setChecking(true);
     try {
-      console.log("Checking email verification status...");
-
-      // First reload the current user
       await refreshUser();
 
-      // Wait a moment for the state to update
       setTimeout(() => {
         const currentUser = auth.currentUser;
-        console.log(
-          "After refresh - emailVerified:",
-          currentUser?.emailVerified
-        );
 
         if (currentUser?.emailVerified) {
-          console.log("Email verified successfully");
           toastSuccess("Email verified successfully!");
           router.replace("/(tabs)");
         } else {
-          console.log("Email not verified yet");
           toastError(
             "Email not verified yet. Please check your inbox and click the verification link."
           );
