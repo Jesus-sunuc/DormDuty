@@ -146,10 +146,10 @@ const Updates = () => {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
               <>
-                {rooms.length > 0 && (
+                {rooms.length > 1 && (
                   <View className="mb-6">
                     <ThemedText className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-                      {rooms.length > 1 ? "Select Room" : "Room"}
+                      Select Room
                     </ThemedText>
                     <FlatList
                       data={rooms}

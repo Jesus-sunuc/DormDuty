@@ -102,10 +102,10 @@ const ExpensesScreen = () => {
       <Header title="Expenses" onMenuPress={openSidebar} />
       <ParallaxScrollViewY>
         <View className="px-6 pt-6">
-          {rooms.length > 0 && (
+          {rooms.length > 1 && (
             <View className="mb-6">
               <ThemedText className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-300">
-                {rooms.length > 1 ? "Select Room" : "Room"}
+                Select Room
               </ThemedText>
               <FlatList
                 data={rooms}
