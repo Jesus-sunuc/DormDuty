@@ -1,3 +1,4 @@
+
 # DormDuty
 
 > A modern roommate management platform that simplifies shared living through smart chore scheduling, expense tracking, and seamless communication.
