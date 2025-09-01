@@ -86,10 +86,10 @@ const ExpensesScreen = () => {
           <View className="flex-1 items-center justify-center px-6 py-20">
             <Ionicons name="receipt-outline" size={64} color="#6b7280" />
             <ThemedText className="text-center text-gray-600 dark:text-gray-400 mt-4 text-lg font-medium">
-              No rooms yet
+              No apartments yet
             </ThemedText>
             <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
-              Join or create a room to start tracking expenses
+              Join or create an apartment to start tracking expenses
             </ThemedText>
           </View>
         </ParallaxScrollViewY>
@@ -102,10 +102,10 @@ const ExpensesScreen = () => {
       <Header title="Expenses" onMenuPress={openSidebar} />
       <ParallaxScrollViewY>
         <View className="px-6 pt-6">
-          {rooms.length > 0 && (
+          {rooms.length > 1 && (
             <View className="mb-6">
               <ThemedText className="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-300">
-                {rooms.length > 1 ? "Select Room" : "Room"}
+                Select Apartment
               </ThemedText>
               <FlatList
                 data={rooms}
@@ -186,8 +186,8 @@ const RoomExpenseContent: React.FC<RoomExpenseContentProps> = ({
         </ThemedText>
         <ThemedText className="text-center text-gray-700 dark:text-gray-500 mt-2 text-sm">
           You don't have permission to view expenses for "{room.name}".
-          {"\n"}Please select a different room or contact an admin to be added
-          to this room.
+          {"\n"}Please select a different apartment or contact an admin to be
+          added to this apartment.
         </ThemedText>
       </View>
     );

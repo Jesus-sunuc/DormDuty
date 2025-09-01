@@ -116,10 +116,10 @@ const Updates = () => {
       <View className="flex-1 items-center justify-center px-6 py-20">
         <Ionicons name="chatbubbles-outline" size={64} color="#9ca3af" />
         <ThemedText className="text-center text-gray-400 mt-4 text-lg font-medium">
-          No rooms yet
+          No apartments yet
         </ThemedText>
         <ThemedText className="text-center text-gray-500 mt-2 text-sm">
-          Join or create a room to start receiving updates
+          Join or create an apartment to start receiving updates
         </ThemedText>
       </View>
     );
@@ -146,10 +146,10 @@ const Updates = () => {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={
               <>
-                {rooms.length > 0 && (
+                {rooms.length > 1 && (
                   <View className="mb-6">
                     <ThemedText className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-                      {rooms.length > 1 ? "Select Room" : "Room"}
+                      Select Apartment
                     </ThemedText>
                     <FlatList
                       data={rooms}
@@ -306,7 +306,7 @@ const Updates = () => {
             {rooms.length > 0 && (
               <View className="mb-6">
                 <ThemedText className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
-                  Select a Room
+                  Select an Apartment
                 </ThemedText>
                 {rooms.map((room) => (
                   <TouchableOpacity

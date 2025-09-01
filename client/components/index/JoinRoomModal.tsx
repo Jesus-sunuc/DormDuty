@@ -31,12 +31,12 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 
   const handleJoinRoom = () => {
     if (!roomCode.trim()) {
-      toastError("Please enter a room code");
+      toastError("Please enter an apartment code");
       return;
     }
 
     if (roomCode.trim().length !== 6) {
-      toastError("Room code must be exactly 6 characters");
+      toastError("Apartment code must be exactly 6 characters");
       return;
     }
 
@@ -52,14 +52,14 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
       },
       {
         onSuccess: (data) => {
-          toastSuccess(data.message || "Successfully joined room!");
+          toastSuccess(data.message || "Successfully joined apartment!");
           setRoomCode("");
           onClose();
           onSuccess(data.roomId);
         },
         onError: (error: any) => {
           const errorMessage =
-            error?.response?.data?.detail || "Failed to join room";
+            error?.response?.data?.detail || "Failed to join apartment";
           toastError(errorMessage);
         },
       }
@@ -86,7 +86,7 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
           <View className="bg-white dark:bg-neutral-800 rounded-2xl p-6 w-full max-w-sm">
             <View className="flex-row items-center justify-between mb-6">
               <ThemedText className="text-xl font-bold text-gray-700 dark:text-gray-300">
-                Join Room
+                Join Apartment
               </ThemedText>
               <TouchableOpacity
                 onPress={handleClose}
@@ -98,12 +98,12 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 
             <View className="mb-6">
               <ThemedText className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Room Code
+                Apartment Code
               </ThemedText>
               <TextInput
                 value={roomCode}
                 onChangeText={setRoomCode}
-                placeholder="Enter 6-character room code"
+                placeholder="Enter 6-character apartment code"
                 placeholderTextColor="#9ca3af"
                 className="border border-gray-300 dark:border-neutral-600 rounded-lg px-4 py-3 text-gray-900 dark:text-gray-100 bg-white dark:bg-neutral-700"
                 autoCapitalize="characters"
@@ -132,21 +132,21 @@ export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
                 className={`flex-1 py-3 px-4 rounded-lg ${
                   joinRoomMutation.isPending || roomCode.trim().length !== 6
                     ? "bg-gray-100 dark:bg-gray-600"
-                    : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700" 
+                    : "bg-blue-100 dark:bg-blue-600 border border-blue-200 dark:border-blue-700"
                 }`}
                 disabled={
                   joinRoomMutation.isPending || roomCode.trim().length !== 6
                 }
               >
                 <Text className="text-center font-semibold text-blue-500 dark:text-white">
-                  {joinRoomMutation.isPending ? "Joining..." : "Join Room"}
+                  {joinRoomMutation.isPending ? "Joining..." : "Join Apartment"}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View className="mt-4">
               <ThemedText className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                Ask a room member to share the room code with you
+                Ask an apartment member to share the apartment code with you
               </ThemedText>
             </View>
           </View>

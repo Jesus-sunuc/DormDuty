@@ -6,6 +6,9 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  reload,
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { User } from "@/models/User";
@@ -19,6 +22,9 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  sendEmailVerification: () => Promise<void>;
+  sendPasswordReset: (email: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,44 +63,117 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error: any) {
       if (error.response?.status === 404) {
         try {
-          const createResponse = await axiosClient.post("/api/users", {
-            fb_uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            name:
-              providedName ||
-              firebaseUser.displayName ||
-              firebaseUser.email?.split("@")[0] ||
-              "User",
-          });
-          setUser(createResponse.data);
-        } catch (createError) {
-          console.error("Failed to create user in database:", createError);
-          const tempUser = {
-            userId: 0,
-            fbUid: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            name:
-              providedName ||
-              firebaseUser.displayName ||
-              firebaseUser.email?.split("@")[0] ||
-              "User",
-            avatarUrl: undefined,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          setUser(tempUser);
+          const emailResponse = await axiosClient.get(
+            `/api/users/email/${encodeURIComponent(firebaseUser.email || "")}`
+          );
+
+          const updateResponse = await axiosClient.put(
+            `/api/users/firebase-uid/${emailResponse.data.user_id}`,
+            { fb_uid: firebaseUser.uid }
+          );
+          setUser(updateResponse.data);
+        } catch (emailError: any) {
+          if (emailError.response?.status === 404) {
+            try {
+              const userName =
+                providedName && providedName.trim()
+                  ? providedName.trim()
+                  : firebaseUser.displayName && firebaseUser.displayName.trim()
+                    ? firebaseUser.displayName.trim()
+                    : firebaseUser.email?.split("@")[0] || "User";
+
+              const createResponse = await axiosClient.post("/api/users", {
+                fb_uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: userName,
+              });
+              setUser(createResponse.data);
+            } catch (createError: any) {
+              console.error("Failed to create user in database:", createError);
+
+              if (createError.response?.status === 500) {
+                try {
+                  const retryResponse = await axiosClient.get(
+                    `/api/users/firebase/${firebaseUser.uid}`
+                  );
+                  setUser(retryResponse.data);
+                } catch (retryError) {
+                  console.error("Retry fetch also failed:", retryError);
+                  const userName =
+                    providedName && providedName.trim()
+                      ? providedName.trim()
+                      : firebaseUser.displayName &&
+                          firebaseUser.displayName.trim()
+                        ? firebaseUser.displayName.trim()
+                        : firebaseUser.email?.split("@")[0] || "User";
+
+                  const tempUser = {
+                    userId: 0,
+                    fbUid: firebaseUser.uid,
+                    email: firebaseUser.email || "",
+                    name: userName,
+                    avatarUrl: undefined,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                  };
+                  setUser(tempUser);
+                }
+              } else {
+                const userName =
+                  providedName && providedName.trim()
+                    ? providedName.trim()
+                    : firebaseUser.displayName &&
+                        firebaseUser.displayName.trim()
+                      ? firebaseUser.displayName.trim()
+                      : firebaseUser.email?.split("@")[0] || "User";
+
+                const tempUser = {
+                  userId: 0,
+                  fbUid: firebaseUser.uid,
+                  email: firebaseUser.email || "",
+                  name: userName,
+                  avatarUrl: undefined,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                };
+                setUser(tempUser);
+              }
+            }
+          } else {
+            console.error("Error fetching user by email:", emailError);
+            const userName =
+              providedName && providedName.trim()
+                ? providedName.trim()
+                : firebaseUser.displayName && firebaseUser.displayName.trim()
+                  ? firebaseUser.displayName.trim()
+                  : firebaseUser.email?.split("@")[0] || "User";
+
+            const tempUser = {
+              userId: 0,
+              fbUid: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              name: userName,
+              avatarUrl: undefined,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            setUser(tempUser);
+          }
         }
       } else {
         console.error("Failed to fetch user from database:", error);
+        const userName =
+          providedName && providedName.trim()
+            ? providedName.trim()
+            : firebaseUser.displayName && firebaseUser.displayName.trim()
+              ? firebaseUser.displayName.trim()
+              : firebaseUser.email?.split("@")[0] || "User";
+
         const tempUser = {
           userId: 0,
           fbUid: firebaseUser.uid,
           email: firebaseUser.email || "",
-          name:
-            providedName ||
-            firebaseUser.displayName ||
-            firebaseUser.email?.split("@")[0] ||
-            "User",
+          name: userName,
           avatarUrl: undefined,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -134,13 +213,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!loading) {
-      if (user) {
-        router.replace("/(tabs)");
+      if (user && firebaseUser) {
+        if (firebaseUser.emailVerified) {
+          router.replace("/(tabs)");
+        } else {
+          router.replace("/verify-email");
+        }
       } else {
         router.replace("/auth");
       }
     }
-  }, [user, loading]);
+  }, [user, firebaseUser, loading]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -164,6 +247,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       await updateProfile(userCredential.user, {
         displayName: name,
       });
+
+      await reload(userCredential.user);
+
+      await fetchOrCreateUser(userCredential.user, name);
+
+      try {
+        await sendEmailVerification(userCredential.user);
+      } catch (emailError) {
+        console.error("Failed to send verification email:", emailError);
+      }
     } catch (error) {
       setPendingUserName(null);
       setLoading(false);
@@ -181,6 +274,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const sendEmailVerificationFn = async () => {
+    if (!firebaseUser) {
+      throw new Error("No user is currently signed in");
+    }
+
+    if (firebaseUser.emailVerified) {
+      throw new Error("Email is already verified");
+    }
+
+    try {
+      await sendEmailVerification(firebaseUser);
+    } catch (error: any) {
+      console.error("Error sending verification email:", error);
+
+      if (error.code === "auth/too-many-requests") {
+        throw new Error(
+          "Too many verification emails sent. Please wait a few minutes before trying again."
+        );
+      } else if (error.code === "auth/user-not-found") {
+        throw new Error("User account not found. Please sign up again.");
+      } else if (error.code === "auth/network-request-failed") {
+        throw new Error(
+          "Network error. Please check your internet connection and try again."
+        );
+      }
+
+      throw error;
+    }
+  };
+  const sendPasswordReset = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+      throw error;
+    }
+  };
+
+  const refreshUser = async () => {
+    if (!firebaseUser) {
+      throw new Error("No user is currently signed in");
+    }
+
+    try {
+      await reload(firebaseUser);
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        setFirebaseUser(currentUser);
+      }
+    } catch (error) {
+      console.error("Error refreshing user:", error);
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     firebaseUser,
     user,
@@ -188,6 +336,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     signIn,
     signUp,
     logout,
+    sendEmailVerification: sendEmailVerificationFn,
+    sendPasswordReset,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

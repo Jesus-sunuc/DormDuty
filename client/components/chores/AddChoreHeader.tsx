@@ -8,12 +8,15 @@ interface AddChoreHeaderProps {
   roomId: string;
   isPending: boolean;
   onBack: () => void;
+  onSave: () => void;
   isEdit?: boolean;
   choreName?: string;
 }
 
 export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
   onBack,
+  onSave,
+  isPending,
   isEdit = false,
   choreName,
 }) => {
@@ -41,7 +44,33 @@ export const AddChoreHeader: React.FC<AddChoreHeaderProps> = ({
             {isEdit ? `Editing "${choreName}"` : "Create a task for your room"}
           </ThemedText>
         </View>
-        <View className="w-10" />
+        <TouchableOpacity
+          onPress={onSave}
+          disabled={isPending}
+          className="w-20 h-10 items-center justify-center rounded-xl border border-blue-500 dark:border-blue-400"
+          style={{
+            backgroundColor: isPending
+              ? colorScheme === "dark"
+                ? "#374151"
+                : "#e5e7eb"
+              : colorScheme === "dark"
+                ? "#1e40af"
+                : "#3b82f6",
+          }}
+        >
+          <ThemedText
+            className="text-sm font-semibold"
+            style={{
+              color: isPending
+                ? colorScheme === "dark"
+                  ? "#6b7280"
+                  : "#9ca3af"
+                : "#ffffff",
+            }}
+          >
+            {isPending ? "..." : isEdit ? "Update" : "Create"}
+          </ThemedText>
+        </TouchableOpacity>
       </View>
     </View>
   );

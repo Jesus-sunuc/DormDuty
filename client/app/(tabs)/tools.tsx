@@ -270,7 +270,7 @@ const ToolsScreen = () => {
                     className="bg-gray-100 dark:bg-neutral-900 rounded-2xl p-4 mb-4 border border-gray-300 dark:border-neutral-800"
                   >
                     <ThemedText className="text-lg font-medium text-gray-800 dark:text-white mb-3">
-                      Select Room
+                      Select Apartment
                     </ThemedText>
                     <ScrollView
                       horizontal
